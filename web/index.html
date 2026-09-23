@@ -4,28 +4,38 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AX — models &amp; spend</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
 <meta name="description" content="See what your AI coding tools actually cost you, and which work can move to a cheaper model without getting worse.">
 <style>
-:root{--bg:#fff;--panel:#f7f7f5;--ink:#16161a;--muted:#6b6b76;--line:#e4e4e0;
- --good:#0f7b56;--warn:#a66a12;--accent:#1f4fd8;--nav:#f2f2ef;
- --mono:ui-monospace,SFMono-Regular,Menlo,monospace}
-:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
- --bg:#0e0e11;--panel:#17171c;--ink:#ececf1;--muted:#9a9aa8;--line:#26262e;
- --good:#3ecf9b;--warn:#e0a94a;--accent:#7aa2ff;--nav:#121216}}
-:root[data-theme="dark"]{--bg:#0e0e11;--panel:#17171c;--ink:#ececf1;--muted:#9a9aa8;
- --line:#26262e;--good:#3ecf9b;--warn:#e0a94a;--accent:#7aa2ff;--nav:#121216}
+:root{--bg:#0b0d0e;--panel:#121617;--ink:#e8eceb;--muted:#8d9a98;--line:#1f2729;
+ --good:#3ecf9b;--warn:#e0a94a;--accent:#7aa2ff;--nav:#0e1213;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
- font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+ font:15px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
  -webkit-font-smoothing:antialiased}
 .app{display:flex;min-height:100vh}
-nav{width:216px;flex:none;background:var(--nav);border-right:1px solid var(--line);padding:22px 0}
+nav{width:216px;flex:none;background:var(--nav);border-right:1px solid var(--line);padding:22px 0;position:relative;overflow:hidden}
+nav .brand,nav .grp,nav a{position:relative;z-index:2}
+.art{position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:.5;mix-blend-mode:screen;
+ -webkit-mask-image:linear-gradient(100deg,#000 0%,#000 42%,transparent 88%);
+ mask-image:linear-gradient(100deg,#000 0%,#000 42%,transparent 88%)}
+.art img{width:100%;height:100%;object-fit:cover;object-position:center 22%;
+ filter:grayscale(1) contrast(1.45) brightness(.72) sepia(1) hue-rotate(125deg) saturate(2.2);
+ image-rendering:pixelated}
+.art::after{content:"";position:absolute;inset:0;
+ background-image:radial-gradient(circle at 25% 25%,rgba(4,28,28,.92) 1px,transparent 1.4px),
+                  radial-gradient(circle at 75% 75%,rgba(4,28,28,.92) 1px,transparent 1.4px);
+ background-size:4px 4px,4px 4px;background-position:0 0,2px 2px}
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:14px;
+ background:var(--panel);padding:28px 30px;margin:0 0 22px}
+.hero h1,.hero .lede{position:relative;z-index:2}.hero .lede{margin-bottom:0}
 nav .brand{padding:0 20px 18px;font-weight:700;font-size:17px;letter-spacing:-.01em}
 nav .brand span{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
 nav .grp{padding:14px 20px 5px;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:600}
 nav a{display:block;padding:8px 20px;color:var(--muted);text-decoration:none;font-size:14px;cursor:pointer;border-left:3px solid transparent}
 nav a:hover{color:var(--ink)}
-nav a.on{color:var(--ink);border-left-color:var(--accent);background:var(--panel);font-weight:600}
+nav a.on{color:var(--ink);border-left-color:var(--good);background:var(--panel);font-weight:600}
 main{flex:1;padding:34px 30px 80px;max-width:1000px;min-width:0}
 h1{font-size:27px;margin:0 0 6px;letter-spacing:-.02em}
 .lede{color:var(--muted);max-width:66ch;margin:0 0 26px;font-size:15px}
@@ -57,6 +67,21 @@ tr:last-child td{border-bottom:0}
 .cmd{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre;color:var(--ink)}
 .do{border-left:3px solid var(--good);padding-left:14px;margin:12px 0}
+#modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:26px}
+#modal[hidden]{display:none}
+.mbd{position:absolute;inset:0;background:rgba(4,6,8,.72);backdrop-filter:blur(3px)}
+.mbox{position:relative;width:min(1080px,100%);height:min(86vh,900px);background:var(--bg);
+ border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;
+ box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.mhd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;
+ border-bottom:1px solid var(--line);font-size:14px;background:var(--panel)}
+.mhd span{display:flex;align-items:center;gap:14px}
+.mhd a{font-size:13px;color:var(--accent);text-decoration:none}
+.mhd button{font:inherit;font-size:13px;padding:6px 14px;border-radius:7px;border:1px solid var(--line);
+ background:transparent;color:var(--muted);cursor:pointer}
+.mhd button:hover{color:var(--ink)}
+#mfr{flex:1;width:100%;border:0;background:var(--bg)}
+@media (max-width:760px){#modal{padding:10px}.mbox{height:92vh}}
 .view{display:none}.view.on{display:block}
 .mobnav{display:none}
 @media (max-width:760px){
@@ -73,6 +98,7 @@ tr:last-child td{border-bottom:0}
 <body>
 <div class="app">
 <nav>
+  <div class="art" style="opacity:.22"><img src="art/marble-queen.jpg" alt="" aria-hidden="true"></div>
   <div class="brand">AX<span>models &amp; spend</span></div>
   <div class="grp">Your money</div>
   <a data-v="overview" class="on">Overview</a>
@@ -81,8 +107,19 @@ tr:last-child td{border-bottom:0}
   <div class="grp">Assessment</div>
   <a data-v="models">Models</a>
   <a data-v="proof">Proof</a>
+  <div class="grp">Learn</div>
+  <a id="howto">How it works</a>
 </nav>
 <main id="main"></main>
+</div>
+<div id="modal" hidden>
+  <div class="mbd"></div>
+  <div class="mbox" role="dialog" aria-modal="true" aria-label="How the audit works">
+    <div class="mhd"><strong>How it works</strong>
+      <span><a href="/demo.html" target="_blank" rel="noopener">Open in a tab</a>
+      <button id="mx" aria-label="Close">Close</button></span></div>
+    <iframe id="mfr" title="How the audit works" src="about:blank"></iframe>
+  </div>
 </div>
 <script>
 const frag=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content};
@@ -116,11 +153,13 @@ const ratio=win&&dear?Math.round(dear.cost_per_1k_tasks_usd/win.cost_per_1k_task
 
 // ---------------- Overview
 V.overview=`
+<div class="hero"><div class="art" style="opacity:.30"><img src="art/vitruvian.jpg" alt="" aria-hidden="true"></div>
 <h1>What your AI is costing you</h1>
 <p class="lede">A real audit of one machine &mdash; yours would look like this. Nothing here was
 typed in by hand. And the headline, measured on the same tasks by the same blind judge:
 <strong>google/gemma-3-27b-it</strong> scores <strong>95.2%</strong>, exactly what
 <strong>claude-opus-5</strong> scores, at <strong>159&times; less</strong>.</p>
+</div>
 <div class="kpis">
  <div class="kpi"><div class="v">${usd(e.spend.total_usd)}</div><div class="k">spent on AI, ${e.spend.requests.toLocaleString()} requests</div><div class="n">estate.json</div></div>
  <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">overspend &mdash; same work, cheaper model</div><div class="n">estate.json</div></div>
@@ -311,10 +350,18 @@ is designed, not built. Five of eight jobs have no fixtures. All of this is on t
 a demo that overstates its reach is worth less than one that does not.</p></div>`;
 
 const show=v=>{M.innerHTML='';M.appendChild(frag(V[v]||'<p>—</p>'));
- document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+ document.querySelectorAll('nav a[data-v]').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
  if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);window.scrollTo(0,0)};
-document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>show(a.dataset.v)));
+document.querySelectorAll('nav a[data-v]').forEach(a=>a.addEventListener('click',()=>show(a.dataset.v)));
 addEventListener('hashchange',()=>show((location.hash||'#overview').slice(1)));
+
+var modal=document.getElementById('modal'), mfr=document.getElementById('mfr');
+function openHow(){ if(mfr.src.indexOf('demo.html')<0) mfr.src='/demo.html'; modal.hidden=false; document.body.style.overflow='hidden'; }
+function closeHow(){ modal.hidden=true; document.body.style.overflow=''; }
+document.getElementById('howto').addEventListener('click',function(e){e.preventDefault();openHow();});
+document.getElementById('mx').addEventListener('click',closeHow);
+modal.querySelector('.mbd').addEventListener('click',closeHow);
+addEventListener('keydown',function(e){ if(e.key==='Escape' && !modal.hidden) closeHow(); });
 show((location.hash||'#overview').slice(1)in V?(location.hash||'#overview').slice(1):'overview');
 })();
 </script>
