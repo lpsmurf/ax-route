@@ -1,6 +1,6 @@
 {
   "schema": "route.estate.v1",
-  "generated_at": "2026-09-23T12:07:39.161Z",
+  "generated_at": "2026-09-23T12:53:41.575Z",
   "privacy": "project names replaced with stable labels; they are client names",
   "inventory": {
     "agents": 8,
@@ -128,19 +128,19 @@
     }
   ],
   "spend": {
-    "requests": 4005,
-    "total_usd": 670.73,
+    "requests": 4067,
+    "total_usd": 690.34,
     "projects": [
       {
         "label": "C-01",
         "revealed": false,
-        "requests": 1544,
+        "requests": 1606,
         "days": 50,
-        "cost_usd": 259.81,
+        "cost_usd": 279.42,
         "top_model": "claude-opus-5",
         "models": 5,
-        "all_routed_usd": 36.03,
-        "addressable_usd": 111.89
+        "all_routed_usd": 39.45,
+        "addressable_usd": 119.98
       },
       {
         "label": "SA-02",
@@ -884,7 +884,7 @@
     "roles_total": 8,
     "roles_deployable": 3,
     "roles_untested": 5,
-    "addressable_usd": 275.35,
+    "addressable_usd": 283.44,
     "basis": "addressable = half the gap between what each project actually paid and what the swept winner would cost, the midpoint of the replay band"
   },
   "source": "~/.claude/projects transcripts + ~/dev/.agents + config/projects.tsv + results/sweep.json"

@@ -1,0 +1,67 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AX — how the audit works</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{--bg:#0e0e11;--panel:#17171c;--ink:#ececf1;--muted:#9a9aa8;--line:#26262e;--good:#3ecf9b;--accent:#7aa2ff;--warn:#e0a94a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:44px 16px 80px}
+h1{font-size:30px;margin:0 0 8px;letter-spacing:-.02em}
+.lede{color:var(--muted);max-width:64ch;margin:0 0 26px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:32px 0 12px;font-weight:600}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:26px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.step b{display:block;font-size:13px;color:var(--accent);font-family:"JetBrains Mono",monospace;margin-bottom:6px}
+.step h3{font-size:17px;margin:0 0 6px;font-weight:600}
+.step p{margin:0;font-size:13.5px;color:var(--muted)}
+.term{background:#08080b;border:1px solid var(--line);border-radius:10px;padding:18px;font:13px/1.65 "JetBrains Mono",monospace;min-height:430px;white-space:pre-wrap;overflow-x:auto}
+.term .p{color:var(--good)}.term .d{color:var(--muted)}.term .w{color:var(--warn)}.term .g{color:var(--good);font-weight:700}
+.bar{display:flex;gap:10px;align-items:center;margin:16px 0 10px;flex-wrap:wrap}
+button{font:inherit;font-size:14px;padding:10px 18px;border-radius:8px;border:0;cursor:pointer;background:var(--good);color:#06120d;font-weight:600}
+button.alt{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.note{font-size:13px;color:var(--muted);max-width:74ch}
+a{color:var(--accent)}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--good);vertical-align:-2px;animation:bl 1s steps(2) infinite}
+@keyframes bl{0%,50%{opacity:1}51%,100%{opacity:0}}
+</style></head><body><div class="wrap">
+<h1>How the audit works</h1>
+<p class="lede">Route reads the logs your AI tools already keep on your own machine. Nothing is uploaded, and it needs no API key. Press play to watch a real run.</p>
+<div class="steps">
+<div class="step"><b>1</b><h3>You run one command</h3><p>No install, no account, no key. It finishes in a few seconds.</p></div>
+<div class="step"><b>2</b><h3>It reads your own logs</h3><p>Agent roles, projects and every request you already paid for, priced from raw tokens.</p></div>
+<div class="step"><b>3</b><h3>It names the change</h3><p>Only for jobs it has tested. It stays quiet on the rest.</p></div>
+</div>
+<h2>A real run, replayed</h2>
+<div class="bar"><button id="play">Play the audit</button><button class="alt" id="skip">Show all output</button><span class="note" id="stat"></span></div>
+<div class="term" id="t"><span class="d">$ </span><span class="cursor"></span></div>
+<p class="note" style="margin-top:12px"><strong>This is a recording, not a live scan.</strong> A web page cannot read files on your computer, and we would not want it to. The output above is a real <span style="font-family:JetBrains Mono,monospace">route audit</span> run on the author&rsquo;s machine, replayed line by line. To see your own numbers, run the same command &mdash; the data never leaves your machine.</p>
+<h2>Next: drop your own logs in the browser</h2>
+<p class="note">The version we want: drag your <span style="font-family:JetBrains Mono,monospace">~/.claude/projects</span> folder onto this page and it parses entirely in your browser, so your numbers appear without a single byte being uploaded. Designed, not built &mdash; and we would rather show a real recording than a fake scan.</p>
+<p class="note" style="margin-top:20px"><a href="/">&larr; the dashboard</a> &middot; <a href="/deck.html">the deck</a> &middot; <a href="https://github.com/lpsmurf/ax-route">the code</a></p>
+</div>
+<script>
+var LINES=["estate: 8 agent roles, 129 skills, 19 repos registered","spend:  4067 requests across 56 projects, $690.34","","project          reqs  days      paid  addressable","C-01             1606    50   $279.42      $119.98","SA-02             630     4   $127.51       $48.98","VDR-03            413     4     $69.6       $30.15","W-04              127     2    $23.37        $9.21","S-05               92     4    $21.16        $8.33","A-06              148     2    $20.55        $8.72","S-07              148     3    $20.47        $7.13","S-08               97     1       $19        $8.31","A-09              120     4    $16.98         $5.1","CDR-10             93     1    $14.82        $6.17","","routes: 3 of 8 roles deployable on measured evidence, 5 untested","  + memory-retrieval     mechanical  deployable","  + learning-extractor   mechanical  deployable","  + qa-test              mechanical  deployable","  ? core-investigator    reasoning   untested","  ? main-researcher      reasoning   untested","  ? implementer          reasoning   untested","  ? dreamer              reasoning   untested","  ? code-review          critical    untested","","addressable today: $283.44","-> results/estate.json"];
+var t=document.getElementById("t"),stat=document.getElementById("stat"),playing=false;
+function cls(l){
+  if(/^\s*\+/.test(l))return "g";
+  if(/^\s*\?/.test(l))return "w";
+  if(/^(estate|spend|routes|addressable)/.test(l))return "p";
+  return "d";
+}
+function esc(s){return s.replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+function render(n){
+  var h='<span class="d">$ </span><span class="p">npx ax-route audit</span>\n\n';
+  for(var i=0;i<n;i++){h+='<span class="'+cls(LINES[i])+'">'+esc(LINES[i])+'</span>\n';}
+  if(n<LINES.length)h+='<span class="cursor"></span>';
+  t.innerHTML=h;
+  stat.textContent = n>=LINES.length ? ("done \u00b7 "+LINES.length+" lines") : "";
+}
+function play(){
+  if(playing)return; playing=true; var i=0; render(0);
+  var iv=setInterval(function(){ i++; render(i); if(i>=LINES.length){clearInterval(iv);playing=false;} },110);
+}
+document.getElementById("play").addEventListener("click",play);
+document.getElementById("skip").addEventListener("click",function(){playing=false;render(LINES.length);});
+setTimeout(play,700);
+</script></body></html>
