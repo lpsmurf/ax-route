@@ -1,0 +1,63 @@
+PROOF: https://ax-route.vercel.app  (every figure on the page names the file it came from)
+Raw data, reproducible: /frontier.json /sweep.json /bench.json /escalate.json /replay.json
+Commands: route frontier | route sweep | route bench | route escalate | route replay
+
+BASELINE 1 — CLOSED MODELS, CALLED FOR REAL
+
+21 realistic tasks: actual stack traces, YAML config, source files, git history and raw usage
+records from these repositories. One judge grades every arm against each task's rubric, blind to
+which model answered. Nothing below is arithmetic.
+
+  model                             quality   cost (21 tasks)   p50 latency
+  google/gemma-3-27b-it (Nebius)      95.2%       $0.000319         378 ms
+  claude-haiku-4-5  (Anthropic)       90.5%       $0.003697         814 ms
+  claude-sonnet-5   (Anthropic)         81%       $0.013938        1693 ms
+  claude-opus-5     (Anthropic)       95.2%       $0.050645        2564 ms
+
+An open model on Token Factory matched claude-opus-5 exactly — 95.2% against 95.2% — at 159x
+lower cost and 6.8x lower latency. It also beat claude-haiku-4-5 on quality while costing 12x
+less. Whole Anthropic baseline run: $0.0683.
+
+BASELINE 2 — THE WHOLE CATALOGUE, NOT A FLATTERING PAIR
+
+All 19 Token Factory text models, same tasks, same judge. Quality spans 66.7-95.2%. Price spans
+172x. The single most expensive model tested (Qwen3.5-397B, $2.6083 per 1k tasks) scored the
+worst of all nineteen at 66.7%. Price predicts close to nothing about quality on this work, which
+is the entire argument for measuring instead of guessing.
+
+BASELINE 3 — OUR OWN PREVIOUS APPROACH, WHICH THE MEASUREMENT KILLED
+
+policy.yaml named Qwen3-30B, picked by hand. Against an earlier set of toy fixtures ("does this
+JSON parse") it scored 95.2%. Against the realistic set it scored 76.2% and failed the 90% bar,
+so the sweep replaced it with gemma-3-27b-it. The tool overruled its author, in public, and the
+commit history shows both numbers.
+
+CONTROL OVER BEHAVIOUR
+
+Routing is declared in a file a human reads, never inferred from prompt text, so there is no
+second model guessing intent and no silent promotion to a dearer tier. Every call appends one
+auditable line: job, tier, model, tokens, cost, latency, region. 3 of 8 jobs are marked
+deployable because fixtures back them; 5 are marked untested and the tool refuses to recommend
+them.
+
+A NEGATIVE RESULT WE KEPT
+
+Automatic escalation does not work yet. Asking the cheap model whether its own answer looked
+complete escalated 1 task in 21 and changed nothing. Escalating on self-disagreement escalated
+19%, cost 4.8x more, and still scored 81% — exactly what the cheap model scored alone. A cheap
+general-purpose confidence gate cannot see wrongness, because a small model is wrong confidently
+and in good form. A gate that works has to verify against the task itself.
+
+A CORRECTION WE FOUND OURSELVES
+
+The replay first reported $164.40. cost() subtracted cached tokens from an input count that
+already excluded them, so every cached token billed at zero — and on real traffic cache reads
+outnumber fresh input roughly fifty to one. The true figure is $664.87. It surfaced while writing
+a fixture that asks a model to spot exactly that bug. Fixing it made the problem four times
+larger.
+
+WHAT IT IS WORTH
+
+3,985 real requests over 50 days, re-priced from raw tokens: $664.87. Routing half of that work
+takes the bill to $391.98, a 41% saving; at 75% it is $255.53. Reported as a 25/50/75 band
+because the mechanical share is an assumption, not a measurement.
