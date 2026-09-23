@@ -67,6 +67,11 @@ tr:last-child td{border-bottom:0}
 .cmd{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre;color:var(--ink)}
 .do{border-left:3px solid var(--good);padding-left:14px;margin:12px 0}
+.cta{font:inherit;font-size:14.5px;font-weight:600;padding:11px 20px;border-radius:9px;border:0;
+ cursor:pointer;background:var(--good);color:#06120d}
+.cta:hover{filter:brightness(1.08)}
+.ctan{font-size:12.5px;color:var(--muted);margin-left:12px;font-family:var(--mono)}
+@media (max-width:600px){.ctan{display:block;margin:8px 0 0}}
 #modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:26px}
 #modal[hidden]{display:none}
 .mbd{position:absolute;inset:0;background:rgba(4,6,8,.72);backdrop-filter:blur(3px)}
@@ -166,6 +171,9 @@ typed in by hand. And the headline, measured on the same tasks by the same blind
  <div class="kpi"><div class="v">${e.spend.projects.length}</div><div class="k">projects it went across</div><div class="n">estate.json</div></div>
  <div class="kpi"><div class="v warn">${sm.roles_untested}</div><div class="k">jobs not yet tested &mdash; not claimed safe</div><div class="n">estate.json</div></div>
 </div>
+<p style="position:relative;z-index:2;margin:18px 0 0">
+ <button class="cta" id="playdemo">&#9654;&nbsp; Watch it run &mdash; 30 seconds</button>
+ <span class="ctan">a real audit, replayed &middot; no key, nothing uploaded</span></p>
 <h2>The one thing to do</h2>
 <div class="panel">
  <p class="big">Three of the eight jobs your AI does are <strong>simple</strong> &mdash; looking
@@ -360,6 +368,15 @@ function openHow(){ if(mfr.src.indexOf('demo.html')<0) mfr.src='/demo.html'; mod
 function closeHow(){ modal.hidden=true; document.body.style.overflow=''; }
 document.getElementById('howto').addEventListener('click',function(e){e.preventDefault();openHow();});
 document.getElementById('mx').addEventListener('click',closeHow);
+// The CTA lives inside a view that is re-rendered, so bind by delegation.
+M.addEventListener('click',function(ev){ if(ev.target.closest('#playdemo')) openHow(); });
+// First visit: show the explainer unprompted, once. Anyone who has seen it is left alone.
+try{
+  if(!localStorage.getItem('ax_seen_demo')){
+    localStorage.setItem('ax_seen_demo','1');
+    setTimeout(openHow,1100);
+  }
+}catch(e){ /* private window or blocked storage: just skip the auto-open */ }
 modal.querySelector('.mbd').addEventListener('click',closeHow);
 addEventListener('keydown',function(e){ if(e.key==='Escape' && !modal.hidden) closeHow(); });
 show((location.hash||'#overview').slice(1)in V?(location.hash||'#overview').slice(1):'overview');
