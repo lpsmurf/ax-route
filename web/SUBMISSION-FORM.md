@@ -156,22 +156,20 @@ because the mechanical share is an assumption, not a measurement.
 
 ## Responsible design
 
-Routing is **declared, never inferred**: the caller names the job and a human-readable
-`policy.yaml` decides the model, so no second model guesses intent and nothing is silently
-promoted to a pricier tier or silently downgraded to a cheaper one. Every call appends an
-auditable ledger line (job, model, tokens, cost, latency, region), so if the model gets something
-wrong the user can see exactly which model answered, what it cost, and pin that job to a higher
-tier in one line.
+The audit reads the logs your AI tools already keep on your own machine and never sends them
+anywhere: it emits aggregates only — counts, tokens and dollars — and because project names are
+often client names, the published output carries stable labels like "C-01" rather than the real
+thing, with `--reveal` staying local and opt-in. API keys are read from the environment or the
+macOS Keychain and never written to the repository, gitleaks gates every commit, and open weights
+run in Nebius's Finland region so source code never leaves the EU.
 
-On privacy: the replay reads local agent transcripts but emits **aggregates only** — counts,
-tokens and dollars. Project names, file paths and prompt text never reach the published output,
-because several are client names. API keys are read from environment or the macOS Keychain and
-never written to the repository, which gitleaks gates on every commit. Open weights run in the EU
-(Finland), so source code never leaves EU jurisdiction. And no number is invented: a model with
-no published price reports `null` rather than an estimate, and every figure is labelled
-*measured* or *computed* on the dashboard and in the README.
-
----
+When the model gets it wrong you can see exactly why: every call appends one auditable line
+naming the job, model, tokens, cost and region, and any job can be pinned to a higher tier by
+editing one line of a policy file a human can read — routing is declared, never inferred from
+prompt text, so nothing is silently downgraded. Most importantly the tool refuses to recommend
+what it has not tested: 3 of 8 jobs are marked deployable and 5 are marked untested, because a
+router that painted all eight green would be guessing on five and the user would find out the
+expensive way.
 
 ## Pitch slides
 

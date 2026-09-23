@@ -1,0 +1,14 @@
+The audit reads the logs your AI tools already keep on your own machine and never sends them
+anywhere: it emits aggregates only — counts, tokens and dollars — and because project names are
+often client names, the published output carries stable labels like "C-01" rather than the real
+thing, with `--reveal` staying local and opt-in. API keys are read from the environment or the
+macOS Keychain and never written to the repository, gitleaks gates every commit, and open weights
+run in Nebius's Finland region so source code never leaves the EU.
+
+When the model gets it wrong you can see exactly why: every call appends one auditable line
+naming the job, model, tokens, cost and region, and any job can be pinned to a higher tier by
+editing one line of a policy file a human can read — routing is declared, never inferred from
+prompt text, so nothing is silently downgraded. Most importantly the tool refuses to recommend
+what it has not tested: 3 of 8 jobs are marked deployable and 5 are marked untested, because a
+router that painted all eight green would be guessing on five and the user would find out the
+expensive way.
