@@ -65,6 +65,13 @@ blind to arm:
 **13.8× cheaper at indistinguishable quality.** At n=20 the quality gap is noise; the claim is
 that the cheap model is *not worse*, not that it is better.
 
+**Swept.** The policy is not hand-picked. All 19 text models on Token Factory ran the
+same fixtures, scored identically: quality spread 85–100%,
+price spread **355×**. `Qwen/Qwen3-30B-A3B-Instruct-2507` is the cheapest clearing a 90% bar at
+**$0.0073 per 1,000 tasks**; `moonshotai/Kimi-K3` scores the same 95% at
+$2.5909. On mechanical work price predicts almost nothing about quality — that
+finding is the product.
+
 **Computed.** The same measured token counts at frontier list price: **62× vs claude-opus-5**,
 25× vs sonnet-5, 12× vs haiku-4-5.
 
@@ -98,7 +105,8 @@ limits, team ledgers, and the escalation gate.
 2. `route serve`, then one curl with `x-route-job: memory-retrieval` — a real Token Factory
    response, and the ledger line it just wrote with its real cost.
 3. `route bench` — 20 fixtures, two arms, live, ~25 seconds.
-4. https://ax-route.vercel.app — the result, with every number citing its file.
+4. `route sweep` — the whole catalogue scored, and the scatter that comes out of it.
+5. https://ax-route.vercel.app — the result, with every number citing its file.
 
 ## Responsible design
 

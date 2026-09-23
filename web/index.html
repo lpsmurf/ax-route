@@ -79,8 +79,8 @@ const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>'
 async function load(f){ try { const r = await fetch(f); return r.ok ? await r.json() : null; } catch { return null; } }
 
 (async () => {
-  const [bench, replay, harness] = await Promise.all([
-    load('bench.json'), load('replay.json'), load('harness-usage.json')
+  const [bench, replay, harness, sweep] = await Promise.all([
+    load('bench.json'), load('replay.json'), load('harness-usage.json'), load('sweep.json')
   ]);
   const app = document.getElementById('app');
   const add = (h) => app.appendChild(frag(h));
@@ -103,6 +103,57 @@ async function load(f){ try { const r = await fetch(f); return r.ok ? await r.js
       <div class="k">of real requests that used the cheap tier the policy declares</div>
       <div class="n">results/replay.json</div></div>
   </div>`);
+
+  // ---- catalogue sweep: the routing choice, measured
+  if (sweep) {
+    const rs = sweep.results.filter(r => r.cost_per_1k_tasks_usd !== null);
+    const win = sweep.cheapest_passing;
+    const dear = [...rs].sort((a,b) => b.cost_per_1k_tasks_usd - a.cost_per_1k_tasks_usd)[0];
+    const qmin = Math.min(...rs.map(r => r.judge_pct)), qmax = Math.max(...rs.map(r => r.judge_pct));
+
+    // log-scale scatter: price across, quality up. The flat cloud is the whole argument.
+    const W = 660, H = 260, PL = 46, PB = 34, PT = 14, PR = 14;
+    const lx = (c) => Math.log10(c), xs = rs.map(r => lx(r.cost_per_1k_tasks_usd));
+    const x0 = Math.min(...xs) - 0.12, x1 = Math.max(...xs) + 0.12;
+    const px = (c) => PL + ((lx(c) - x0) / (x1 - x0)) * (W - PL - PR);
+    const py = (q) => PT + (1 - (q - 80) / 22) * (H - PT - PB);
+    const ticks = [0.005, 0.01, 0.05, 0.1, 0.5, 1, 3].filter(t => lx(t) >= x0 && lx(t) <= x1);
+    const dots = rs.map(r => {
+      const isWin = win && r.model === win.model;
+      return `<circle cx="${px(r.cost_per_1k_tasks_usd).toFixed(1)}" cy="${py(r.judge_pct).toFixed(1)}"
+        r="${isWin ? 7 : 4.5}" fill="${isWin ? 'var(--good)' : 'var(--accent)'}"
+        opacity="${isWin ? 1 : 0.62}"><title>${esc(r.model)} — ${r.judge_pct}% judge, $${r.cost_per_1k_tasks_usd}/1k tasks</title></circle>`;
+    }).join('');
+    const grid = [85, 90, 95, 100].map(q =>
+      `<line x1="${PL}" y1="${py(q)}" x2="${W-PR}" y2="${py(q)}" stroke="var(--line)" stroke-width="1"/>
+       <text x="${PL-8}" y="${py(q)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${q}%</text>`).join('');
+    const xlab = ticks.map(t =>
+      `<text x="${px(t)}" y="${H-PB+18}" text-anchor="middle" font-size="10" fill="var(--muted)">$${t}</text>`).join('');
+
+    add(`<h2>The routing choice, measured <span class="tag measured">measured</span></h2>
+    <div class="panel">
+      <p class="note" style="margin-top:0">A routing policy should be derived, not asserted. Every
+      one of <strong>${sweep.models_tested} Token Factory models</strong> ran the same
+      ${sweep.fixtures} fixtures and was scored identically. Quality landed between
+      <strong>${qmin}% and ${qmax}%</strong>. Price spread across the same models:
+      <strong>${(dear.cost_per_1k_tasks_usd / win.cost_per_1k_tasks_usd).toFixed(0)}\u00d7</strong>.</p>
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:8px 0 2px" role="img"
+           aria-label="Cost per thousand tasks against judge pass rate, ${sweep.models_tested} models">
+        ${grid}${xlab}${dots}
+        <text x="${PL}" y="${H-2}" font-size="10" fill="var(--muted)">cost per 1,000 tasks (log scale) \u2192</text>
+      </svg>
+      <p class="note"><strong>The cloud is flat.</strong> On mechanical work, price predicts almost
+      nothing about quality. The cheapest model clearing the ${sweep.bar_judge_pct}% bar is
+      <span class="num">${esc(win.model)}</span> at <strong>$${win.cost_per_1k_tasks_usd} per 1,000
+      tasks</strong> and ${win.judge_pct}% \u2014 against
+      <span class="num">${esc(dear.model)}</span> at $${dear.cost_per_1k_tasks_usd} and
+      ${dear.judge_pct}%. Same quality,
+      ${(dear.cost_per_1k_tasks_usd / win.cost_per_1k_tasks_usd).toFixed(0)}\u00d7 the price.
+      That is what <span class="num">policy.yaml</span> encodes.</p>
+      <p class="note">${esc(sweep.max_tokens_note)}</p>
+      <div class="src">source: results/sweep.json \u00b7 judge ${esc(sweep.judge)}, blind to model \u00b7 reproduce with <span class="num">route sweep</span></div>
+    </div>`);
+  }
 
   // ---- benchmark
   if (bench) {

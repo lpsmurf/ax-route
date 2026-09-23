@@ -25,6 +25,11 @@ switch (cmd) {
     await run({ n: Number(flag('n', 0)) || undefined, only: flag('only') });
     break;
   }
+  case 'sweep': {
+    const { run } = await import('../src/sweep.mjs');
+    await run({ bar: Number(flag('bar', 90)) });
+    break;
+  }
   case 'replay': {
     const { run } = await import('../src/replay.mjs');
     await run({ days: Number(flag('days', 0)) || undefined });
@@ -36,6 +41,7 @@ switch (cmd) {
   route serve [--port 8787]   OpenAI-compatible endpoint that routes by job
   route policy                show the routing table
   route bench [--n 20]        head-to-head: Token Factory vs frontier
+  route sweep [--bar 90]      test the catalogue, find the cheapest model that passes
   route replay                re-price real historical usage under the policy
 `);
     process.exit(cmd ? 1 : 0);

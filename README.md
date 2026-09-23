@@ -56,6 +56,48 @@ honest claim is that the small model is not worse, not that it is better. Both a
 same three fixtures on exact match and passed them on the judge: open-ended items where substring
 matching is too strict. That disagreement is a scorer artifact, not a model difference.
 
+### The routing choice, measured — the sweep
+
+A routing policy should be derived, not asserted. All **19 text models on Token
+Factory** ran the same 20 fixtures and were scored identically, with the judge blind
+to which model answered.
+
+Quality landed between **85% and 100%**.
+Price across the same models spread **355×**.
+
+| model | judge pass | exact match | $ / 1k tasks | p50 |
+|---|---|---|---|---|
+| **Qwen/Qwen3-30B-A3B-Instruct-2507** | 95% | 90% | $0.0073 | 389 ms |
+| google/gemma-3-27b-it | 90% | 80% | $0.0078 | 298 ms |
+| Qwen/Qwen3-235B-A22B-Instruct-2507 | 95% | 95% | $0.0145 | 541 ms |
+| deepseek-ai/DeepSeek-V4-Flash-0731 | 95% | 90% | $0.0296 | 1284 ms |
+| nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B | 95% | 90% | $0.0315 | 1513 ms |
+| openai/gpt-oss-120b | 95% | 95% | $0.0762 | 574 ms |
+| zai-org/GLM-5.3-Flash | 100% | 90% | $0.0832 | 2113 ms |
+| NousResearch/Hermes-4-405B | 95% | 90% | $0.0863 | 461 ms |
+| nvidia/Nemotron-3_5-Lightning | 95% | 90% | $0.0885 | 3235 ms |
+| nvidia/nemotron-3-super-120b-a12b | 95% | 95% | $0.0895 | 1241 ms |
+| deepseek-ai/DeepSeek-V4-Pro | 95% | 95% | $0.1004 | 1089 ms |
+| deepseek-ai/DeepSeek-V4.1-Flash | 95% | 95% | $0.1038 | 1509 ms |
+| MiniMaxAI/MiniMax-M3 | 95% | 95% | $0.1492 | 940 ms |
+| moonshotai/Kimi-K2.7-Code | 95% | 95% | $0.3198 | 3758 ms |
+| nvidia/Nemotron-3-Ultra-550b-a55b | 90% | 90% | $0.3795 | 1184 ms |
+| zai-org/GLM-5.3 | 100% | 90% | $0.7633 | 1366 ms |
+| moonshotai/Kimi-K2.6 | 95% | 90% | $0.7922 | 1646 ms |
+| Qwen/Qwen3.5-397B-A17B | 85% | 90% | $2.0168 | 3388 ms |
+| moonshotai/Kimi-K3 | 95% | 90% | $2.5909 | 1292 ms |
+
+**The cloud is flat.** On mechanical work, price predicts almost nothing about quality.
+`Qwen/Qwen3-30B-A3B-Instruct-2507` clears the bar at **$0.0073 per 1,000 tasks**;
+`moonshotai/Kimi-K3` scores the same 95% at **$2.5909** —
+355× the price for no measurable gain. That is why `policy.yaml` names the model it does.
+
+A first pass capped output at 300 tokens and scored reasoning models as incapable when they
+truncated mid-scratchpad — `Qwen3.5-397B` read 20%. The ceiling was raised to
+1200 and it reads 85%.
+The scratchpad tokens are still billed and still counted against its cost, which is why it sits
+where it does on price. Reproduce with `route sweep`.
+
 ### The same tokens at frontier list price — computed
 
 Arithmetic over the measured token counts, no frontier calls made:
