@@ -1,0 +1,30 @@
+People who build with AI all day and are not infrastructure engineers — vibecoders, solo
+founders, designers shipping products, heavy Claude Code and Cursor users — have exactly one
+setting they understand: pick the best model. So they pick it for everything, including "does
+this file parse". They hit this on every single request, every day. They are doing nothing about
+it, because nobody has ever told them which of their jobs don't need the expensive model, and
+they are never going to hand-tune a routing table.
+
+I am that user, and I have the receipts. Over 50 days my agent tools billed $664.87 across 4,005
+requests and 56 projects. claude-opus-5 served 65.5% of them. My own config file already said
+that three of my eight agent jobs should run on the cheap tier — the cheap tier ran five
+requests. 0.13%. The policy was right and completely unenforced.
+
+Route reads your machine and tells you what to change. One command, no API key, no account:
+it finds every agent role, every project and every request you have already paid for, prices
+them, and reports how much can move to a cheaper model — $275.35 of my $670.73 — then names the
+specific files to edit. It only recommends jobs it has actually tested: 3 of my 8 are marked
+deployable, 5 are marked untested, because a tool that marked all eight green would be guessing
+on five and you would find out the expensive way.
+
+The measurement is the product, and it is brutal about its own recommendations. On 21 realistic
+tasks — real stack traces, config, source — graded by a blind judge, google/gemma-3-27b-it on
+Nebius Token Factory scored 95.2%, exactly what claude-opus-5 scored, at 159x lower cost and 7x
+the speed. That same measurement overruled me: the model I had picked by hand failed the bar and
+the sweep replaced it.
+
+Would they pay? They already are — just to the wrong place. We charge a share of the savings we
+prove, so it comes out of money that was going to burn anyway. This becomes a company because it
+sits in the request path of a cost line that is growing faster than headcount, the audit is free
+and produces a number people post, and Nebius serves from Finland — so the same product answers
+the question every European company is about to be asked about where its source code goes.

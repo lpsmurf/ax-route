@@ -219,7 +219,7 @@ V.models=sweep?(()=>{
 <h1>Which model should you actually use?</h1>
 <p class="lede">Route tested every open model on Nebius Token Factory against the same
 ${sweep.fixtures} simple tasks, with the same judge, blind to which model answered. This is the
-assessment that decides what your setup recommends &mdash; it is measured, not an opinion.</p>
+assessment that decides what your setup recommends &mdash; every figure traces to a logged call.</p>
 <div class="panel">
  <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;color:var(--muted)" role="img"
   aria-label="Cost against accuracy for ${sweep.models_tested} models. Accuracy stays between ${Math.min(...rs.map(r=>r.judge_pct))} and ${Math.max(...rs.map(r=>r.judge_pct))} percent while price spans ${ratio} times.">
