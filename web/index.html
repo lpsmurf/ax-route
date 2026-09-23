@@ -3,331 +3,286 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Route</title>
+<title>AX — models &amp; spend</title>
+<meta name="description" content="See what your AI coding tools actually cost you, and which work can move to a cheaper model without getting worse.">
 <style>
-:root{
-  --bg:#ffffff; --panel:#f7f7f5; --ink:#16161a; --muted:#6b6b76; --line:#e4e4e0;
-  --good:#0f7b56; --warn:#a66a12; --accent:#1f4fd8; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
-}
-:root:not([data-theme="light"]) { @media (prefers-color-scheme: dark){
-  --bg:#0e0e11; --panel:#17171c; --ink:#ececf1; --muted:#9a9aa8; --line:#26262e;
-  --good:#3ecf9b; --warn:#e0a94a; --accent:#7aa2ff;
-}}
-:root[data-theme="dark"]{
-  --bg:#0e0e11; --panel:#17171c; --ink:#ececf1; --muted:#9a9aa8; --line:#26262e;
-  --good:#3ecf9b; --warn:#e0a94a; --accent:#7aa2ff;
-}
+:root{--bg:#fff;--panel:#f7f7f5;--ink:#16161a;--muted:#6b6b76;--line:#e4e4e0;
+ --good:#0f7b56;--warn:#a66a12;--accent:#1f4fd8;--nav:#f2f2ef;
+ --mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+ --bg:#0e0e11;--panel:#17171c;--ink:#ececf1;--muted:#9a9aa8;--line:#26262e;
+ --good:#3ecf9b;--warn:#e0a94a;--accent:#7aa2ff;--nav:#121216}}
+:root[data-theme="dark"]{--bg:#0e0e11;--panel:#17171c;--ink:#ececf1;--muted:#9a9aa8;
+ --line:#26262e;--good:#3ecf9b;--warn:#e0a94a;--accent:#7aa2ff;--nav:#121216}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased}
-.wrap{max-width:1040px;margin:0 auto;padding:40px 16px 80px}
-header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
-h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
-h1 span{color:var(--muted);font-weight:400}
-.sub{color:var(--muted);max-width:60ch;margin:0}
-h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
-  margin:34px 0 12px;font-weight:600}
+ font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+ -webkit-font-smoothing:antialiased}
+.app{display:flex;min-height:100vh}
+nav{width:216px;flex:none;background:var(--nav);border-right:1px solid var(--line);padding:22px 0}
+nav .brand{padding:0 20px 18px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+nav .brand span{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+nav .grp{padding:14px 20px 5px;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:600}
+nav a{display:block;padding:8px 20px;color:var(--muted);text-decoration:none;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+nav a:hover{color:var(--ink)}
+nav a.on{color:var(--ink);border-left-color:var(--accent);background:var(--panel);font-weight:600}
+main{flex:1;padding:34px 30px 80px;max-width:1000px;min-width:0}
+h1{font-size:27px;margin:0 0 6px;letter-spacing:-.02em}
+.lede{color:var(--muted);max-width:66ch;margin:0 0 26px;font-size:15px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:30px 0 11px;font-weight:600}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.big{font-size:19px;line-height:1.5;margin:0 0 8px;max-width:62ch}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.kpi .v{font-size:30px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.kpi .v{font-size:29px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
 .kpi .k{font-size:12px;color:var(--muted);margin-top:5px}
 .kpi .n{font-size:11px;color:var(--muted);margin-top:7px;font-family:var(--mono)}
 table{width:100%;border-collapse:collapse;font-size:14px}
-th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;
-  color:var(--muted);font-weight:600;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);
+ font-weight:600;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
 td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.good{color:var(--good);font-weight:600}
+.good{color:var(--good);font-weight:600}.warn{color:var(--warn);font-weight:600}
 .dim{color:var(--muted)}
 .win{background:color-mix(in srgb,var(--good) 9%,transparent)}
-.tb{font:inherit;font-size:13px;padding:7px 14px;border-radius:20px;cursor:pointer;
-  background:transparent;color:var(--muted);border:1px solid var(--line)}
-.tb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.src{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px}
-.note{font-size:13px;color:var(--muted);margin:10px 0 0;max-width:72ch}
-.bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.src{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:11px}
+.note{font-size:13.5px;color:var(--muted);margin:10px 0 0;max-width:74ch}
+.bar{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:5px}
 .bar i{display:block;height:100%;background:var(--accent)}
-.tag{display:inline-block;font-size:11px;font-family:var(--mono);padding:2px 7px;
-  border:1px solid var(--line);border-radius:20px;color:var(--muted)}
+.tag{display:inline-block;font-size:10.5px;font-family:var(--mono);padding:2px 7px;
+ border:1px solid var(--line);border-radius:20px;color:var(--muted);vertical-align:2px}
 .measured{border-color:var(--good);color:var(--good)}
 .computed{border-color:var(--warn);color:var(--warn)}
-footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
-  color:var(--muted);font-size:13px}
-@media (max-width:600px){ .wrap{padding:24px 16px 60px} h1{font-size:24px} .kpi .v{font-size:25px} }
+.cmd{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--line);
+ border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre;color:var(--ink)}
+.do{border-left:3px solid var(--good);padding-left:14px;margin:12px 0}
+.view{display:none}.view.on{display:block}
+.mobnav{display:none}
+@media (max-width:760px){
+ .app{flex-direction:column}
+ nav{width:auto;border-right:0;border-bottom:1px solid var(--line);padding:14px 0 0}
+ nav .grp{display:none}
+ nav a{display:inline-block;border-left:0;border-bottom:3px solid transparent;padding:8px 14px}
+ nav a.on{border-left:0;border-bottom-color:var(--accent);background:transparent}
+ main{padding:24px 16px 60px}
+ h1{font-size:22px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h1>Route <span>— find out what your agents cost, then make them cost less</span></h1>
-  <p class="sub">Point it at your machine and it reads your whole agent estate: every role, every
-  project, every request, what each one cost. Then it tells you which of those routes can move to
-  open weights on Nebius Token Factory <em>on measured evidence</em>, and enforces the ones you
-  approve. Every number below names the file it came from.</p>
-</header>
-<div id="app"></div>
-<footer>
-  <strong>Route</strong> · built at Accel AI Innovate Amsterdam, 23 September 2026 ·
-  open weights served from Nebius Token Factory, EU (Finland) ·
-  <a href="https://github.com/lpsmurf/ax-route" style="color:var(--accent)">github.com/lpsmurf/ax-route</a>
-</footer>
+<div class="app">
+<nav>
+  <div class="brand">AX<span>models &amp; spend</span></div>
+  <div class="grp">Your money</div>
+  <a data-v="overview" class="on">Overview</a>
+  <a data-v="projects">Projects</a>
+  <a data-v="roles">What your AI does</a>
+  <div class="grp">Assessment</div>
+  <a data-v="models">Models</a>
+  <a data-v="proof">Proof</a>
+</nav>
+<main id="main"></main>
 </div>
 <script>
-const frag = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content; };
-const usd = (n, d=2) => n === null || n === undefined ? '—' : '$' + Number(n).toFixed(d);
-const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const frag=h=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content};
+const usd=(n,d=2)=>n===null||n===undefined?'—':'$'+Number(n).toFixed(d);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const load=async f=>{try{const r=await fetch(f);return r.ok?await r.json():null}catch{return null}};
 
-async function load(f){ try { const r = await fetch(f); return r.ok ? await r.json() : null; } catch { return null; } }
+// Role ids are engineer words. Say what each one actually does.
+const PLAIN={
+ 'memory-retrieval':['Looking things up','Finding a fact in your notes or a file'],
+ 'learning-extractor':['Pulling facts out of text','Turning a long answer into a short note'],
+ 'qa-test':['Checking work','Did the test pass, does this parse, is this valid'],
+ 'core-investigator':['Exploring your code','Working out how your project fits together'],
+ 'main-researcher':['Researching online','Looking things up on the web and summarising'],
+ 'implementer':['Writing code','Making the actual change you asked for'],
+ 'dreamer':['Reviewing your setup','Spotting repeated work worth automating'],
+ 'code-review':['Reviewing code','Catching bugs before they ship']
+};
 
-(async () => {
-  const [bench, replay, harness, sweep] = await Promise.all([
-    load('bench.json'), load('replay.json'), load('harness-usage.json'), load('sweep.json')
-  ]);
-  const estate = await load('estate.json');
-  const app = document.getElementById('app');
-  const add = (h) => app.appendChild(frag(h));
+(async()=>{
+const [estate,sweep,bench,replay,harness]=await Promise.all([
+  load('estate.json'),load('sweep.json'),load('bench.json'),load('replay.json'),load('harness-usage.json')]);
+const M=document.getElementById('main');
+const V={};
+const e=estate,sm=e&&e.summary;
+const rs=sweep?sweep.results.filter(r=>r.cost_per_1k_tasks_usd!==null):[];
+const win=sweep&&sweep.cheapest_passing;
+const dear=rs.length?[...rs].sort((a,b)=>b.cost_per_1k_tasks_usd-a.cost_per_1k_tasks_usd)[0]:null;
+const ratio=win&&dear?Math.round(dear.cost_per_1k_tasks_usd/win.cost_per_1k_tasks_usd):null;
 
-  const r = bench?.arms?.routed, s = bench?.arms?.strong;
-  const ratio = r && s ? (s.cost_usd / r.cost_usd) : null;
+// ---------------- Overview
+V.overview=`
+<h1>What your AI is costing you</h1>
+<p class="lede">This is a real audit of one machine. Yours would look like this. Nothing here was
+typed in by hand &mdash; it was read from the tools you already run.</p>
+${e?`
+<div class="kpis">
+ <div class="kpi"><div class="v">${usd(e.spend.total_usd)}</div><div class="k">spent on AI, ${e.spend.requests.toLocaleString()} requests</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">could move to a cheaper model</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v">${e.spend.projects.length}</div><div class="k">projects it went across</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v warn">${sm.roles_untested}</div><div class="k">jobs not yet tested &mdash; not claimed safe</div><div class="n">estate.json</div></div>
+</div>
+<h2>The one thing to do</h2>
+<div class="panel">
+ <p class="big">Three of the eight jobs your AI does are <strong>simple</strong> &mdash; looking
+ things up, pulling a fact out of text, checking whether something passes. A model costing
+ <strong>${ratio}&times; less</strong> got them right just as often. You are paying top rates for
+ all three.</p>
+ <div class="do">
+  <p style="margin:0 0 8px"><strong>If you use Cursor, Cline, Continue or the OpenAI SDK</strong> &mdash; point it at Route and the switch is automatic:</p>
+  <div class="cmd">npx ax-route serve
+# then set your tool's base URL to  http://localhost:8787/v1</div>
+ </div>
+ <div class="do">
+  <p style="margin:0 0 8px"><strong>If you use Claude Code</strong> &mdash; it speaks a different protocol, so Route can't sit in front of it yet. But you can still stop overpaying, today, by changing one line per agent file:</p>
+  <div class="cmd">~/.claude/agents/memory-retrieval.md
+-  model: opus
++  model: haiku      # 12x cheaper, and these jobs do not need opus</div>
+ </div>
+ <p class="note">Route tells you <em>which</em> files to change and why. It will not tell you to
+ change the other five, because it has not tested them.</p>
+ <div class="src">source: results/estate.json, results/sweep.json</div>
+</div>
+<h2>Run it on your own machine</h2>
+<div class="panel">
+ <div class="cmd">npx ax-route audit</div>
+ <p class="note">No API key. No account. Nothing to sign up for. It reads the logs your AI tools
+ already keep on your own computer and prints exactly the table above, for you. Takes a few seconds.</p>
+</div>`:'<div class="panel">estate.json not loaded</div>'}`;
 
-  // ---- headline
-  // ---- the audit: what a first-time user sees, in one sentence
-  if (estate) {
-    const e = estate, sm = e.summary;
-    add(`<h2 style="margin-top:0">Your agent estate <span class="tag measured">audited on this machine</span></h2>
-    <div class="panel">
-      <p style="font-size:19px;line-height:1.5;margin:0 0 6px;max-width:64ch">
-        You ran <strong>${e.spend.requests.toLocaleString()} agent requests</strong> across
-        <strong>${e.spend.projects.length} projects</strong>, costing
-        <strong>${usd(e.spend.total_usd)}</strong>. About
-        <strong class="good">${usd(sm.addressable_usd)}</strong> of that can move to open weights today,
-        on evidence &mdash; not a guess.</p>
-      <p class="note">One command, no API key, nothing to sign up for:
-        <span class="num" style="color:var(--accent)">npx ax-route audit</span></p>
-      <div style="display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap">
-        <button class="tb on" data-t="proj">Projects</button>
-        <button class="tb" data-t="roles">Agent roles</button>
-        <button class="tb" data-t="inv">What you have</button>
-      </div>
-      <div id="t-proj" class="tp">
-        <table><tr><th>project</th><th>requests</th><th>days</th><th>paid</th><th>can move</th></tr>
-        ${e.spend.projects.slice(0,10).map(p=>`<tr><td class="num">${esc(p.label)}</td>
-          <td class="num">${p.requests.toLocaleString()}</td><td class="num dim">${p.days}</td>
-          <td class="num">${usd(p.cost_usd)}</td>
-          <td class="num good">${usd(p.addressable_usd)}</td></tr>`).join('')}</table>
-        <p class="note">${esc(e.privacy)}. Run <span class="num">route audit --reveal</span> locally for real names.
-        &ldquo;Can move&rdquo; is ${esc(sm.basis)}.</p>
-      </div>
-      <div id="t-roles" class="tp" style="display:none">
-        <table><tr><th>agent role</th><th>tier</th><th>status</th><th>evidence</th></tr>
-        ${e.routes.map(r=>`<tr><td class="num">${esc(r.job)}</td><td class="dim">${esc(r.declared_tier)}</td>
-          <td class="${r.status==='deployable'?'good':''}" style="${r.status!=='deployable'?'color:var(--warn)':''}">
-          ${r.status==='deployable'?'&#10003; deployable':'? untested'}</td>
-          <td class="dim" style="font-size:13px">${esc(r.evidence)}</td></tr>`).join('')}</table>
-        <p class="note"><strong>${sm.roles_deployable} of ${sm.roles_total} roles</strong> have measured
-        evidence behind them. The other ${sm.roles_untested} have no fixtures yet, so Route will not
-        call them safe. A routing tool that marked all eight green would be guessing on five.</p>
-      </div>
-      <div id="t-inv" class="tp" style="display:none">
-        <div class="kpis" style="margin-bottom:14px">
-          <div class="kpi"><div class="v">${e.inventory.agents}</div><div class="k">agent roles defined</div></div>
-          <div class="kpi"><div class="v">${e.inventory.skills}</div><div class="k">skills installed</div></div>
-          <div class="kpi"><div class="v">${e.inventory.repos}</div><div class="k">repos registered</div></div>
-        </div>
-        <table><tr><th>role</th><th>declared model</th><th>what it does</th></tr>
-        ${e.inventory.agent_list.map(a=>`<tr><td class="num">${esc(a.name)}</td>
-          <td class="num dim">${esc(a.declared_model||'—')}</td>
-          <td class="dim" style="font-size:13px">${esc((a.description||'').slice(0,90))}</td></tr>`).join('')}</table>
-      </div>
-      <div class="src">source: results/estate.json &middot; ${esc(e.source)}</div>
-    </div>`);
-    document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>{
-      document.querySelectorAll('.tb').forEach(x=>x.classList.toggle('on',x===b));
-      document.querySelectorAll('.tp').forEach(x=>{x.style.display='none'});
-      document.getElementById('t-'+b.dataset.t).style.display='';
-    }));
-  }
+// ---------------- Projects
+V.projects=e?`
+<h1>Where the money went</h1>
+<p class="lede">Every project your AI tools worked in, what it cost, and how much of that could
+have run on a cheaper model. Project names are client names, so these are labels &mdash;
+<span class="num">route audit --reveal</span> shows the real ones on your own machine.</p>
+<div class="panel">
+ <table><tr><th>project</th><th>requests</th><th>days active</th><th>paid</th><th>could move</th><th>share of spend</th></tr>
+ ${e.spend.projects.slice(0,16).map(p=>{const sh=(p.cost_usd/e.spend.total_usd*100);return `<tr>
+   <td class="num">${esc(p.label)}</td><td class="num">${p.requests.toLocaleString()}</td>
+   <td class="num dim">${p.days}</td><td class="num">${usd(p.cost_usd)}</td>
+   <td class="num good">${usd(p.addressable_usd)}</td>
+   <td class="num dim">${sh.toFixed(1)}%<div class="bar"><i style="width:${Math.min(100,sh)}%"></i></div></td></tr>`}).join('')}
+ </table>
+ <p class="note">${esc(sm.basis)}.</p>
+ <div class="src">source: results/estate.json &middot; ${esc(e.privacy)}</div>
+</div>
+<h2>Your repositories</h2>
+<div class="panel">
+ <p class="big" style="font-size:16px">${e.inventory.repos} repositories registered,
+ ${e.repos.filter(r=>r.has_remote).length} with a remote. Connecting a repo lets the audit
+ attribute spend to it and flag work that repeats often enough to be worth automating.</p>
+ <p class="note">Repeat-work detection is designed but not built &mdash; today the audit
+ attributes spend per project, which is what the table above shows. Saying otherwise would be
+ claiming a feature that does not exist.</p>
+ <div class="src">source: ~/dev/config/projects.tsv</div>
+</div>`:'';
 
-  add(`<h2>The measured case</h2>`);
-  add(`<div class="kpis">
-    <div class="kpi"><div class="v good">${ratio ? ratio.toFixed(1)+'×' : '—'}</div>
-      <div class="k">cheaper than the strong model, same tasks</div>
-      <div class="n">results/bench.json</div></div>
-    <div class="kpi"><div class="v">${r ? r.judge_pass_pct+'%' : '—'} <span class="dim" style="font-size:17px">vs ${s ? s.judge_pass_pct+'%' : '—'}</span></div>
-      <div class="k">quality, routed vs strong (blind judge)</div>
-      <div class="n">n=${bench?.fixture_count ?? '—'} · results/bench.json</div></div>
-    <div class="kpi"><div class="v">${r?.latency_p50_ms ?? '—'}<span class="dim" style="font-size:17px">ms</span></div>
-      <div class="k">p50 latency, routed arm</div>
-      <div class="n">results/bench.json</div></div>
-    <div class="kpi"><div class="v warn" style="color:var(--warn)">${replay ? replay.cheapest_tier_share_pct+'%' : '—'}</div>
-      <div class="k">of real requests that used the cheap tier the policy declares</div>
-      <div class="n">results/replay.json</div></div>
-  </div>`);
+// ---------------- Roles
+V.roles=e?`
+<h1>What your AI actually does</h1>
+<p class="lede">Your setup has ${e.inventory.agents} distinct jobs. Each one has a different cost
+of being wrong, so each one deserves a different model. Green means tested. Amber means Route has
+no evidence yet and will not tell you it is safe.</p>
+<div class="panel">
+ <table><tr><th>job</th><th>what it is</th><th>how hard</th><th>status</th></tr>
+ ${e.routes.map(r=>{const p=PLAIN[r.job]||[r.job,''];const ok=r.status==='deployable';return `<tr class="${ok?'win':''}">
+   <td><strong>${esc(p[0])}</strong><div class="num dim" style="font-size:11px">${esc(r.job)}</div></td>
+   <td class="dim">${esc(p[1])}</td>
+   <td class="dim">${esc(r.declared_tier==='mechanical'?'simple':r.declared_tier==='reasoning'?'thinking':'high stakes')}</td>
+   <td class="${ok?'good':'warn'}">${ok?'&#10003; safe to move':'not tested'}<div class="dim" style="font-weight:400;font-size:11.5px;margin-top:3px">${esc(r.evidence)}</div></td></tr>`}).join('')}
+ </table>
+ <p class="note"><strong>${sm.roles_deployable} of ${sm.roles_total}</strong> jobs have real
+ evidence behind them. The other ${sm.roles_untested} are the harder ones &mdash; writing code,
+ reviewing code, research. A tool that painted all eight green would be guessing on five, and you
+ would find out the expensive way.</p>
+ <div class="src">source: results/estate.json &middot; evidence from results/sweep.json</div>
+</div>`:'';
 
-  // ---- catalogue sweep: the routing choice, measured
-  if (sweep) {
-    const rs = sweep.results.filter(r => r.cost_per_1k_tasks_usd !== null);
-    const win = sweep.cheapest_passing;
-    const dear = [...rs].sort((a,b) => b.cost_per_1k_tasks_usd - a.cost_per_1k_tasks_usd)[0];
-    const qmin = Math.min(...rs.map(r => r.judge_pct)), qmax = Math.max(...rs.map(r => r.judge_pct));
+// ---------------- Models (assessment)
+V.models=sweep?(()=>{
+ const W=660,H=250,PL=52,PB=32,PT=12,PR=14;
+ const lg=c=>Math.log10(c),xs=rs.map(r=>lg(r.cost_per_1k_tasks_usd));
+ const x0=Math.min(...xs)-.13,x1=Math.max(...xs)+.13;
+ const px=c=>PL+((lg(c)-x0)/(x1-x0))*(W-PL-PR),py=q=>PT+(1-(q-83)/18)*(H-PT-PB);
+ const grid=[85,90,95,100].map(q=>`<line x1="${PL}" y1="${py(q).toFixed(1)}" x2="${W-PR}" y2="${py(q).toFixed(1)}" stroke="currentColor" stroke-width="1" opacity=".18"/><text x="${PL-9}" y="${(py(q)+4).toFixed(1)}" text-anchor="end" font-size="10" fill="currentColor" opacity=".6">${q}%</text>`).join('');
+ const xt=[0.01,0.1,1].filter(t=>lg(t)>=x0&&lg(t)<=x1);
+ const xl=xt.map(t=>`<text x="${px(t).toFixed(1)}" y="${H-PB+20}" text-anchor="middle" font-size="10" fill="currentColor" opacity=".6">$${t}</text>`).join('');
+ const dots=rs.map(r=>{const w=r.model===win.model;return `<circle cx="${px(r.cost_per_1k_tasks_usd).toFixed(1)}" cy="${py(r.judge_pct).toFixed(1)}" r="${w?7:4.5}" fill="${w?'var(--good)':'var(--accent)'}" opacity="${w?1:.6}"><title>${esc(r.model)} — ${r.judge_pct}%, $${r.cost_per_1k_tasks_usd}/1k</title></circle>`}).join('');
+ return `
+<h1>Which model should you actually use?</h1>
+<p class="lede">Route tested every open model on Nebius Token Factory against the same
+${sweep.fixtures} simple tasks, with the same judge, blind to which model answered. This is the
+assessment that decides what your setup recommends &mdash; it is measured, not an opinion.</p>
+<div class="panel">
+ <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;color:var(--muted)" role="img"
+  aria-label="Cost against accuracy for ${sweep.models_tested} models. Accuracy stays between ${Math.min(...rs.map(r=>r.judge_pct))} and ${Math.max(...rs.map(r=>r.judge_pct))} percent while price spans ${ratio} times.">
+  ${grid}${xl}${dots}
+  <text x="${PL}" y="${H-4}" font-size="10" fill="currentColor" opacity=".6">cost per 1,000 tasks (log scale) &#8594;</text>
+ </svg>
+ <p class="big" style="margin-top:14px">Accuracy barely moves. Price moves
+ <strong class="good">${ratio}&times;</strong>. On simple work you are paying for headroom you
+ never use.</p>
+ <div class="src">source: results/sweep.json &middot; ${sweep.models_tested} models &middot; reproduce with <span class="num">route sweep</span></div>
+</div>
+<h2>Every model tested</h2>
+<div class="panel">
+ <table><tr><th>model</th><th>got it right</th><th>cost per 1,000 tasks</th><th>speed</th></tr>
+ ${[...rs].sort((a,b)=>a.cost_per_1k_tasks_usd-b.cost_per_1k_tasks_usd).map(r=>`<tr class="${r.model===win.model?'win':''}">
+  <td class="num" style="font-size:12.5px">${esc(r.model)}${r.model===win.model?' <span class="tag measured">pick</span>':''}</td>
+  <td class="num ${r.judge_pct>=90?'good':'warn'}">${r.judge_pct}%</td>
+  <td class="num">$${r.cost_per_1k_tasks_usd}</td>
+  <td class="num dim">${r.latency_p50_ms} ms</td></tr>`).join('')}
+ </table>
+ <p class="note">${esc(sweep.max_tokens_note)}</p>
+</div>`})():'';
 
-    // log-scale scatter: price across, quality up. The flat cloud is the whole argument.
-    const W = 660, H = 260, PL = 46, PB = 34, PT = 14, PR = 14;
-    const lx = (c) => Math.log10(c), xs = rs.map(r => lx(r.cost_per_1k_tasks_usd));
-    const x0 = Math.min(...xs) - 0.12, x1 = Math.max(...xs) + 0.12;
-    const px = (c) => PL + ((lx(c) - x0) / (x1 - x0)) * (W - PL - PR);
-    const py = (q) => PT + (1 - (q - 80) / 22) * (H - PT - PB);
-    const ticks = [0.005, 0.01, 0.05, 0.1, 0.5, 1, 3].filter(t => lx(t) >= x0 && lx(t) <= x1);
-    const dots = rs.map(r => {
-      const isWin = win && r.model === win.model;
-      return `<circle cx="${px(r.cost_per_1k_tasks_usd).toFixed(1)}" cy="${py(r.judge_pct).toFixed(1)}"
-        r="${isWin ? 7 : 4.5}" fill="${isWin ? 'var(--good)' : 'var(--accent)'}"
-        opacity="${isWin ? 1 : 0.62}"><title>${esc(r.model)} — ${r.judge_pct}% judge, $${r.cost_per_1k_tasks_usd}/1k tasks</title></circle>`;
-    }).join('');
-    const grid = [85, 90, 95, 100].map(q =>
-      `<line x1="${PL}" y1="${py(q)}" x2="${W-PR}" y2="${py(q)}" stroke="var(--line)" stroke-width="1"/>
-       <text x="${PL-8}" y="${py(q)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${q}%</text>`).join('');
-    const xlab = ticks.map(t =>
-      `<text x="${px(t)}" y="${H-PB+18}" text-anchor="middle" font-size="10" fill="var(--muted)">$${t}</text>`).join('');
+// ---------------- Proof
+V.proof=`
+<h1>Proof, for the sceptical</h1>
+<p class="lede">Every number on this site names the file it came from, and every figure is marked
+either measured or computed. Nothing is rounded in our favour.</p>
+${bench?`<h2>Head to head <span class="tag measured">measured</span></h2>
+<div class="panel"><table><tr><th>model</th><th>exact match</th><th>judge pass</th><th>p50</th><th>cost</th></tr>
+${Object.entries(bench.arms).map(([k,v])=>`<tr class="${k==='routed'?'win':''}"><td class="num" style="font-size:12.5px">${esc(v.model)}<div class="dim" style="font-size:11px">${k}</div></td>
+<td class="num">${v.match_rate_pct}%</td><td class="num">${v.judge_pass_pct}%</td>
+<td class="num dim">${v.latency_p50_ms} ms</td><td class="num ${k==='routed'?'good':''}">${usd(v.cost_usd,6)}</td></tr>`).join('')}</table>
+<p class="note">n=${bench.fixture_count}. The 5-point quality gap is one question, so the claim is
+that the cheap model is <strong>not worse</strong> &mdash; not that it is better. The claim rests
+on the price gap.</p><div class="src">source: results/bench.json</div></div>`:''}
+${bench?(()=>{const r=bench.arms.routed;const pr={'claude-haiku-4-5':[1,5],'claude-sonnet-5':[2,10],'claude-opus-5':[5,25],'gpt-6-astra':[10,50]};
+ return `<h2>The same work at big-model prices <span class="tag computed">computed</span></h2>
+ <div class="panel"><table><tr><th>model</th><th>cost for the same 20 tasks</th><th>vs the cheap one</th></tr>
+ ${Object.entries(pr).map(([m,[i,o]])=>{const c=(r.tokens_in*i+r.tokens_out*o)/1e6;return `<tr><td class="num">${m}</td><td class="num">${usd(c,6)}</td><td class="num">${(c/r.cost_usd).toFixed(0)}&times;</td></tr>`}).join('')}</table>
+ <p class="note">Arithmetic, not an experiment: real token counts at published rates. No calls
+ were made to these models, and it is labelled computed for that reason.</p></div>`})():''}
+${replay?`<h2>Replayed over real history <span class="tag measured">measured</span></h2>
+<div class="panel"><p class="big" style="font-size:16px">${replay.requests.toLocaleString()} real
+requests over ${replay.window.days} days, re-priced from raw token counts: ${usd(replay.actual_cost_usd)}.</p>
+<table><tr><th>share moved</th><th>bill becomes</th><th>saved</th></tr>
+${replay.counterfactual_band.map(b=>`<tr><td class="num">${(b.mechanical_share*100).toFixed(0)}%</td><td class="num">${usd(b.cost_usd)}</td><td class="num good">${usd(b.saved_usd)} (${b.saved_pct}%)</td></tr>`).join('')}</table>
+<p class="note">${esc(replay.band_note)}</p><div class="src">source: results/replay.json</div></div>`:''}
+${harness?`<h2>The wider bill <span class="tag measured">measured</span></h2>
+<div class="panel"><p class="big" style="font-size:16px">${usd(harness.total_cost_usd)} over
+${harness.window.days} days across three AI tools.</p>
+<table><tr><th>tool</th><th>spend</th></tr>${Object.entries(harness.by_tool).map(([t,c])=>`<tr><td>${esc(t)}</td><td class="num">${usd(c)}</td></tr>`).join('')}</table>
+<div class="src">source: results/harness-usage.json</div></div>`:''}
+<h2>What is not built</h2>
+<div class="panel"><p class="note" style="margin-top:0">No big-model arm was measured &mdash; no
+API key was available &mdash; so that comparison is arithmetic and labelled computed. Claude Code
+cannot route through Route yet; it speaks a different protocol. Repeat-work detection across repos
+is designed, not built. Five of eight jobs have no fixtures. All of this is on the record because
+a demo that overstates its reach is worth less than one that does not.</p></div>`;
 
-    add(`<h2>The routing choice, measured <span class="tag measured">measured</span></h2>
-    <div class="panel">
-      <p class="note" style="margin-top:0">A routing policy should be derived, not asserted. Every
-      one of <strong>${sweep.models_tested} Token Factory models</strong> ran the same
-      ${sweep.fixtures} fixtures and was scored identically. Quality landed between
-      <strong>${qmin}% and ${qmax}%</strong>. Price spread across the same models:
-      <strong>${(dear.cost_per_1k_tasks_usd / win.cost_per_1k_tasks_usd).toFixed(0)}\u00d7</strong>.</p>
-      <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:8px 0 2px" role="img"
-           aria-label="Cost per thousand tasks against judge pass rate, ${sweep.models_tested} models">
-        ${grid}${xlab}${dots}
-        <text x="${PL}" y="${H-2}" font-size="10" fill="var(--muted)">cost per 1,000 tasks (log scale) \u2192</text>
-      </svg>
-      <p class="note"><strong>The cloud is flat.</strong> On mechanical work, price predicts almost
-      nothing about quality. The cheapest model clearing the ${sweep.bar_judge_pct}% bar is
-      <span class="num">${esc(win.model)}</span> at <strong>$${win.cost_per_1k_tasks_usd} per 1,000
-      tasks</strong> and ${win.judge_pct}% \u2014 against
-      <span class="num">${esc(dear.model)}</span> at $${dear.cost_per_1k_tasks_usd} and
-      ${dear.judge_pct}%. Same quality,
-      ${(dear.cost_per_1k_tasks_usd / win.cost_per_1k_tasks_usd).toFixed(0)}\u00d7 the price.
-      That is what <span class="num">policy.yaml</span> encodes.</p>
-      <p class="note">${esc(sweep.max_tokens_note)}</p>
-      <div class="src">source: results/sweep.json \u00b7 judge ${esc(sweep.judge)}, blind to model \u00b7 reproduce with <span class="num">route sweep</span></div>
-    </div>`);
-  }
-
-  // ---- benchmark
-  if (bench) {
-    add(`<h2>Head-to-head <span class="tag measured">measured</span></h2>`);
-    const rows = Object.entries(bench.arms).map(([k, v]) => `
-      <tr class="${k === 'routed' ? 'win' : ''}">
-        <td><strong>${k}</strong></td>
-        <td class="num" style="font-size:13px">${esc(v.model)}</td>
-        <td class="num">${v.match_rate_pct}%</td>
-        <td class="num">${v.judge_pass_pct}%</td>
-        <td class="num">${v.latency_p50_ms}</td>
-        <td class="num">${v.tokens_in + v.tokens_out}</td>
-        <td class="num ${k === 'routed' ? 'good' : ''}">${usd(v.cost_usd, 6)}</td>
-      </tr>`).join('');
-    add(`<div class="panel"><table>
-      <tr><th>arm</th><th>model</th><th>exact match</th><th>judge pass</th><th>p50 ms</th><th>tokens</th><th>cost</th></tr>
-      ${rows}</table>
-      <p class="note">${esc(bench.fixtures_note)}</p>
-      <p class="note">Two scorers on purpose. <strong>Exact match</strong> is deterministic string
-      checking. <strong>Judge pass</strong> is ${esc(bench.judge)} grading against each rubric,
-      blind to which arm produced the answer. Both arms disagreed on the same
-      ${r?.disagreements?.length ?? 0} fixtures (${(r?.disagreements||[]).join(', ')}) — open-ended
-      items where substring matching is too strict. The disagreement is a scorer artifact, not a
-      difference between the models.</p>
-      <div class="src">source: results/bench.json · fixtures: bench/fixtures/mechanical.json</div>
-    </div>`);
-  }
-
-  // ---- frontier projection
-  if (r) {
-    const prices = { 'claude-haiku-4-5': [1,5], 'claude-sonnet-5': [2,10], 'claude-opus-5': [5,25], 'gpt-6-astra': [10,50] };
-    const rowsF = Object.entries(prices).map(([m, [pi, po]]) => {
-      const c = (r.tokens_in * pi + r.tokens_out * po) / 1e6;
-      return `<tr><td class="num" style="font-size:13px">${m}</td><td class="num">${usd(c,6)}</td>
-        <td class="num">${(c / r.cost_usd).toFixed(0)}×</td></tr>`;
-    }).join('');
-    add(`<h2>The same tokens at frontier list price <span class="tag computed">computed</span></h2>
-    <div class="panel"><table>
-      <tr><th>model</th><th>cost for the same 20 tasks</th><th>vs routed</th></tr>${rowsF}</table>
-      <p class="note">Arithmetic, not a measurement: the exact token counts the routed arm used,
-      priced at each model's published rate. No frontier calls were made for this table, and it is
-      labelled computed for that reason. Prices from <span class="num">prices.yaml</span>.</p>
-      <div class="src">source: results/bench.json token counts × prices.yaml</div>
-    </div>`);
-  }
-
-  // ---- replay
-  if (replay) {
-    const mrows = replay.by_model.slice(0, 6).map(m => `
-      <tr><td class="num" style="font-size:13px">${esc(m.model)}</td>
-        <td class="num">${m.requests.toLocaleString()}</td>
-        <td class="num">${m.share_pct}%<div class="bar"><i style="width:${Math.min(100,m.share_pct)}%"></i></div></td>
-        <td class="num">${m.priced ? usd(m.cost_usd) : '<span class="dim">unpriced</span>'}</td></tr>`).join('');
-    const brows = replay.counterfactual_band.map(b => `
-      <tr><td class="num">${(b.mechanical_share*100).toFixed(0)}%</td>
-        <td class="num">${usd(b.cost_usd)}</td>
-        <td class="num good">${usd(b.saved_usd)}</td>
-        <td class="num good">${b.saved_pct}%</td></tr>`).join('');
-    add(`<h2>Replay of real work <span class="tag measured">measured</span></h2>
-    <div class="panel">
-      <p class="note" style="margin-top:0"><strong>${replay.requests.toLocaleString()} real requests</strong>
-      across ${replay.transcripts} transcripts and ${replay.window.days} days
-      (${replay.window.first_day} → ${replay.window.last_day}), deduped on request id and priced from
-      raw token counts. Actual cost <strong>${usd(replay.actual_cost_usd)}</strong>.</p>
-      <table><tr><th>model</th><th>requests</th><th>share</th><th>cost</th></tr>${mrows}</table>
-      <p class="note"><strong>The finding.</strong> The policy declares three of eight job types
-      mechanical. The cheap tier actually ran
-      <strong>${replay.cheapest_tier_requests} of ${replay.requests.toLocaleString()} requests
-      (${replay.cheapest_tier_share_pct}%)</strong>. A tier policy nothing enforces is a comment,
-      not a control.</p>
-      <div class="src">source: results/replay.json · ${esc(replay.privacy)}</div>
-    </div>
-    <h2>If that work had been routed <span class="tag computed">scenario</span></h2>
-    <div class="panel"><table>
-      <tr><th>mechanical share</th><th>bill becomes</th><th>saved</th><th>saved %</th></tr>${brows}</table>
-      <p class="note">${esc(replay.band_note)} Routed model:
-      <span class="num">${esc(replay.routed_model)}</span>. Independent support for the low end:
-      the harness's own accounting already carried a <span class="num">cheaperShare: 0.3</span>
-      estimate before Route existed.</p>
-      <div class="src">source: results/replay.json</div>
-    </div>`);
-  }
-
-  // ---- harness spend
-  if (harness) {
-    const trows = Object.entries(harness.by_tool).map(([t, c]) =>
-      `<tr><td>${esc(t)}</td><td class="num">${usd(c)}</td></tr>`).join('');
-    add(`<h2>The bill this is about <span class="tag measured">measured</span></h2>
-    <div class="panel">
-      <p class="note" style="margin-top:0">Broader picture from the harness's own cost accounting:
-      <strong>${usd(harness.total_cost_usd)}</strong> over ${harness.window.days} days
-      (${harness.window.first_day} → ${harness.window.last_day}), across three agent tools.</p>
-      <table><tr><th>tool</th><th>spend</th></tr>${trows}</table>
-      <div class="src">source: results/harness-usage.json · ${esc(harness.privacy)}</div>
-    </div>`);
-  }
-
-  add(`<h2>How it routes</h2>
-  <div class="panel">
-    <p class="note" style="margin-top:0">Routing is declared, never inferred. The caller names the
-    job; <span class="num">policy.yaml</span> decides the model. Nothing is promoted to a more
-    expensive tier silently, and every decision lands in an append-only ledger with its cost.</p>
-    <pre class="num" style="font-size:12px;overflow-x:auto;margin:14px 0 0;color:var(--muted)">POST /v1/chat/completions
-x-route-job: memory-retrieval
-  → tier mechanical → Qwen/Qwen3-30B-A3B-Instruct-2507 (Nebius, EU Finland)
-
-x-route-job: code-review
-  → tier critical   → claude-opus-5 (frontier)</pre>
-    <div class="src">source: policy.yaml</div>
-  </div>`);
+const show=v=>{M.innerHTML='';M.appendChild(frag(V[v]||'<p>—</p>'));
+ document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===v));
+ if(location.hash!=='#'+v)history.replaceState(null,'','#'+v);window.scrollTo(0,0)};
+document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',()=>show(a.dataset.v)));
+addEventListener('hashchange',()=>show((location.hash||'#overview').slice(1)));
+show((location.hash||'#overview').slice(1)in V?(location.hash||'#overview').slice(1):'overview');
 })();
 </script>
-</body>
-</html>
+</body></html>

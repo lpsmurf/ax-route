@@ -39,20 +39,20 @@ td,th{padding:14px 18px;border-bottom:1px solid #2A313B;text-align:left}
 <p style="font-size:28px; color:#7AA2FF; font-family:'JetBrains Mono', Courier New, monospace; padding-top:24px">ax-route.vercel.app &#183; github.com/lpsmurf/ax-route</p>
 
 </section>
-<section class="" id="problem" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
-<p style="font-size:24px; color:#E0A94A; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The problem</p>
-<h2 style="font-size:72px; font-weight:600; line-height:1.15; width:1600px">My harness says three of its eight job types should run on the cheap model.</h2>
+<section class="" id="problem" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:44px">
+<p style="font-size:24px; color:#E0A94A; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">Who this is for</p>
+<h2 style="font-size:68px; font-weight:600; line-height:1.15; width:1660px">You always pick the best model. Nobody ever told you which jobs don&#8217;t need it.</h2>
 <div style="display:flex; gap:64px; align-items:center">
   <div style="display:flex; flex-direction:column; gap:8px">
-    <p style="font-size:200px; font-weight:700; color:#E0A94A; line-height:1; font-family:'JetBrains Mono', Courier New, monospace">0.13%</p>
-    <p style="font-size:32px; color:#98A2B3">of real requests used it</p>
+    <p style="font-size:190px; font-weight:700; color:#E0A94A; line-height:1; font-family:'JetBrains Mono', Courier New, monospace">0.13%</p>
+    <p style="font-size:30px; color:#98A2B3; width:560px">of my requests used the cheap model. I had even written down that they should.</p>
   </div>
-  <div style="display:flex; flex-direction:column; gap:20px; padding-left:64px; border-left:2px solid #2A313B">
-    <p style="font-size:44px; line-height:1.3; width:780px">The cheap model ran <b style="color:#ECEEF2">5 requests</b> out of <b style="color:#ECEEF2">3,865</b>.</p>
-    <p style="font-size:44px; line-height:1.3; width:780px; color:#98A2B3">claude-opus-5 ran <b style="color:#ECEEF2">65.5%</b>.</p>
+  <div style="display:flex; flex-direction:column; gap:22px; padding-left:64px; border-left:2px solid #2A313B">
+    <p style="font-size:40px; line-height:1.35; width:800px">If you build with AI all day and you are not an infrastructure engineer, you are almost certainly doing this.</p>
+    <p style="font-size:40px; line-height:1.35; width:800px; color:#98A2B3">Opus for everything. Including &#8220;does this file parse&#8221;.</p>
   </div>
 </div>
-<p style="font-size:44px; color:#3ECF9B; line-height:1.3; width:1600px">A tier policy that nothing enforces is a comment, not a control.</p>
+<p style="font-size:40px; color:#3ECF9B; line-height:1.3; width:1660px">Nobody is going to hand-tune this. It has to be measured for you.</p>
 <p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">measured &#183; 3,865 deduped requests, 50 days &#183; results/replay.json</p>
 
 </section>
@@ -93,27 +93,30 @@ td,th{padding:14px 18px;border-bottom:1px solid #2A313B;text-align:left}
 <p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">prices read live from the Token Factory API &#183; GET /v1/models?verbose=true</p>
 
 </section>
-<section class="" id="product" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
-<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The product</p>
-<h2 style="font-size:72px; font-weight:600; line-height:1.15">Routing is declared, never inferred.</h2>
-<div style="display:flex; gap:48px; align-items:flex-start">
-  <div style="flex:1; background:#0E1116; padding:44px; border-radius:16px; border:1px solid #2A313B; display:flex; flex-direction:column; gap:20px">
-    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#98A2B3; line-height:1.6">POST /v1/chat/completions<br><span style="color:#3ECF9B">x-route-job: memory-retrieval</span></p>
-    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2; line-height:1.6">&#8594; tier <b>mechanical</b><br>&#8594; Qwen3-30B <span style="color:#98A2B3">(Nebius, EU)</span></p>
-    <hr style="border-top:1px solid #2A313B; width:100%">
-    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#98A2B3; line-height:1.6">POST /v1/chat/completions<br><span style="color:#E0A94A">x-route-job: code-review</span></p>
-    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2; line-height:1.6">&#8594; tier <b>critical</b><br>&#8594; claude-opus-5 <span style="color:#98A2B3">(frontier)</span></p>
+<section class="" id="product" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:40px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">What you actually do with it</p>
+<h2 style="font-size:68px; font-weight:600; line-height:1.15">One command. Then one line to change.</h2>
+<div style="display:flex; gap:44px; align-items:flex-start">
+  <div style="flex:1; display:flex; flex-direction:column; gap:26px">
+    <div style="background:#0E1116; padding:36px; border-radius:16px; border-left:6px solid #3ECF9B">
+      <h3 style="font-size:30px; font-weight:600; color:#3ECF9B; padding-bottom:12px">Step 1 &#8212; see it</h3>
+      <p style="font-size:30px; font-family:'JetBrains Mono', Courier New, monospace; color:#7AA2FF">npx ax-route audit</p>
+      <p style="font-size:26px; color:#98A2B3; line-height:1.4; padding-top:12px">No key. No account. Reads the logs your tools already keep.</p>
+    </div>
+    <div style="background:#0E1116; padding:36px; border-radius:16px; border-left:6px solid #7AA2FF">
+      <h3 style="font-size:30px; font-weight:600; color:#7AA2FF; padding-bottom:12px">Step 2 &#8212; change it</h3>
+      <p style="font-size:26px; font-family:'JetBrains Mono', Courier New, monospace; color:#98A2B3; line-height:1.6">~/.claude/agents/memory-retrieval.md<br><span style="color:#E06C75">-  model: opus</span><br><span style="color:#3ECF9B">+  model: haiku</span></p>
+      <p style="font-size:26px; color:#98A2B3; line-height:1.4; padding-top:12px">Or point Cursor at Route and it switches by itself.</p>
+    </div>
   </div>
-  <div style="flex:1; display:flex; flex-direction:column; gap:28px">
-    <p style="font-size:36px; line-height:1.4">The caller names the job. A file a human reads decides the model.</p>
-    <p style="font-size:36px; line-height:1.4; color:#98A2B3">No second model guessing intent. Nothing promoted to a pricier tier silently.</p>
-    <p style="font-size:36px; line-height:1.4">Every call leaves a receipt: <span style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">job, model, tokens, cost, latency, region</span>.</p>
-    <p style="font-size:36px; line-height:1.4; color:#3ECF9B">The saving is an invoice, not a claim.</p>
-    <hr style="border-top:1px solid #2A313B; width:100%">
-    <p style="font-size:30px; line-height:1.4; color:#98A2B3"><b style="color:#ECEEF2">Day one:</b> <span style="font-family:'JetBrains Mono', Courier New, monospace; color:#7AA2FF">npx ax-route audit</span> &#8212; no key, no signup.<br><b style="color:#ECEEF2">Day one hundred:</b> policy file, model sweeps, per-project ledgers, JSON for CI.</p>
+  <div style="flex:1; display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:36px; line-height:1.4">It tells you <b>which</b> files to change, and why.</p>
+    <p style="font-size:36px; line-height:1.4; color:#98A2B3">And it refuses to tell you about the other five jobs, because it has not tested them.</p>
+    <p style="font-size:32px; line-height:1.4; color:#98A2B3">Every routed call leaves a receipt: <span style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">model, tokens, cost, region</span>.</p>
+    <p style="font-size:32px; line-height:1.4; color:#3ECF9B">The saving is an invoice, not a claim.</p>
   </div>
 </div>
-<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">policy.yaml &#183; ledger/*.jsonl &#183; OpenAI-compatible, zero dependencies</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">ax-route.vercel.app &#183; the dashboard is the demo</p>
 
 </section>
 <section class="" id="sweep" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">

@@ -7,6 +7,12 @@
 
 ---
 
+## Who this is for
+
+People who build with AI all day and are not infrastructure engineers. They have one setting they
+understand — pick the best model — so they pick it for everything, including "does this file
+parse". They will never hand-tune a routing table, so it has to be measured for them.
+
 ## The problem, measured
 
 One operator, 20+ projects, two Macs. Over 104 days the agent tools billed **$1,240.47**

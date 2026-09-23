@@ -8,6 +8,13 @@
 
 ## What did you build, and what problem does it solve?
 
+**This is for people who build with AI all day and are not infrastructure engineers.** Vibecoders,
+solo founders, designers shipping products, heavy Claude Code and Cursor users. They have one
+setting they understand — pick the best model — so they pick it for everything, including "does
+this file parse". They hit this every single day, they are doing nothing about it today because
+nobody has told them which jobs don't need the expensive model, and they will never hand-tune a
+routing table. It has to be measured for them.
+
 Teams running coding agents are billed at frontier prices for work that is not hard. Most agent
 calls are mechanical — fetch this file, pull the number out of that text, check whether the JSON
 parses, did the test pass. They are a large and growing share of every agent workload, because
@@ -24,7 +31,7 @@ What people do today is nothing, or they hand-edit a model name in a config and 
 per-job routing, no record of what each call cost, and no way to answer "could that have run
 somewhere cheaper" after the fact.
 
-**Route audits first, then enforces.** `npx ax-route audit` needs no API key and no signup: it
+**The product is the AX dashboard: an audit and an assessment, with routing as the last step.** `npx ax-route audit` needs no API key and no signup: it
 reads the operator's whole agent estate — 8 agent roles, 129 skills, 19 registered repos, 3,960
 real requests across 56 projects — prices every request, and reports that **$82.23 of $168.15 is
 addressable today**. Crucially it grades each of the 8 agent roles: **3 are marked deployable
@@ -36,6 +43,12 @@ job; a policy file a human can read sends it to the cheapest model that can actu
 open weights on Nebius Token Factory for the mechanical majority, a frontier model reserved for
 review. Every decision appends a line to a ledger: job, tier, model, tokens, cost, latency,
 region. The saving is a receipt, not a claim.
+
+**Honest scope note:** Route speaks the OpenAI protocol, so Cursor, Cline, Continue and the
+OpenAI SDK can route through it automatically. Claude Code speaks Anthropic's protocol and cannot
+today — so for Claude Code users the deliverable is not a proxy they must run, it is the exact
+one-line change per agent file, which the audit names for them. That is worth saying plainly:
+half our target users get a config diff, not an endpoint, and it still saves them money today.
 
 It has to work for both ends of the market, so the audit is the on-ramp — one command, no key,
 no account, answering the only question a new user has: is there money here at all. Heavy users
