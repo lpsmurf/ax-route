@@ -24,11 +24,23 @@ What people do today is nothing, or they hand-edit a model name in a config and 
 per-job routing, no record of what each call cost, and no way to answer "could that have run
 somewhere cheaper" after the fact.
 
-**Route** is an OpenAI-compatible endpoint that sits in front of the models. Every call declares a
+**Route audits first, then enforces.** `npx ax-route audit` needs no API key and no signup: it
+reads the operator's whole agent estate — 8 agent roles, 129 skills, 19 registered repos, 3,960
+real requests across 56 projects — prices every request, and reports that **$82.23 of $168.15 is
+addressable today**. Crucially it grades each of the 8 agent roles: **3 are marked deployable
+because fixtures back them, and 5 are marked untested**. A routing tool that marked all eight
+green would be guessing on five. That assessment is the product; anyone can write the proxy.
+
+Enforcement is the second half: an OpenAI-compatible endpoint that sits in front of the models. Every call declares a
 job; a policy file a human can read sends it to the cheapest model that can actually do that job —
 open weights on Nebius Token Factory for the mechanical majority, a frontier model reserved for
 review. Every decision appends a line to a ledger: job, tier, model, tokens, cost, latency,
 region. The saving is a receipt, not a claim.
+
+It has to work for both ends of the market, so the audit is the on-ramp — one command, no key,
+no account, answering the only question a new user has: is there money here at all. Heavy users
+get the policy file in version control, sweeps against their own fixtures, per-project ledgers
+and JSON that gates CI.
 
 Would they pay? Model spend is becoming a top-three engineering line item, and Route's saving on
 measured data is 24–73% of the agent bill depending on how much of the work is mechanical. It is

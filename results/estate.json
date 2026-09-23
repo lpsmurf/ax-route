@@ -1,0 +1,889 @@
+{
+  "schema": "route.estate.v1",
+  "generated_at": "2026-09-23T11:25:21.482Z",
+  "privacy": "project names replaced with stable labels; they are client names",
+  "inventory": {
+    "agents": 8,
+    "skills": 129,
+    "repos": 19,
+    "agent_list": [
+      {
+        "name": "code-review",
+        "declared_model": "opus",
+        "description": "Independent review of a diff for bugs, security issues and missed edge cases, ranked by severity with concrete failure scenarios. Use before merging or opening "
+      },
+      {
+        "name": "core-investigator",
+        "declared_model": "sonnet",
+        "description": "Maps the code relevant to a task — files, entry points, data flow, tests, conventions — without editing anything. Use before planning changes."
+      },
+      {
+        "name": "dreamer",
+        "declared_model": "sonnet",
+        "description": "Nightly harness review — finds repeated manual work, costly model use, stale or conflicting memory, unused skills — and proposes the 4 highest-leverage improvem"
+      },
+      {
+        "name": "implementer",
+        "declared_model": "sonnet",
+        "description": "Makes one well-specified code change, matching the repo's conventions, and runs the relevant build/tests. Use after the change is planned and agreed."
+      },
+      {
+        "name": "learning-extractor",
+        "declared_model": "haiku",
+        "description": "Distils a finished session into 0–5 reusable learnings and saves them to the shared memory vault after checking for duplicates. Used by the session-end hook."
+      },
+      {
+        "name": "main-researcher",
+        "declared_model": "sonnet",
+        "description": "Researches outside facts — docs, versions, pricing, APIs, best practices — and returns a short cited brief. Use when the answer is not in the repo."
+      },
+      {
+        "name": "memory-retrieval",
+        "declared_model": "haiku",
+        "description": "Recall shared memory before a task. Returns at most 10 relevant, verified-where-possible facts with sources. Use first on any non-trivial task."
+      },
+      {
+        "name": "qa-test",
+        "declared_model": "haiku",
+        "description": "Verifies a change works — runs tests, builds, linters, and compares against the base branch to separate new failures from existing ones. Use after implementing."
+      }
+    ]
+  },
+  "repos": [
+    {
+      "name": "A-01",
+      "has_remote": true
+    },
+    {
+      "name": "B-02",
+      "has_remote": true
+    },
+    {
+      "name": "CO-03",
+      "has_remote": true
+    },
+    {
+      "name": "CM-04",
+      "has_remote": true
+    },
+    {
+      "name": "FH-05",
+      "has_remote": true
+    },
+    {
+      "name": "GGD-06",
+      "has_remote": true
+    },
+    {
+      "name": "HLC-07",
+      "has_remote": true
+    },
+    {
+      "name": "I-08",
+      "has_remote": true
+    },
+    {
+      "name": "L-09",
+      "has_remote": true
+    },
+    {
+      "name": "MP-10",
+      "has_remote": true
+    },
+    {
+      "name": "RS-11",
+      "has_remote": true
+    },
+    {
+      "name": "SA-12",
+      "has_remote": true
+    },
+    {
+      "name": "S-13",
+      "has_remote": true
+    },
+    {
+      "name": "TA-14",
+      "has_remote": true
+    },
+    {
+      "name": "T-15",
+      "has_remote": true
+    },
+    {
+      "name": "VDR-16",
+      "has_remote": true
+    },
+    {
+      "name": "CDR-17",
+      "has_remote": true
+    },
+    {
+      "name": "DDR-18",
+      "has_remote": true
+    },
+    {
+      "name": "CS-19",
+      "has_remote": true
+    }
+  ],
+  "spend": {
+    "requests": 3960,
+    "total_usd": 168.15,
+    "projects": [
+      {
+        "label": "C-01",
+        "revealed": false,
+        "requests": 1499,
+        "days": 50,
+        "cost_usd": 91.98,
+        "top_model": "claude-opus-5",
+        "models": 5,
+        "all_routed_usd": 2.21,
+        "addressable_usd": 44.88
+      },
+      {
+        "label": "VDR-02",
+        "revealed": false,
+        "requests": 413,
+        "days": 4,
+        "cost_usd": 22.1,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.35,
+        "addressable_usd": 10.87
+      },
+      {
+        "label": "SA-03",
+        "revealed": false,
+        "requests": 630,
+        "days": 4,
+        "cost_usd": 13.31,
+        "top_model": "claude-opus-5",
+        "models": 2,
+        "all_routed_usd": 0.26,
+        "addressable_usd": 6.52
+      },
+      {
+        "label": "S-04",
+        "revealed": false,
+        "requests": 92,
+        "days": 4,
+        "cost_usd": 7.42,
+        "top_model": "claude-sonnet-5",
+        "models": 2,
+        "all_routed_usd": 0.2,
+        "addressable_usd": 3.61
+      },
+      {
+        "label": "S-05",
+        "revealed": false,
+        "requests": 97,
+        "days": 1,
+        "cost_usd": 6.99,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.11,
+        "addressable_usd": 3.44
+      },
+      {
+        "label": "A-06",
+        "revealed": false,
+        "requests": 148,
+        "days": 2,
+        "cost_usd": 4.95,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.07,
+        "addressable_usd": 2.44
+      },
+      {
+        "label": "CDR-07",
+        "revealed": false,
+        "requests": 93,
+        "days": 1,
+        "cost_usd": 2.43,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 1.2
+      },
+      {
+        "label": "S-08",
+        "revealed": false,
+        "requests": 148,
+        "days": 3,
+        "cost_usd": 2.21,
+        "top_model": "claude-sonnet-5",
+        "models": 2,
+        "all_routed_usd": 0.08,
+        "addressable_usd": 1.07
+      },
+      {
+        "label": "W-09",
+        "revealed": false,
+        "requests": 127,
+        "days": 2,
+        "cost_usd": 2.15,
+        "top_model": "claude-opus-5",
+        "models": 2,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 1.06
+      },
+      {
+        "label": "W-10",
+        "revealed": false,
+        "requests": 161,
+        "days": 2,
+        "cost_usd": 2.07,
+        "top_model": "claude-opus-5",
+        "models": 2,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 1.02
+      },
+      {
+        "label": "HLC-11",
+        "revealed": false,
+        "requests": 26,
+        "days": 3,
+        "cost_usd": 1.81,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 0.89
+      },
+      {
+        "label": "F-12",
+        "revealed": false,
+        "requests": 23,
+        "days": 1,
+        "cost_usd": 1.48,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.02,
+        "addressable_usd": 0.73
+      },
+      {
+        "label": "MS-13",
+        "revealed": false,
+        "requests": 36,
+        "days": 1,
+        "cost_usd": 1.44,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.02,
+        "addressable_usd": 0.71
+      },
+      {
+        "label": "A-14",
+        "revealed": false,
+        "requests": 120,
+        "days": 4,
+        "cost_usd": 1.22,
+        "top_model": "claude-sonnet-5",
+        "models": 2,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 0.6
+      },
+      {
+        "label": "D-15",
+        "revealed": false,
+        "requests": 54,
+        "days": 1,
+        "cost_usd": 0.98,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.48
+      },
+      {
+        "label": "TA-16",
+        "revealed": false,
+        "requests": 24,
+        "days": 1,
+        "cost_usd": 0.81,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.4
+      },
+      {
+        "label": "P-17",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.54,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.27
+      },
+      {
+        "label": "CS-18",
+        "revealed": false,
+        "requests": 42,
+        "days": 2,
+        "cost_usd": 0.46,
+        "top_model": "claude-fable-5",
+        "models": 3,
+        "all_routed_usd": 0.03,
+        "addressable_usd": 0.22
+      },
+      {
+        "label": "MR-19",
+        "revealed": false,
+        "requests": 17,
+        "days": 1,
+        "cost_usd": 0.43,
+        "top_model": "claude-opus-4-8",
+        "models": 1,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.21
+      },
+      {
+        "label": "M-20",
+        "revealed": false,
+        "requests": 23,
+        "days": 2,
+        "cost_usd": 0.33,
+        "top_model": "claude-sonnet-5",
+        "models": 2,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.16
+      },
+      {
+        "label": "S-21",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.26,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.13
+      },
+      {
+        "label": "0SM-22",
+        "revealed": false,
+        "requests": 2,
+        "days": 1,
+        "cost_usd": 0.25,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.12
+      },
+      {
+        "label": "B-23",
+        "revealed": false,
+        "requests": 8,
+        "days": 1,
+        "cost_usd": 0.24,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.12
+      },
+      {
+        "label": "D-24",
+        "revealed": false,
+        "requests": 15,
+        "days": 1,
+        "cost_usd": 0.24,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.12
+      },
+      {
+        "label": "D-25",
+        "revealed": false,
+        "requests": 11,
+        "days": 2,
+        "cost_usd": 0.16,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.08
+      },
+      {
+        "label": "C-26",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.15,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.07
+      },
+      {
+        "label": "DDR-27",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.13,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.06
+      },
+      {
+        "label": "S-28",
+        "revealed": false,
+        "requests": 12,
+        "days": 1,
+        "cost_usd": 0.12,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.06
+      },
+      {
+        "label": "F-29",
+        "revealed": false,
+        "requests": 5,
+        "days": 1,
+        "cost_usd": 0.11,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.05
+      },
+      {
+        "label": "PK-30",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.1,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.05
+      },
+      {
+        "label": "W-31",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.1,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.05
+      },
+      {
+        "label": "A-32",
+        "revealed": false,
+        "requests": 7,
+        "days": 1,
+        "cost_usd": 0.1,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.05
+      },
+      {
+        "label": "T-33",
+        "revealed": false,
+        "requests": 5,
+        "days": 2,
+        "cost_usd": 0.08,
+        "top_model": "claude-haiku-4-5-20251001",
+        "models": 1,
+        "all_routed_usd": 0.01,
+        "addressable_usd": 0.04
+      },
+      {
+        "label": "V-34",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.08,
+        "top_model": "claude-sonnet-5",
+        "models": 2,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.04
+      },
+      {
+        "label": "D-35",
+        "revealed": false,
+        "requests": 5,
+        "days": 1,
+        "cost_usd": 0.08,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.04
+      },
+      {
+        "label": "D-36",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.07,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.03
+      },
+      {
+        "label": "CR-37",
+        "revealed": false,
+        "requests": 2,
+        "days": 1,
+        "cost_usd": 0.06,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.03
+      },
+      {
+        "label": "W-38",
+        "revealed": false,
+        "requests": 7,
+        "days": 1,
+        "cost_usd": 0.06,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.03
+      },
+      {
+        "label": "SPD-39",
+        "revealed": false,
+        "requests": 15,
+        "days": 1,
+        "cost_usd": 0.06,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.03
+      },
+      {
+        "label": "D-40",
+        "revealed": false,
+        "requests": 5,
+        "days": 1,
+        "cost_usd": 0.06,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.03
+      },
+      {
+        "label": "M-41",
+        "revealed": false,
+        "requests": 2,
+        "days": 1,
+        "cost_usd": 0.05,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "XAA-42",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.05,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "D-43",
+        "revealed": false,
+        "requests": 5,
+        "days": 1,
+        "cost_usd": 0.05,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "D-44",
+        "revealed": false,
+        "requests": 4,
+        "days": 1,
+        "cost_usd": 0.05,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "D-45",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.05,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "C-46",
+        "revealed": false,
+        "requests": 1,
+        "days": 1,
+        "cost_usd": 0.04,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "H-47",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.04,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "F-48",
+        "revealed": false,
+        "requests": 1,
+        "days": 1,
+        "cost_usd": 0.04,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.02
+      },
+      {
+        "label": "C-49",
+        "revealed": false,
+        "requests": 3,
+        "days": 2,
+        "cost_usd": 0.03,
+        "top_model": "claude-opus-5",
+        "models": 2,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "0A-50",
+        "revealed": false,
+        "requests": 1,
+        "days": 1,
+        "cost_usd": 0.03,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "C-51",
+        "revealed": false,
+        "requests": 3,
+        "days": 1,
+        "cost_usd": 0.02,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "V-52",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.02,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "D-53",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.02,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "D-54",
+        "revealed": false,
+        "requests": 6,
+        "days": 1,
+        "cost_usd": 0.02,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0.01
+      },
+      {
+        "label": "D-55",
+        "revealed": false,
+        "requests": 1,
+        "days": 1,
+        "cost_usd": 0.01,
+        "top_model": "claude-opus-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0
+      },
+      {
+        "label": "D-56",
+        "revealed": false,
+        "requests": 4,
+        "days": 1,
+        "cost_usd": 0.01,
+        "top_model": "claude-sonnet-5",
+        "models": 1,
+        "all_routed_usd": 0,
+        "addressable_usd": 0
+      }
+    ]
+  },
+  "routes": [
+    {
+      "job": "memory-retrieval",
+      "declared_tier": "mechanical",
+      "was": "haiku",
+      "target_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "provider": "nebius",
+      "status": "deployable",
+      "evidence": "95% blind-judge pass at $0.0073/1k tasks, 19-model sweep",
+      "price": {
+        "input": 0.1,
+        "output": 0.3,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "learning-extractor",
+      "declared_tier": "mechanical",
+      "was": "haiku",
+      "target_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "provider": "nebius",
+      "status": "deployable",
+      "evidence": "95% blind-judge pass at $0.0073/1k tasks, 19-model sweep",
+      "price": {
+        "input": 0.1,
+        "output": 0.3,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "qa-test",
+      "declared_tier": "mechanical",
+      "was": "haiku",
+      "target_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+      "provider": "nebius",
+      "status": "deployable",
+      "evidence": "95% blind-judge pass at $0.0073/1k tasks, 19-model sweep",
+      "price": {
+        "input": 0.1,
+        "output": 0.3,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "core-investigator",
+      "declared_tier": "reasoning",
+      "was": "sonnet",
+      "target_model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "provider": "nebius",
+      "status": "untested",
+      "evidence": "no fixtures for this job type yet — not claimed as safe",
+      "price": {
+        "input": 0.2,
+        "output": 0.6,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "main-researcher",
+      "declared_tier": "reasoning",
+      "was": "sonnet",
+      "target_model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "provider": "nebius",
+      "status": "untested",
+      "evidence": "no fixtures for this job type yet — not claimed as safe",
+      "price": {
+        "input": 0.2,
+        "output": 0.6,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "implementer",
+      "declared_tier": "reasoning",
+      "was": "sonnet",
+      "target_model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "provider": "nebius",
+      "status": "untested",
+      "evidence": "no fixtures for this job type yet — not claimed as safe",
+      "price": {
+        "input": 0.2,
+        "output": 0.6,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "dreamer",
+      "declared_tier": "reasoning",
+      "was": "sonnet",
+      "target_model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "provider": "nebius",
+      "status": "untested",
+      "evidence": "no fixtures for this job type yet — not claimed as safe",
+      "price": {
+        "input": 0.2,
+        "output": 0.6,
+        "ctx": 262144,
+        "source": "nebius api /v1/models?verbose=true 2026-09-23",
+        "confidence": "high"
+      }
+    },
+    {
+      "job": "code-review",
+      "declared_tier": "critical",
+      "was": "opus",
+      "target_model": "claude-opus-5",
+      "provider": "anthropic",
+      "status": "untested",
+      "evidence": "no fixtures for this job type yet — not claimed as safe",
+      "price": {
+        "input": 5,
+        "output": 25,
+        "source": "ax-harness config/models.yaml",
+        "confidence": "high"
+      }
+    }
+  ],
+  "summary": {
+    "roles_total": 8,
+    "roles_deployable": 3,
+    "roles_untested": 5,
+    "addressable_usd": 82.23,
+    "basis": "addressable = half the gap between what each project actually paid and what the swept winner would cost, the midpoint of the replay band"
+  },
+  "source": "~/.claude/projects transcripts + ~/dev/.agents + config/projects.tsv + results/sweep.json"
+}

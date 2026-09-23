@@ -43,6 +43,9 @@ tr:last-child td{border-bottom:0}
 .good{color:var(--good);font-weight:600}
 .dim{color:var(--muted)}
 .win{background:color-mix(in srgb,var(--good) 9%,transparent)}
+.tb{font:inherit;font-size:13px;padding:7px 14px;border-radius:20px;cursor:pointer;
+  background:transparent;color:var(--muted);border:1px solid var(--line)}
+.tb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .src{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px}
 .note{font-size:13px;color:var(--muted);margin:10px 0 0;max-width:72ch}
 .bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
@@ -59,10 +62,11 @@ footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
 <body>
 <div class="wrap">
 <header>
-  <h1>Route <span>— a cost governor for agent workloads</span></h1>
-  <p class="sub">Every agent call declares a job. A policy file sends it to the cheapest model that
-  can actually do it — open weights on Nebius Token Factory for the mechanical majority, frontier
-  only where being wrong is expensive. Every number below names the file it came from.</p>
+  <h1>Route <span>— find out what your agents cost, then make them cost less</span></h1>
+  <p class="sub">Point it at your machine and it reads your whole agent estate: every role, every
+  project, every request, what each one cost. Then it tells you which of those routes can move to
+  open weights on Nebius Token Factory <em>on measured evidence</em>, and enforces the ones you
+  approve. Every number below names the file it came from.</p>
 </header>
 <div id="app"></div>
 <footer>
@@ -82,6 +86,7 @@ async function load(f){ try { const r = await fetch(f); return r.ok ? await r.js
   const [bench, replay, harness, sweep] = await Promise.all([
     load('bench.json'), load('replay.json'), load('harness-usage.json'), load('sweep.json')
   ]);
+  const estate = await load('estate.json');
   const app = document.getElementById('app');
   const add = (h) => app.appendChild(frag(h));
 
@@ -89,6 +94,64 @@ async function load(f){ try { const r = await fetch(f); return r.ok ? await r.js
   const ratio = r && s ? (s.cost_usd / r.cost_usd) : null;
 
   // ---- headline
+  // ---- the audit: what a first-time user sees, in one sentence
+  if (estate) {
+    const e = estate, sm = e.summary;
+    add(`<h2 style="margin-top:0">Your agent estate <span class="tag measured">audited on this machine</span></h2>
+    <div class="panel">
+      <p style="font-size:19px;line-height:1.5;margin:0 0 6px;max-width:64ch">
+        You ran <strong>${e.spend.requests.toLocaleString()} agent requests</strong> across
+        <strong>${e.spend.projects.length} projects</strong>, costing
+        <strong>${usd(e.spend.total_usd)}</strong>. About
+        <strong class="good">${usd(sm.addressable_usd)}</strong> of that can move to open weights today,
+        on evidence &mdash; not a guess.</p>
+      <p class="note">One command, no API key, nothing to sign up for:
+        <span class="num" style="color:var(--accent)">npx ax-route audit</span></p>
+      <div style="display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap">
+        <button class="tb on" data-t="proj">Projects</button>
+        <button class="tb" data-t="roles">Agent roles</button>
+        <button class="tb" data-t="inv">What you have</button>
+      </div>
+      <div id="t-proj" class="tp">
+        <table><tr><th>project</th><th>requests</th><th>days</th><th>paid</th><th>can move</th></tr>
+        ${e.spend.projects.slice(0,10).map(p=>`<tr><td class="num">${esc(p.label)}</td>
+          <td class="num">${p.requests.toLocaleString()}</td><td class="num dim">${p.days}</td>
+          <td class="num">${usd(p.cost_usd)}</td>
+          <td class="num good">${usd(p.addressable_usd)}</td></tr>`).join('')}</table>
+        <p class="note">${esc(e.privacy)}. Run <span class="num">route audit --reveal</span> locally for real names.
+        &ldquo;Can move&rdquo; is ${esc(sm.basis)}.</p>
+      </div>
+      <div id="t-roles" class="tp" style="display:none">
+        <table><tr><th>agent role</th><th>tier</th><th>status</th><th>evidence</th></tr>
+        ${e.routes.map(r=>`<tr><td class="num">${esc(r.job)}</td><td class="dim">${esc(r.declared_tier)}</td>
+          <td class="${r.status==='deployable'?'good':''}" style="${r.status!=='deployable'?'color:var(--warn)':''}">
+          ${r.status==='deployable'?'&#10003; deployable':'? untested'}</td>
+          <td class="dim" style="font-size:13px">${esc(r.evidence)}</td></tr>`).join('')}</table>
+        <p class="note"><strong>${sm.roles_deployable} of ${sm.roles_total} roles</strong> have measured
+        evidence behind them. The other ${sm.roles_untested} have no fixtures yet, so Route will not
+        call them safe. A routing tool that marked all eight green would be guessing on five.</p>
+      </div>
+      <div id="t-inv" class="tp" style="display:none">
+        <div class="kpis" style="margin-bottom:14px">
+          <div class="kpi"><div class="v">${e.inventory.agents}</div><div class="k">agent roles defined</div></div>
+          <div class="kpi"><div class="v">${e.inventory.skills}</div><div class="k">skills installed</div></div>
+          <div class="kpi"><div class="v">${e.inventory.repos}</div><div class="k">repos registered</div></div>
+        </div>
+        <table><tr><th>role</th><th>declared model</th><th>what it does</th></tr>
+        ${e.inventory.agent_list.map(a=>`<tr><td class="num">${esc(a.name)}</td>
+          <td class="num dim">${esc(a.declared_model||'—')}</td>
+          <td class="dim" style="font-size:13px">${esc((a.description||'').slice(0,90))}</td></tr>`).join('')}</table>
+      </div>
+      <div class="src">source: results/estate.json &middot; ${esc(e.source)}</div>
+    </div>`);
+    document.querySelectorAll('.tb').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('.tb').forEach(x=>x.classList.toggle('on',x===b));
+      document.querySelectorAll('.tp').forEach(x=>{x.style.display='none'});
+      document.getElementById('t-'+b.dataset.t).style.display='';
+    }));
+  }
+
+  add(`<h2>The measured case</h2>`);
   add(`<div class="kpis">
     <div class="kpi"><div class="v good">${ratio ? ratio.toFixed(1)+'×' : '—'}</div>
       <div class="k">cheaper than the strong model, same tasks</div>

@@ -23,7 +23,24 @@ Across **3,865 real requests** in the local transcripts, the cheap tier ran **5 
 
 ## What Route does
 
-One OpenAI-compatible endpoint. Every call declares a *job*. A policy file a human can read maps
+**Step one is an audit, and it needs no API key.** Point Route at your machine and it reads your
+whole agent estate — every role you have defined, every project, every request, what each one
+cost — then says which of those routes can move to open weights *on measured evidence*:
+
+```
+$ npx ax-route audit
+estate: 8 agent roles, 129 skills, 19 repos registered
+spend:  3,960 requests across 56 projects, $168.15
+
+routes: 3 of 8 roles deployable on measured evidence, 5 untested
+addressable today: $82.23
+```
+
+Three of eight roles have fixtures behind them and are marked deployable. The other five do not,
+so Route will not call them safe. A routing tool that marked all eight green would be guessing on
+five of them.
+
+**Step two is enforcement.** One OpenAI-compatible endpoint. Every call declares a *job*. A policy file a human can read maps
 that job to the cheapest model that can actually do it — open weights on **Nebius Token Factory**
 for the mechanical majority, a frontier model only where being wrong is expensive. Every decision
 lands in an append-only ledger with its tokens, its price and its latency.
@@ -143,6 +160,16 @@ governor. Now the gap is 62× and the quality difference is noise.
   European companies contractually unable to send source to US frontier APIs.
 - **Aggregates only.** The replay reads local transcripts and emits counts, tokens and dollars.
   Project names, paths and prompt text never reach the committed output.
+
+## Built for both ends
+
+| | |
+|---|---|
+| **Day one** | `npx ax-route audit`. No API key, no signup, no config. Reads your machine, prints what you spend and what can move. |
+| **Day one hundred** | A policy file in version control, model sweeps against your own fixtures, per-project ledgers, and JSON output you can diff or gate CI on. |
+
+The audit is the on-ramp because it costs nothing to run and answers the only question a new user
+has: *is there money here at all?*
 
 ## Install
 

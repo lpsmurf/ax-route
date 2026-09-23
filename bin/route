@@ -25,6 +25,12 @@ switch (cmd) {
     await run({ n: Number(flag('n', 0)) || undefined, only: flag('only') });
     break;
   }
+  case 'audit':
+  case 'estate': {
+    const { run } = await import('../src/estate.mjs');
+    await run({ reveal: args.includes('--reveal') });
+    break;
+  }
   case 'sweep': {
     const { run } = await import('../src/sweep.mjs');
     await run({ bar: Number(flag('bar', 90)) });
@@ -36,13 +42,25 @@ switch (cmd) {
     break;
   }
   default:
-    console.log(`route — a cost governor for agent workloads
+    console.log(`route — find out what your agents cost, then make them cost less
 
-  route serve [--port 8787]   OpenAI-compatible endpoint that routes by job
+START HERE — no API key needed, reads your machine, takes a few seconds:
+
+  route audit                 what you spend, per project, and how much can move today
+
+THEN, to act on it:
+
+  route serve [--port 8787]   OpenAI-compatible endpoint that routes each job
   route policy                show the routing table
-  route bench [--n 20]        head-to-head: Token Factory vs frontier
-  route sweep [--bar 90]      test the catalogue, find the cheapest model that passes
-  route replay                re-price real historical usage under the policy
+
+GOING DEEPER — prove it on your own workload (needs NEBIUS_API_KEY):
+
+  route sweep [--bar 90]      score every Token Factory model, pick the cheapest that passes
+  route bench [--n 20]        head-to-head against a stronger model, blind-judged
+  route replay                re-price your whole history under the policy
+  route audit --reveal        same audit, with real project names instead of labels
+
+Everything writes JSON to results/ so you can diff it, chart it, or gate CI on it.
 `);
     process.exit(cmd ? 1 : 0);
 }
