@@ -93,7 +93,9 @@ to it.
 the cheapest model would be a worse product than routing nothing — the point is a declared tier
 per job, with the assignment derived from measurement.
 
-**Closed models:** none were called. `claude-opus-5` is named in `policy.yaml` for the critical
+**Closed models:** yes, and measured — claude-haiku-4-5, claude-sonnet-5 and claude-opus-5 were
+called directly over the Anthropic API as the comparison baseline, at a total cost of $0.0683. They
+are the baseline, not part of the product path. Previously: none were called. `claude-opus-5` is named in `policy.yaml` for the critical
 tier (code review) but was never invoked — no key was available, so that path is configured and
 untested, and the frontier cost comparison is arithmetic over real token counts, labelled
 *computed* everywhere it appears rather than presented as an experiment.
@@ -105,44 +107,53 @@ Model IDs and prices were read from the Token Factory API itself
 
 ## Measurable model advantage
 
-**Proof:** https://ax-route.vercel.app — every figure on the page names the file it came from.
-Raw data: [bench.json](https://ax-route.vercel.app/bench.json),
+**Proof:** https://ax-route.vercel.app — every figure names the file it came from and is marked
+measured or computed. Raw: [frontier.json](https://ax-route.vercel.app/frontier.json),
 [sweep.json](https://ax-route.vercel.app/sweep.json),
-[replay.json](https://ax-route.vercel.app/replay.json). Reproduce with `route bench`,
-`route sweep`, `route replay`.
+[bench.json](https://ax-route.vercel.app/bench.json),
+[escalate.json](https://ax-route.vercel.app/escalate.json),
+[replay.json](https://ax-route.vercel.app/replay.json).
+Reproduce with `route frontier`, `route sweep`, `route bench`, `route escalate`, `route replay`.
 
-**Baseline 1 — a much larger open model, measured.** 20 fixtures across the three mechanical job
-types, two scorers (deterministic exact match, plus the blind judge):
+**The headline, fully measured.** Same 21 realistic tasks — real stack traces, YAML config,
+source files, git history, raw usage records — one blind judge, no arithmetic:
 
-| arm | model | exact match | judge pass | p50 latency | cost |
-|---|---|---|---|---|---|
-| routed | Qwen3-30B-A3B | 90% | 95% | 998 ms | **$0.000146** |
-| strong | DeepSeek-V4-Pro | 85% | 90% | 993 ms | $0.002013 |
+| model | judge pass | cost, 21 tasks | p50 |
+|---|---|---|---|
+| **google/gemma-3-27b-it** (open, Nebius) | **95.2%** | **$0.000319** | 378 ms |
+| claude-haiku-4-5 (Anthropic) | 90.5% | $0.003697 | 814 ms |
+| claude-sonnet-5 (Anthropic) | 81% | $0.013938 | 1693 ms |
+| claude-opus-5 (Anthropic) | 95.2% | $0.050645 | 2564 ms |
 
-**13.8× cheaper, indistinguishable quality, same latency.** At n=20 the 5-point gap is one
-question; the claim is that the small model is *not worse*, not that it is better.
+**An open model on Token Factory matched claude-opus-5 exactly — 95.2% against
+95.2% — at 159× lower cost and 7× the speed.** Whole Anthropic run cost $0.0683.
 
-**Baseline 2 — the whole catalogue, measured.** All 19 models, same fixtures, same judge.
-Quality landed between **85% and 100%**. Price across the same 19 spanned **355×**. The cheapest
-model clearing a 90% bar is Qwen3-30B at **$0.0073 per 1,000 tasks**; Kimi-K3 scores the same 95%
-at **$2.5909 per 1,000 tasks**. On mechanical work, price predicts almost nothing about quality.
+**The catalogue sweep.** All 19 Token Factory text models on the same tasks:
+accuracy spans **66.7–95.2%**, price spans **172×**. The most expensive model tested
+scored the *worst* of all 19. Paying more buys nothing here.
 
-**Baseline 3 — frontier list price, computed.** The same measured token counts priced at
-published rates: 12× vs claude-haiku-4-5, 25× vs claude-sonnet-5, **62× vs claude-opus-5**, 123×
-vs gpt-6-astra. Arithmetic, not an experiment, and labelled as such.
+**The tool overruled its author.** `policy.yaml` previously named Qwen3-30B, which I chose by
+hand. When the fixtures were rewritten from toy questions to real ones it fell to
+76.2% and failed the 90% bar. The sweep
+replaced it with google/gemma-3-27b-it. That is the assessment layer doing its job, in public, against me.
 
-**Baseline 4 — my own historical spend, measured.** 3,865 real requests over 50 days re-priced
-from raw token counts: $164.40 actual. Routing 50% of it to Token Factory takes it to $83.98, a
-**48.9% saving**. Reported as a 25/50/75% band because the mechanical share is an assumption, not
-a measurement.
+**Two negative results, both published.** Automatic escalation does not work: a gate asking the
+cheap model whether its own answer looked complete escalated 1 task in 21 and changed nothing;
+escalating on self-disagreement escalated 19% and still scored
+81%, the same as the cheap model alone, at
+4.8× the cost. A cheap general-purpose confidence
+gate cannot see wrongness, because a small model is wrong confidently and in good form.
 
-**A methodology note I am volunteering:** the first sweep capped output at 300 tokens and scored
-reasoning models as incapable when they truncated mid-scratchpad — Qwen3.5-397B read 20%. The
-ceiling was raised to 1,200 and it reads 85%. Its scratchpad tokens are still billed and still
-counted against its cost, which is why it remains expensive per task. Cheap per token is not the
-same as cheap per task, which is why every number here is cost per task.
+**A correction we found ourselves.** The replay first reported $164.40. `cost()` subtracted
+cached tokens from an input count that already excluded them, so every cached token billed at
+zero — and cache reads outnumber fresh input roughly fifty to one. The real figure is
+**$664.87**. It surfaced while writing a fixture that asks a model to spot
+exactly that bug. Fixing it made the problem four times larger.
 
----
+**Replay.** 3,985 real requests over 50 days re-priced from raw
+tokens: $664.87. Routing half of it takes the bill to
+$391.98, a 41% saving.
+Presented as a 25/50/75 band because the mechanical share is an assumption, not a measurement.
 
 ## Responsible design
 

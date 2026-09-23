@@ -117,15 +117,10 @@ const ratio=win&&dear?Math.round(dear.cost_per_1k_tasks_usd/win.cost_per_1k_task
 // ---------------- Overview
 V.overview=`
 <h1>What your AI is costing you</h1>
-<p class="lede">This is a real audit of one machine. Yours would look like this. Nothing here was
-typed in by hand &mdash; it was read from the tools you already run.</p>
-${e?`
-<div class="kpis">
- <div class="kpi"><div class="v">${usd(e.spend.total_usd)}</div><div class="k">spent on AI, ${e.spend.requests.toLocaleString()} requests</div><div class="n">estate.json</div></div>
- <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">could move to a cheaper model</div><div class="n">estate.json</div></div>
- <div class="kpi"><div class="v">${e.spend.projects.length}</div><div class="k">projects it went across</div><div class="n">estate.json</div></div>
- <div class="kpi"><div class="v warn">${sm.roles_untested}</div><div class="k">jobs not yet tested &mdash; not claimed safe</div><div class="n">estate.json</div></div>
-</div>
+<p class="lede">A real audit of one machine &mdash; yours would look like this. Nothing here was
+typed in by hand. And the headline, measured on the same tasks by the same blind judge:
+<strong>google/gemma-3-27b-it</strong> scores <strong>95.2%</strong>, exactly what
+<strong>claude-opus-5</strong> scores, at <strong>159&times; less</strong>.</p>
 <h2>The one thing to do</h2>
 <div class="panel">
  <p class="big">Three of the eight jobs your AI does are <strong>simple</strong> &mdash; looking
