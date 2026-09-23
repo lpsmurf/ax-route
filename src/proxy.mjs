@@ -7,6 +7,9 @@ import { resolve as resolveJob, apiKey, jobs } from './policy.mjs';
 import { cost } from './price.mjs';
 import { append } from './ledger.mjs';
 
+// Token-level prices are small; keep the ledger readable instead of carrying float noise.
+const round6 = (n) => (n === null || n === undefined ? null : Number(n.toFixed(8)));
+
 const readBody = (req) => new Promise((ok, fail) => {
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
@@ -73,7 +76,7 @@ export async function handleCompletion(req, res) {
     status,
     latency_ms,
     tokens,
-    cost_usd: tokens ? cost(decision.model, tokens) : null,
+    cost_usd: tokens ? round6(cost(decision.model, tokens)) : null,
     outcome: status >= 200 && status < 300 ? 'ok' : 'error',
   });
 
@@ -96,6 +99,16 @@ export function serve(port = Number(process.env.ROUTE_PORT) || 8787) {
     }
     res.writeHead(404, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ error: { message: `no route for ${req.method} ${url.pathname}` } }));
+  });
+  // A silently-unbound server is worse than a crash: the caller keeps hitting a stale
+  // process on the same port and cannot tell why its numbers look wrong.
+  server.on('error', (e) => {
+    if (e.code === 'EADDRINUSE') {
+      console.error(`route: port ${port} is already in use — another route process is probably still running.`);
+      console.error(`  lsof -ti:${port} | xargs kill    # then start again, or use --port`);
+      process.exit(1);
+    }
+    throw e;
   });
   server.listen(port, () => {
     console.log(`route listening on http://localhost:${port}`);
