@@ -1,0 +1,32 @@
+1. cover
+   Do not read the slide. Say: I am going to show you a bill, a number that should not exist, and then what I did about it.
+
+2. problem
+   This is the slide. Let it sit. Everyone in this room has a policy like this that nothing enforces.
+
+3. bill
+   The customer is me. Not a persona. The invoice is in the repo and you can read it.
+
+4. whynow
+   Answers the judge question: why has nobody done this. The answer is that it was not worth doing until this year.
+
+5. product
+   Demo moment. Run route policy, then one curl, then cat the ledger line. Thirty seconds.
+
+6. sweep
+   The money slide. Say: on mechanical work, price predicts almost nothing about quality. You are paying for headroom you never use.
+
+7. bench
+   Say the n=20 caveat yourself before a judge says it. It buys you credibility for everything else.
+
+8. frontier
+   Volunteering the weakness is the point. A judge who finds it themselves discounts everything else you said.
+
+9. replay
+   Honest framing wins here. I am showing a band because I will not pretend to know the exact mechanical share.
+
+10. eu
+   The accent slide. Slow down. This is the answer to is it a company.
+
+11. close
+   Close on the honesty. Say: I would rather you trust the small number than doubt the big one.

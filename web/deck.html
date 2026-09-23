@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Route — Accel AI Innovate Amsterdam</title>
+<meta name="description" content="Route: a cost governor for agent workloads. Open weights on Nebius Token Factory.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#05070A;height:100%;overflow:hidden;
+  font-family:"IBM Plex Sans",Verdana,sans-serif}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#canvas{width:1920px;height:1080px;transform-origin:center center;position:relative;flex:none}
+section{position:absolute;inset:0;width:1920px;height:1080px;display:none!important;overflow:hidden}
+section.on{display:flex!important}
+h1,h2,h3,p,ul,ol{margin:0}
+ul,ol{padding-left:1.2em}
+table{border-collapse:collapse}
+td,th{padding:14px 18px;border-bottom:1px solid #2A313B;text-align:left}
+#bar{position:fixed;left:0;right:0;bottom:0;height:5px;background:#161B22;z-index:10}
+#bar i{display:block;height:100%;background:#3ECF9B;transition:width .18s ease}
+#num{position:fixed;right:18px;bottom:16px;color:#5A6673;font:400 13px/1 "JetBrains Mono",monospace;z-index:11}
+#hint{position:fixed;left:18px;bottom:16px;color:#5A6673;font:400 13px/1 "JetBrains Mono",monospace;z-index:11;transition:opacity .5s}
+@media print{
+  html,body{overflow:visible;background:#fff;height:auto}
+  #stage{position:static;display:block}
+  #canvas{transform:none!important;width:1920px;height:auto}
+  section{position:relative;display:flex!important;page-break-after:always;inset:auto}
+  #bar,#num,#hint{display:none}
+}
+</style></head>
+<body>
+<div id="stage"><div id="canvas">
+<section class="on" id="cover" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:center; gap:40px">
+<p style="font-size:32px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace">Accel AI Innovate &#183; Amsterdam &#183; 23 September 2026</p>
+<h1 style="font-size:180px; font-weight:700; line-height:1; letter-spacing:-4px">Route</h1>
+<h2 style="font-size:64px; font-weight:400; line-height:1.15; color:#ECEEF2; width:1500px">A cost governor for agent workloads.</h2>
+<p style="font-size:32px; color:#98A2B3; width:1400px; line-height:1.4">Every agent call declares a job. A policy file sends it to the cheapest model that can actually do it &#8212; open weights on Nebius Token Factory.</p>
+<p style="font-size:28px; color:#7AA2FF; font-family:'JetBrains Mono', Courier New, monospace; padding-top:24px">ax-route.vercel.app &#183; github.com/lpsmurf/ax-route</p>
+
+</section>
+<section class="" id="problem" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#E0A94A; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The problem</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15; width:1600px">My harness says three of its eight job types should run on the cheap model.</h2>
+<div style="display:flex; gap:64px; align-items:center">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:200px; font-weight:700; color:#E0A94A; line-height:1; font-family:'JetBrains Mono', Courier New, monospace">0.13%</p>
+    <p style="font-size:32px; color:#98A2B3">of real requests used it</p>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:20px; padding-left:64px; border-left:2px solid #2A313B">
+    <p style="font-size:44px; line-height:1.3; width:780px">The cheap model ran <b style="color:#ECEEF2">5 requests</b> out of <b style="color:#ECEEF2">3,865</b>.</p>
+    <p style="font-size:44px; line-height:1.3; width:780px; color:#98A2B3">claude-opus-5 ran <b style="color:#ECEEF2">65.5%</b>.</p>
+  </div>
+</div>
+<p style="font-size:44px; color:#3ECF9B; line-height:1.3; width:1600px">A tier policy that nothing enforces is a comment, not a control.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">measured &#183; 3,865 deduped requests, 50 days &#183; results/replay.json</p>
+
+</section>
+<section class="" id="bill" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">What it costs</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15">One operator. Three agent tools. 104 days.</h2>
+<div style="display:flex; gap:32px; align-items:stretch">
+  <div style="flex:1; background:#0E1116; padding:48px; border:1px solid #2A313B; border-radius:16px; display:flex; flex-direction:column; gap:12px">
+    <p style="font-size:96px; font-weight:700; color:#ECEEF2; font-family:'JetBrains Mono', Courier New, monospace; line-height:1">$1,240</p>
+    <h3 style="font-size:32px; font-weight:400; color:#98A2B3">billed, 104 days</h3>
+  </div>
+  <div style="flex:1; background:#0E1116; padding:48px; border:1px solid #2A313B; border-radius:16px; display:flex; flex-direction:column; gap:12px">
+    <p style="font-size:96px; font-weight:700; color:#ECEEF2; font-family:'JetBrains Mono', Courier New, monospace; line-height:1">3,865</p>
+    <h3 style="font-size:32px; font-weight:400; color:#98A2B3">real agent requests</h3>
+  </div>
+  <div style="flex:1; background:#0E1116; padding:48px; border:1px solid #2A313B; border-radius:16px; display:flex; flex-direction:column; gap:12px">
+    <p style="font-size:96px; font-weight:700; color:#E0A94A; font-family:'JetBrains Mono', Courier New, monospace; line-height:1">65.5%</p>
+    <h3 style="font-size:32px; font-weight:400; color:#98A2B3">of them on the priciest model</h3>
+  </div>
+</div>
+<p style="font-size:40px; color:#98A2B3; line-height:1.35; width:1600px">Most of that work is mechanical &#8212; retrieval, extraction, checking whether a thing parses. It is billed at frontier prices because nothing routes it anywhere else.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">measured &#183; results/harness-usage.json, results/replay.json</p>
+
+</section>
+<section class="" id="whynow" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">Why this is only possible now</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15; width:1600px">Two years ago the cheap tier could not do the job at all.</h2>
+<div style="display:flex; gap:48px">
+  <div style="flex:1; display:flex; flex-direction:column; gap:16px; padding:40px; background:#151A21; border-radius:16px; border-left:6px solid #2A313B">
+    <h3 style="font-size:36px; font-weight:600; color:#98A2B3">2024</h3>
+    <p style="font-size:32px; color:#98A2B3; line-height:1.4">Small open models failed mechanical work outright. Routing had no upside, so nobody built the governor.</p>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; gap:16px; padding:40px; background:#151A21; border-radius:16px; border-left:6px solid #3ECF9B">
+    <h3 style="font-size:36px; font-weight:600; color:#3ECF9B">2026</h3>
+    <p style="font-size:32px; color:#ECEEF2; line-height:1.4">Open weights cleared the bar. Nebius Token Factory puts 24 of them behind one endpoint at a published per-token price you can compute against.</p>
+  </div>
+</div>
+<p style="font-size:44px; line-height:1.3; width:1600px">The gap is now <b style="color:#3ECF9B">hundreds of times</b> &#8212; and the quality difference is noise.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">prices read live from the Token Factory API &#183; GET /v1/models?verbose=true</p>
+
+</section>
+<section class="" id="product" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The product</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15">Routing is declared, never inferred.</h2>
+<div style="display:flex; gap:48px; align-items:flex-start">
+  <div style="flex:1; background:#0E1116; padding:44px; border-radius:16px; border:1px solid #2A313B; display:flex; flex-direction:column; gap:20px">
+    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#98A2B3; line-height:1.6">POST /v1/chat/completions<br><span style="color:#3ECF9B">x-route-job: memory-retrieval</span></p>
+    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2; line-height:1.6">&#8594; tier <b>mechanical</b><br>&#8594; Qwen3-30B <span style="color:#98A2B3">(Nebius, EU)</span></p>
+    <hr style="border-top:1px solid #2A313B; width:100%">
+    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#98A2B3; line-height:1.6">POST /v1/chat/completions<br><span style="color:#E0A94A">x-route-job: code-review</span></p>
+    <p style="font-size:28px; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2; line-height:1.6">&#8594; tier <b>critical</b><br>&#8594; claude-opus-5 <span style="color:#98A2B3">(frontier)</span></p>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; gap:28px">
+    <p style="font-size:36px; line-height:1.4">The caller names the job. A file a human reads decides the model.</p>
+    <p style="font-size:36px; line-height:1.4; color:#98A2B3">No second model guessing intent. Nothing promoted to a pricier tier silently.</p>
+    <p style="font-size:36px; line-height:1.4">Every call leaves a receipt: <span style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">job, model, tokens, cost, latency, region</span>.</p>
+    <p style="font-size:36px; line-height:1.4; color:#3ECF9B">The saving is an invoice, not a claim.</p>
+  </div>
+</div>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">policy.yaml &#183; ledger/*.jsonl &#183; OpenAI-compatible, zero dependencies</p>
+
+</section>
+<section class="" id="sweep" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:24px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The routing choice, measured</p>
+<h2 style="font-size:64px; font-weight:600; line-height:1.15; width:1650px">I did not pick the model. I tested for it.</h2>
+<p style="font-size:32px; color:#98A2B3; width:1650px; line-height:1.4">All 19 text models on Token Factory, the same 20 tasks, the same judge &#8212; blind to which model answered.</p>
+<svg aria-label="Cost per 1,000 tasks against judge pass rate for 19 Nebius Token Factory models. Quality stays between 85 and 100 percent while price spans 355 times; the cheapest passing model is Qwen3-30B." width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute; left:0px; top:0px; width:1920px; height:1080px">
+<line x1="340" y1="750.0" x2="1800" y2="750.0" stroke="#2A313B" stroke-width="2"/><text x="312" y="760.0" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">85%</text><line x1="340" y1="650.0" x2="1800" y2="650.0" stroke="#2A313B" stroke-width="2"/><text x="312" y="660.0" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">90%</text><line x1="340" y1="550.0" x2="1800" y2="550.0" stroke="#2A313B" stroke-width="2"/><text x="312" y="560.0" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">95%</text><line x1="340" y1="450.0" x2="1800" y2="450.0" stroke="#2A313B" stroke-width="2"/><text x="312" y="460.0" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">100%</text><text x="486.9" y="846" text-anchor="middle" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">$0.01</text><text x="999.1" y="846" text-anchor="middle" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">$0.1</text><text x="1511.4" y="846" text-anchor="middle" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">$1</text><circle cx="958.2" cy="450.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1451.3" cy="450.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="416.8" cy="550.0" r="17" fill="#3ECF9B" opacity="1"/><circle cx="569.5" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="728.3" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="742.1" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="938.6" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="966.3" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="971.9" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="974.4" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1000.0" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1007.4" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1088.1" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1257.7" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1459.5" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1723.2" cy="550.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="431.6" cy="650.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1295.8" cy="650.0" r="10" fill="#7AA2FF" opacity="0.6"/><circle cx="1667.4" cy="750.0" r="10" fill="#7AA2FF" opacity="0.6"/><text x="450.8386599015808" y="452" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#3ECF9B">Qwen3-30B</text><text x="450.8386599015808" y="484" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#3ECF9B">$0.0073 / 1k</text><text x="1695.1613400984188" y="452" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">Kimi-K3</text><text x="1695.1613400984188" y="484" text-anchor="end" font-family="JetBrains Mono, Courier New, monospace" font-size="28" fill="#98A2B3">$2.5909 / 1k</text><text x="340" y="894" font-family="JetBrains Mono, Courier New, monospace" font-size="26" fill="#98A2B3">cost per 1,000 tasks — log scale →</text>
+</svg>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:32px; color:#ECEEF2">Quality spans <b>85&#8211;100%</b>. Price spans <b style="color:#3ECF9B">355&#215;</b>. <span style="color:#98A2B3">The cloud is flat.</span></p>
+
+</section>
+<section class="" id="bench" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">Head to head</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15">Same tasks. Same judge. 13.8&#215; the price.</h2>
+<table style="font-family:'IBM Plex Sans', Verdana, sans-serif; font-size:32px; color:#ECEEF2; width:1664px">
+<tr><th style="width:34%; font-size:26px; color:#98A2B3; text-align:left; padding:16px">model</th><th style="width:16%; font-size:26px; color:#98A2B3; text-align:left">exact match</th><th style="width:16%; font-size:26px; color:#98A2B3; text-align:left">judge pass</th><th style="width:14%; font-size:26px; color:#98A2B3; text-align:left">p50</th><th style="width:20%; font-size:26px; color:#98A2B3; text-align:left">cost</th></tr>
+<tr style="background:#10201A"><td style="font-family:'JetBrains Mono', Courier New, monospace; font-size:28px; color:#3ECF9B">Qwen3-30B <b>(routed)</b></td><td style="color:#3ECF9B">90%</td><td style="color:#3ECF9B">95%</td><td>998 ms</td><td style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">$0.000146</td></tr>
+<tr><td style="font-family:'JetBrains Mono', Courier New, monospace; font-size:28px">DeepSeek-V4-Pro</td><td>85%</td><td>90%</td><td>993 ms</td><td style="font-family:'JetBrains Mono', Courier New, monospace">$0.002013</td></tr>
+</table>
+<p style="font-size:36px; color:#98A2B3; line-height:1.4; width:1650px">At n=20 that 5-point quality gap is one question. The claim is that the cheap model is <b style="color:#ECEEF2">not worse</b> &#8212; not that it is better. The claim rests on the price spread.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">measured &#183; results/bench.json &#183; reproduce: route bench</p>
+
+</section>
+<section class="" id="frontier" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#E0A94A; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">Against frontier prices</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15">The same tokens, at frontier list price.</h2>
+<div style="display:flex; gap:24px">
+  <div style="flex:1; background:#151A21; padding:40px; border-radius:16px; display:flex; flex-direction:column; gap:10px"><p style="font-size:72px; font-weight:700; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2">12&#215;</p><h3 style="font-size:28px; font-weight:400; color:#98A2B3">claude-haiku-4-5</h3></div>
+  <div style="flex:1; background:#151A21; padding:40px; border-radius:16px; display:flex; flex-direction:column; gap:10px"><p style="font-size:72px; font-weight:700; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2">25&#215;</p><h3 style="font-size:28px; font-weight:400; color:#98A2B3">claude-sonnet-5</h3></div>
+  <div style="flex:1; background:#151A21; padding:40px; border-radius:16px; border:2px solid #E0A94A; display:flex; flex-direction:column; gap:10px"><p style="font-size:72px; font-weight:700; font-family:'JetBrains Mono', Courier New, monospace; color:#E0A94A">62&#215;</p><h3 style="font-size:28px; font-weight:400; color:#98A2B3">claude-opus-5</h3></div>
+  <div style="flex:1; background:#151A21; padding:40px; border-radius:16px; display:flex; flex-direction:column; gap:10px"><p style="font-size:72px; font-weight:700; font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2">123&#215;</p><h3 style="font-size:28px; font-weight:400; color:#98A2B3">gpt-6-astra</h3></div>
+</div>
+<p style="font-size:36px; color:#98A2B3; line-height:1.4; width:1650px">This one is <b style="color:#E0A94A">computed, not measured</b> &#8212; real token counts at published rates. No frontier key was available, so I am not going to call it an experiment. It is labelled that way everywhere it appears.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">computed &#183; results/bench.json token counts &#215; prices.yaml</p>
+
+</section>
+<section class="" id="replay" style="background:#151A21; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+<p style="font-size:24px; color:#3ECF9B; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">What it is worth</p>
+<h2 style="font-size:72px; font-weight:600; line-height:1.15">Replayed against 50 days of real work.</h2>
+<table style="font-family:'IBM Plex Sans', Verdana, sans-serif; font-size:36px; color:#ECEEF2; width:1664px">
+<tr><th style="width:34%; font-size:26px; color:#98A2B3; text-align:left; padding:18px">mechanical share routed</th><th style="width:22%; font-size:26px; color:#98A2B3; text-align:left">bill becomes</th><th style="width:22%; font-size:26px; color:#98A2B3; text-align:left">saved</th><th style="width:22%; font-size:26px; color:#98A2B3; text-align:left">saved %</th></tr>
+<tr><td style="font-family:'JetBrains Mono', Courier New, monospace">25%</td><td style="font-family:'JetBrains Mono', Courier New, monospace">$124.19</td><td style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">$40.21</td><td style="color:#3ECF9B">24.5%</td></tr>
+<tr style="background:#10201A"><td style="font-family:'JetBrains Mono', Courier New, monospace">50%</td><td style="font-family:'JetBrains Mono', Courier New, monospace">$83.98</td><td style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">$80.42</td><td style="color:#3ECF9B">48.9%</td></tr>
+<tr><td style="font-family:'JetBrains Mono', Courier New, monospace">75%</td><td style="font-family:'JetBrains Mono', Courier New, monospace">$43.77</td><td style="font-family:'JetBrains Mono', Courier New, monospace; color:#3ECF9B">$120.63</td><td style="color:#3ECF9B">73.4%</td></tr>
+</table>
+<p style="font-size:34px; color:#98A2B3; line-height:1.4; width:1650px">A band, not a point, because the mechanical share is an assumption. The harness&#8217;s own accounting already carried a <span style="font-family:'JetBrains Mono', Courier New, monospace; color:#ECEEF2">cheaperShare: 0.3</span> estimate before Route existed.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">measured baseline, scenario projection &#183; results/replay.json</p>
+
+</section>
+<section class="" id="eu" style="background:#3ECF9B; color:#08130E; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:center; gap:40px">
+<p style="font-size:28px; color:#0A3325; font-family:'JetBrains Mono', Courier New, monospace; letter-spacing:2px; text-transform:uppercase">The business</p>
+<h2 style="font-size:96px; font-weight:700; line-height:1.1; width:1650px; color:#08130E">Cost is the wedge. Residency is the moat.</h2>
+<p style="font-size:44px; line-height:1.4; width:1620px; color:#08130E">Nebius serves from Finland. For a European company this is one product solving two problems: the budget line, and the contract that says source code cannot leave the EU.</p>
+<p style="font-size:38px; line-height:1.4; width:1620px; color:#0A3325">Open-source router. Commercial control plane: shared policies, spend limits, team ledgers, escalation. It sits in the request path, so the value scales with how much you use agents.</p>
+<p style="position:absolute; left:128px; bottom:64px; width:1664px; font-size:24px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace"><span style="color:#0A3325">api.studio.nebius.com &#183; EU (Finland)</span></p>
+
+</section>
+<section class="" id="close" style="background:#0E1116; color:#ECEEF2; font-family:'IBM Plex Sans', Verdana, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:center; gap:36px">
+<h2 style="font-size:88px; font-weight:700; line-height:1.1; width:1650px">Every number names the file it came from.</h2>
+<div style="display:flex; gap:48px; padding-top:16px">
+  <div style="flex:1; display:flex; flex-direction:column; gap:16px">
+    <h3 style="font-size:32px; font-weight:600; color:#3ECF9B">Built today</h3>
+    <ul style="font-size:30px; color:#ECEEF2; line-height:1.6">
+      <li>OpenAI-compatible router, zero dependencies</li>
+      <li>19-model sweep on Token Factory</li>
+      <li>Blind-judged benchmark, n=20</li>
+      <li>Replay over 3,865 real requests</li>
+    </ul>
+  </div>
+  <div style="flex:1; display:flex; flex-direction:column; gap:16px">
+    <h3 style="font-size:32px; font-weight:600; color:#E0A94A">Not built, and said so</h3>
+    <ul style="font-size:30px; color:#98A2B3; line-height:1.6">
+      <li>No measured frontier arm &#8212; no key</li>
+      <li>Escalation gate is designed, not shipped</li>
+      <li>Claude Code needs an Anthropic adapter</li>
+      <li>Fixtures authored, not sampled</li>
+    </ul>
+  </div>
+</div>
+<p style="font-size:40px; color:#7AA2FF; font-family:'JetBrains Mono', Courier New, monospace; padding-top:24px">ax-route.vercel.app</p>
+<p style="font-size:32px; color:#98A2B3; font-family:'JetBrains Mono', Courier New, monospace">github.com/lpsmurf/ax-route &#183; MIT</p>
+
+</section>
+</div></div>
+<div id="bar"><i style="width:0%"></i></div>
+<div id="num">1 / 11</div>
+<div id="hint">&larr; &rarr; or click &middot; F fullscreen</div>
+<script>
+var S=[].slice.call(document.querySelectorAll("section")),i=0;
+var bar=document.querySelector("#bar i"),num=document.getElementById("num"),hint=document.getElementById("hint");
+function fit(){var c=document.getElementById("canvas");
+  var k=Math.min(innerWidth/1920,innerHeight/1080);c.style.transform="scale("+k+")";}
+function go(n){i=Math.max(0,Math.min(S.length-1,n));
+  S.forEach(function(s,k){s.classList.toggle("on",k===i)});
+  bar.style.width=((i)/(S.length-1)*100)+"%";num.textContent=(i+1)+" / "+S.length;
+  if(location.hash!=="#"+(i+1))history.replaceState(null,"","#"+(i+1));}
+addEventListener("resize",fit);
+addEventListener("keydown",function(e){
+  if(e.key==="ArrowRight"||e.key===" "||e.key==="PageDown")go(i+1);
+  else if(e.key==="ArrowLeft"||e.key==="PageUp")go(i-1);
+  else if(e.key==="Home")go(0); else if(e.key==="End")go(S.length-1);
+  else if(e.key==="f"||e.key==="F"){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+});
+addEventListener("click",function(e){go(i+(e.clientX<innerWidth*0.25?-1:1))});
+fit();go(parseInt((location.hash||"#1").slice(1),10)-1||0);
+setTimeout(function(){hint.style.opacity=0},4000);
+</script>
+</body></html>
