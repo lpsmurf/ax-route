@@ -9,16 +9,30 @@ Run from the repo root. Kill any stray proxy first: `lsof -ti:8787 | xargs kill 
 > The cheap model ran five of them. Nought point one three percent.
 > A tier policy that nothing enforces is a comment, not a control."
 
-## 1:00 — the routing table
+## 1:00 — the audit (slide 3). THE demo moment.
+
+```bash
+node bin/route audit
+```
+
+> "No API key. Nothing to sign up for. It just read this machine.
+> Eight agent roles, 129 skills, nineteen repos. Three thousand nine hundred requests across
+> fifty-six projects, a hundred and sixty-eight dollars.
+> Eighty-two of that can move today.
+>
+> And look at the right-hand column. Three of my eight roles say deployable, because I have
+> fixtures for them. Five say untested. A routing tool that painted all eight green would be
+> guessing on five of them. That column is the product. Anyone can write the proxy."
+
+## 1:50 — the routing table
 
 ```bash
 node bin/route policy
 ```
 
-> "Eight jobs, three tiers. Retrieval, extraction and QA go to open weights on Token Factory.
-> Review stays on a frontier model. A human reads this file and knows where every call goes."
+> "Eight jobs, three tiers. A human reads this file and knows where every call goes."
 
-## 1:45 — a real call, and the receipt
+## 2:15 — a real call, and the receipt
 
 ```bash
 node bin/route serve &
@@ -80,3 +94,13 @@ That changed this year. The gap is now 355× at indistinguishable quality.
 **"What's the business?"**
 Open source router, commercial control plane: shared policies, spend limits, team ledgers,
 escalation. It sits in the request path, so value scales with agent usage.
+
+**"Isn't this just LiteLLM / OpenRouter?"** — expect this one, it is the sharpest question.
+Those forward a request to whatever model you name. Neither can tell you *which* model to name.
+Route audits your estate, tests the catalogue against your job types, and grades each role
+deployable or untested on evidence. The proxy is the last twenty percent; the assessment is the
+product. Say it in that order.
+
+**"How does a beginner get value?"**
+One command, no key, no account: `npx ax-route audit`. It answers the only question they have —
+is there money here at all. Everything else is for whoever stays.
