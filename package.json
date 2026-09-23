@@ -1,0 +1,16 @@
+{
+  "name": "ax-route",
+  "version": "0.1.0",
+  "description": "A cost governor for agent workloads. Routes each job to the cheapest capable open-weight model on Nebius Token Factory, and shows you the receipt.",
+  "type": "module",
+  "bin": { "route": "./bin/route" },
+  "engines": { "node": ">=20" },
+  "files": ["bin", "src", "policy.yaml", "prices.yaml", "README.md"],
+  "scripts": {
+    "serve": "node bin/route serve",
+    "bench": "node bin/route bench",
+    "replay": "node bin/route replay"
+  },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/lpsmurf/ax-route" }
+}

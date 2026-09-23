@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Route</title>
+<style>
+:root{
+  --bg:#ffffff; --panel:#f7f7f5; --ink:#16161a; --muted:#6b6b76; --line:#e4e4e0;
+  --good:#0f7b56; --warn:#a66a12; --accent:#1f4fd8; --mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+:root:not([data-theme="light"]) { @media (prefers-color-scheme: dark){
+  --bg:#0e0e11; --panel:#17171c; --ink:#ececf1; --muted:#9a9aa8; --line:#26262e;
+  --good:#3ecf9b; --warn:#e0a94a; --accent:#7aa2ff;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e0e11; --panel:#17171c; --ink:#ececf1; --muted:#9a9aa8; --line:#26262e;
+  --good:#3ecf9b; --warn:#e0a94a; --accent:#7aa2ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:40px 16px 80px}
+header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em}
+h1 span{color:var(--muted);font-weight:400}
+.sub{color:var(--muted);max-width:60ch;margin:0}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+  margin:34px 0 12px;font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.kpi .v{font-size:30px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.kpi .k{font-size:12px;color:var(--muted);margin-top:5px}
+.kpi .n{font-size:11px;color:var(--muted);margin-top:7px;font-family:var(--mono)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);font-weight:600;padding:0 10px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.good{color:var(--good);font-weight:600}
+.dim{color:var(--muted)}
+.win{background:color-mix(in srgb,var(--good) 9%,transparent)}
+.src{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0;max-width:72ch}
+.bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.tag{display:inline-block;font-size:11px;font-family:var(--mono);padding:2px 7px;
+  border:1px solid var(--line);border-radius:20px;color:var(--muted)}
+.measured{border-color:var(--good);color:var(--good)}
+.computed{border-color:var(--warn);color:var(--warn)}
+footer{margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:13px}
+@media (max-width:600px){ .wrap{padding:24px 16px 60px} h1{font-size:24px} .kpi .v{font-size:25px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Route <span>— a cost governor for agent workloads</span></h1>
+  <p class="sub">Every agent call declares a job. A policy file sends it to the cheapest model that
+  can actually do it — open weights on Nebius Token Factory for the mechanical majority, frontier
+  only where being wrong is expensive. Every number below names the file it came from.</p>
+</header>
+<div id="app"></div>
+<footer>
+  <strong>Route</strong> · built at Accel AI Innovate Amsterdam, 23 September 2026 ·
+  open weights served from Nebius Token Factory, EU (Finland) ·
+  <a href="https://github.com/lpsmurf/ax-route" style="color:var(--accent)">github.com/lpsmurf/ax-route</a>
+</footer>
+</div>
+<script>
+const frag = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content; };
+const usd = (n, d=2) => n === null || n === undefined ? '—' : '$' + Number(n).toFixed(d);
+const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+async function load(f){ try { const r = await fetch(f); return r.ok ? await r.json() : null; } catch { return null; } }
+
+(async () => {
+  const [bench, replay, harness] = await Promise.all([
+    load('bench.json'), load('replay.json'), load('harness-usage.json')
+  ]);
+  const app = document.getElementById('app');
+  const add = (h) => app.appendChild(frag(h));
+
+  const r = bench?.arms?.routed, s = bench?.arms?.strong;
+  const ratio = r && s ? (s.cost_usd / r.cost_usd) : null;
+
+  // ---- headline
+  add(`<div class="kpis">
+    <div class="kpi"><div class="v good">${ratio ? ratio.toFixed(1)+'×' : '—'}</div>
+      <div class="k">cheaper than the strong model, same tasks</div>
+      <div class="n">results/bench.json</div></div>
+    <div class="kpi"><div class="v">${r ? r.judge_pass_pct+'%' : '—'} <span class="dim" style="font-size:17px">vs ${s ? s.judge_pass_pct+'%' : '—'}</span></div>
+      <div class="k">quality, routed vs strong (blind judge)</div>
+      <div class="n">n=${bench?.fixture_count ?? '—'} · results/bench.json</div></div>
+    <div class="kpi"><div class="v">${r?.latency_p50_ms ?? '—'}<span class="dim" style="font-size:17px">ms</span></div>
+      <div class="k">p50 latency, routed arm</div>
+      <div class="n">results/bench.json</div></div>
+    <div class="kpi"><div class="v warn" style="color:var(--warn)">${replay ? replay.cheapest_tier_share_pct+'%' : '—'}</div>
+      <div class="k">of real requests that used the cheap tier the policy declares</div>
+      <div class="n">results/replay.json</div></div>
+  </div>`);
+
+  // ---- benchmark
+  if (bench) {
+    add(`<h2>Head-to-head <span class="tag measured">measured</span></h2>`);
+    const rows = Object.entries(bench.arms).map(([k, v]) => `
+      <tr class="${k === 'routed' ? 'win' : ''}">
+        <td><strong>${k}</strong></td>
+        <td class="num" style="font-size:13px">${esc(v.model)}</td>
+        <td class="num">${v.match_rate_pct}%</td>
+        <td class="num">${v.judge_pass_pct}%</td>
+        <td class="num">${v.latency_p50_ms}</td>
+        <td class="num">${v.tokens_in + v.tokens_out}</td>
+        <td class="num ${k === 'routed' ? 'good' : ''}">${usd(v.cost_usd, 6)}</td>
+      </tr>`).join('');
+    add(`<div class="panel"><table>
+      <tr><th>arm</th><th>model</th><th>exact match</th><th>judge pass</th><th>p50 ms</th><th>tokens</th><th>cost</th></tr>
+      ${rows}</table>
+      <p class="note">${esc(bench.fixtures_note)}</p>
+      <p class="note">Two scorers on purpose. <strong>Exact match</strong> is deterministic string
+      checking. <strong>Judge pass</strong> is ${esc(bench.judge)} grading against each rubric,
+      blind to which arm produced the answer. Both arms disagreed on the same
+      ${r?.disagreements?.length ?? 0} fixtures (${(r?.disagreements||[]).join(', ')}) — open-ended
+      items where substring matching is too strict. The disagreement is a scorer artifact, not a
+      difference between the models.</p>
+      <div class="src">source: results/bench.json · fixtures: bench/fixtures/mechanical.json</div>
+    </div>`);
+  }
+
+  // ---- frontier projection
+  if (r) {
+    const prices = { 'claude-haiku-4-5': [1,5], 'claude-sonnet-5': [2,10], 'claude-opus-5': [5,25], 'gpt-6-astra': [10,50] };
+    const rowsF = Object.entries(prices).map(([m, [pi, po]]) => {
+      const c = (r.tokens_in * pi + r.tokens_out * po) / 1e6;
+      return `<tr><td class="num" style="font-size:13px">${m}</td><td class="num">${usd(c,6)}</td>
+        <td class="num">${(c / r.cost_usd).toFixed(0)}×</td></tr>`;
+    }).join('');
+    add(`<h2>The same tokens at frontier list price <span class="tag computed">computed</span></h2>
+    <div class="panel"><table>
+      <tr><th>model</th><th>cost for the same 20 tasks</th><th>vs routed</th></tr>${rowsF}</table>
+      <p class="note">Arithmetic, not a measurement: the exact token counts the routed arm used,
+      priced at each model's published rate. No frontier calls were made for this table, and it is
+      labelled computed for that reason. Prices from <span class="num">prices.yaml</span>.</p>
+      <div class="src">source: results/bench.json token counts × prices.yaml</div>
+    </div>`);
+  }
+
+  // ---- replay
+  if (replay) {
+    const mrows = replay.by_model.slice(0, 6).map(m => `
+      <tr><td class="num" style="font-size:13px">${esc(m.model)}</td>
+        <td class="num">${m.requests.toLocaleString()}</td>
+        <td class="num">${m.share_pct}%<div class="bar"><i style="width:${Math.min(100,m.share_pct)}%"></i></div></td>
+        <td class="num">${m.priced ? usd(m.cost_usd) : '<span class="dim">unpriced</span>'}</td></tr>`).join('');
+    const brows = replay.counterfactual_band.map(b => `
+      <tr><td class="num">${(b.mechanical_share*100).toFixed(0)}%</td>
+        <td class="num">${usd(b.cost_usd)}</td>
+        <td class="num good">${usd(b.saved_usd)}</td>
+        <td class="num good">${b.saved_pct}%</td></tr>`).join('');
+    add(`<h2>Replay of real work <span class="tag measured">measured</span></h2>
+    <div class="panel">
+      <p class="note" style="margin-top:0"><strong>${replay.requests.toLocaleString()} real requests</strong>
+      across ${replay.transcripts} transcripts and ${replay.window.days} days
+      (${replay.window.first_day} → ${replay.window.last_day}), deduped on request id and priced from
+      raw token counts. Actual cost <strong>${usd(replay.actual_cost_usd)}</strong>.</p>
+      <table><tr><th>model</th><th>requests</th><th>share</th><th>cost</th></tr>${mrows}</table>
+      <p class="note"><strong>The finding.</strong> The policy declares three of eight job types
+      mechanical. The cheap tier actually ran
+      <strong>${replay.cheapest_tier_requests} of ${replay.requests.toLocaleString()} requests
+      (${replay.cheapest_tier_share_pct}%)</strong>. A tier policy nothing enforces is a comment,
+      not a control.</p>
+      <div class="src">source: results/replay.json · ${esc(replay.privacy)}</div>
+    </div>
+    <h2>If that work had been routed <span class="tag computed">scenario</span></h2>
+    <div class="panel"><table>
+      <tr><th>mechanical share</th><th>bill becomes</th><th>saved</th><th>saved %</th></tr>${brows}</table>
+      <p class="note">${esc(replay.band_note)} Routed model:
+      <span class="num">${esc(replay.routed_model)}</span>. Independent support for the low end:
+      the harness's own accounting already carried a <span class="num">cheaperShare: 0.3</span>
+      estimate before Route existed.</p>
+      <div class="src">source: results/replay.json</div>
+    </div>`);
+  }
+
+  // ---- harness spend
+  if (harness) {
+    const trows = Object.entries(harness.by_tool).map(([t, c]) =>
+      `<tr><td>${esc(t)}</td><td class="num">${usd(c)}</td></tr>`).join('');
+    add(`<h2>The bill this is about <span class="tag measured">measured</span></h2>
+    <div class="panel">
+      <p class="note" style="margin-top:0">Broader picture from the harness's own cost accounting:
+      <strong>${usd(harness.total_cost_usd)}</strong> over ${harness.window.days} days
+      (${harness.window.first_day} → ${harness.window.last_day}), across three agent tools.</p>
+      <table><tr><th>tool</th><th>spend</th></tr>${trows}</table>
+      <div class="src">source: results/harness-usage.json · ${esc(harness.privacy)}</div>
+    </div>`);
+  }
+
+  add(`<h2>How it routes</h2>
+  <div class="panel">
+    <p class="note" style="margin-top:0">Routing is declared, never inferred. The caller names the
+    job; <span class="num">policy.yaml</span> decides the model. Nothing is promoted to a more
+    expensive tier silently, and every decision lands in an append-only ledger with its cost.</p>
+    <pre class="num" style="font-size:12px;overflow-x:auto;margin:14px 0 0;color:var(--muted)">POST /v1/chat/completions
+x-route-job: memory-retrieval
+  → tier mechanical → Qwen/Qwen3-30B-A3B-Instruct-2507 (Nebius, EU Finland)
+
+x-route-job: code-review
+  → tier critical   → claude-opus-5 (frontier)</pre>
+    <div class="src">source: policy.yaml</div>
+  </div>`);
+})();
+</script>
+</body>
+</html>

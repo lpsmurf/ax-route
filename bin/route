@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+import { serve } from '../src/proxy.mjs';
+import { resolve as resolveJob, jobs } from '../src/policy.mjs';
+
+const [cmd, ...args] = process.argv.slice(2);
+const flag = (name, def) => {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 ? args[i + 1] : def;
+};
+
+switch (cmd) {
+  case 'serve':
+    serve(Number(flag('port', process.env.ROUTE_PORT || 8787)));
+    break;
+  case 'policy': {
+    console.log('job'.padEnd(20), 'tier'.padEnd(12), 'model');
+    for (const j of jobs()) {
+      const r = resolveJob(j);
+      console.log(j.padEnd(20), r.tier.padEnd(12), `${r.model}  (${r.provider}, was ${r.was})`);
+    }
+    break;
+  }
+  case 'bench': {
+    const { run } = await import('../src/bench.mjs');
+    await run({ n: Number(flag('n', 0)) || undefined, only: flag('only') });
+    break;
+  }
+  case 'replay': {
+    const { run } = await import('../src/replay.mjs');
+    await run({ days: Number(flag('days', 0)) || undefined });
+    break;
+  }
+  default:
+    console.log(`route — a cost governor for agent workloads
+
+  route serve [--port 8787]   OpenAI-compatible endpoint that routes by job
+  route policy                show the routing table
+  route bench [--n 20]        head-to-head: Token Factory vs frontier
+  route replay                re-price real historical usage under the policy
+`);
+    process.exit(cmd ? 1 : 0);
+}

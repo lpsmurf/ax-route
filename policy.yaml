@@ -1,0 +1,31 @@
+# Route policy. The single source of routing truth.
+#
+# A human reads this file and knows exactly where every call goes. Routing is never
+# inferred from prompt text: the caller names the job, this file decides the model.
+# That is the difference between a router you can audit and one you have to trust.
+#
+# Job names mirror the eight ax-harness subagent roles (~/dev/.agents/agents/*.md),
+# whose declared tiers were a documented convention that nothing enforced.
+
+providers:
+  nebius: { base_url: "https://api.studio.nebius.com/v1", key_env: "NEBIUS_API_KEY", region: "EU (Finland)" }
+  anthropic: { base_url: "https://api.anthropic.com/v1", key_env: "ANTHROPIC_API_KEY", region: "US" }
+
+# Cheapest first. A job may be pinned to a tier; nothing is promoted silently.
+tiers:
+  mechanical: { model: "Qwen/Qwen3-30B-A3B-Instruct-2507", provider: nebius }
+  reasoning: { model: "Qwen/Qwen3-235B-A22B-Instruct-2507", provider: nebius }
+  critical: { model: "claude-opus-5", provider: anthropic }
+
+jobs:
+  memory-retrieval: { tier: mechanical, was: haiku }
+  learning-extractor: { tier: mechanical, was: haiku }
+  qa-test: { tier: mechanical, was: haiku }
+  core-investigator: { tier: reasoning, was: sonnet }
+  main-researcher: { tier: reasoning, was: sonnet }
+  implementer: { tier: reasoning, was: sonnet }
+  dreamer: { tier: reasoning, was: sonnet }
+  code-review: { tier: critical, was: opus }
+
+# An unknown job goes here. Never silently to the cheapest tier, never silently to frontier.
+default_tier: reasoning
