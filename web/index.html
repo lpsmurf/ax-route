@@ -121,6 +121,12 @@ V.overview=`
 typed in by hand. And the headline, measured on the same tasks by the same blind judge:
 <strong>google/gemma-3-27b-it</strong> scores <strong>95.2%</strong>, exactly what
 <strong>claude-opus-5</strong> scores, at <strong>159&times; less</strong>.</p>
+<div class="kpis">
+ <div class="kpi"><div class="v">${usd(e.spend.total_usd)}</div><div class="k">spent on AI, ${e.spend.requests.toLocaleString()} requests</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">could move to a cheaper model</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v">${e.spend.projects.length}</div><div class="k">projects it went across</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v warn">${sm.roles_untested}</div><div class="k">jobs not yet tested &mdash; not claimed safe</div><div class="n">estate.json</div></div>
+</div>
 <h2>The one thing to do</h2>
 <div class="panel">
  <p class="big">Three of the eight jobs your AI does are <strong>simple</strong> &mdash; looking
@@ -154,7 +160,7 @@ typed in by hand. And the headline, measured on the same tasks by the same blind
  <div class="cmd">npx ax-route audit</div>
  <p class="note">No API key. No account. Nothing to sign up for. It reads the logs your AI tools
  already keep on your own computer and prints exactly the table above, for you. Takes a few seconds.</p>
-</div>`:'<div class="panel">estate.json not loaded</div>'}`;
+</div>`;
 
 // ---------------- Projects
 V.projects=e?`
