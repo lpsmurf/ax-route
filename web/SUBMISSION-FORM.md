@@ -8,102 +8,85 @@
 
 ## What did you build, and what problem does it solve?
 
-**This is for people who build with AI all day and are not infrastructure engineers.** Vibecoders,
-solo founders, designers shipping products, heavy Claude Code and Cursor users. They have one
-setting they understand — pick the best model — so they pick it for everything, including "does
-this file parse". They hit this every single day, they are doing nothing about it today because
-nobody has told them which jobs don't need the expensive model, and they will never hand-tune a
-routing table. It has to be measured for them.
+People who build with AI all day and are not infrastructure engineers — vibecoders, solo
+founders, designers shipping products, heavy Claude Code and Cursor users — have exactly one
+setting they understand: pick the best model. So they pick it for everything, including "does
+this file parse". They hit this on every single request, every day. They are doing nothing about
+it, because nobody has ever told them which of their jobs don't need the expensive model, and
+they are never going to hand-tune a routing table.
 
-Teams running coding agents are billed at frontier prices for work that is not hard. Most agent
-calls are mechanical — fetch this file, pull the number out of that text, check whether the JSON
-parses, did the test pass. They are a large and growing share of every agent workload, because
-agents take more steps per task every month. Nothing routes them anywhere cheaper.
+I am that user, and I have the receipts. Over 50 days my agent tools billed $664.87 across 4,005
+requests and 56 projects. claude-opus-5 served 65.5% of them. My own config file already said
+that three of my eight agent jobs should run on the cheap tier — the cheap tier ran five
+requests. 0.13%. The policy was right and completely unenforced.
 
-I am the user, and I have the invoice. Over 104 days my agent tools billed **$1,240.47**. In the
-local transcripts there are **3,865 real requests**; `claude-opus-5` served **65.5%** of them.
-My own harness declares that three of its eight agent roles should run on the cheap tier. Across
-those 3,865 requests the cheap tier ran **five — 0.13%**. The policy was right and completely
-unenforced. That is the problem in one number: a tier policy nothing enforces is a comment, not
-a control.
+Route reads your machine and tells you what to change. One command, no API key, no account:
+it finds every agent role, every project and every request you have already paid for, prices
+them, and reports how much can move to a cheaper model — $275.35 of my $670.73 — then names the
+specific files to edit. It only recommends jobs it has actually tested: 3 of my 8 are marked
+deployable, 5 are marked untested, because a tool that marked all eight green would be guessing
+on five and you would find out the expensive way.
 
-What people do today is nothing, or they hand-edit a model name in a config and hope. There is no
-per-job routing, no record of what each call cost, and no way to answer "could that have run
-somewhere cheaper" after the fact.
+The measurement is the product, and it is brutal about its own recommendations. On 21 realistic
+tasks — real stack traces, config, source — graded by a blind judge, google/gemma-3-27b-it on
+Nebius Token Factory scored 95.2%, exactly what claude-opus-5 scored, at 159x lower cost and 7x
+the speed. That same measurement overruled me: the model I had picked by hand failed the bar and
+the sweep replaced it.
 
-**The product is the AX dashboard: an audit and an assessment, with routing as the last step.** `npx ax-route audit` needs no API key and no signup: it
-reads the operator's whole agent estate — 8 agent roles, 129 skills, 19 registered repos, 3,960
-real requests across 56 projects — prices every request, and reports that **$82.23 of $168.15 is
-addressable today**. Crucially it grades each of the 8 agent roles: **3 are marked deployable
-because fixtures back them, and 5 are marked untested**. A routing tool that marked all eight
-green would be guessing on five. That assessment is the product; anyone can write the proxy.
-
-Enforcement is the second half: an OpenAI-compatible endpoint that sits in front of the models. Every call declares a
-job; a policy file a human can read sends it to the cheapest model that can actually do that job —
-open weights on Nebius Token Factory for the mechanical majority, a frontier model reserved for
-review. Every decision appends a line to a ledger: job, tier, model, tokens, cost, latency,
-region. The saving is a receipt, not a claim.
-
-**Honest scope note:** Route speaks the OpenAI protocol, so Cursor, Cline, Continue and the
-OpenAI SDK can route through it automatically. Claude Code speaks Anthropic's protocol and cannot
-today — so for Claude Code users the deliverable is not a proxy they must run, it is the exact
-one-line change per agent file, which the audit names for them. That is worth saying plainly:
-half our target users get a config diff, not an endpoint, and it still saves them money today.
-
-It has to work for both ends of the market, so the audit is the on-ramp — one command, no key,
-no account, answering the only question a new user has: is there money here at all. Heavy users
-get the policy file in version control, sweeps against their own fixtures, per-project ledgers
-and JSON that gates CI.
-
-Would they pay? Model spend is becoming a top-three engineering line item, and Route's saving on
-measured data is 24–73% of the agent bill depending on how much of the work is mechanical. It is
-infrastructure in the request path: the more a team uses agents, the more it returns, and the
-switching cost is a policy file they have already tuned. The European angle is the part a US
-competitor cannot copy — Nebius serves from Finland, so Route offers "your code never leaves the
-EU, and it costs a fraction" to companies contractually barred from sending source to a US
-frontier API. That is a compliance requirement and a budget line closed by one product.
-
----
+Would they pay? They already are — just to the wrong place. We charge a share of the savings we
+prove, so it comes out of money that was going to burn anyway. This becomes a company because it
+sits in the request path of a cost line that is growing faster than headcount, the audit is free
+and produces a number people post, and Nebius serves from Finland — so the same product answers
+the question every European company is about to be asked about where its source code goes.
 
 ## Models and Token Factory use
 
-Token Factory is the engine, not an accessory. Every call Route actually makes in production goes
-to it.
+Token Factory is the engine, not a garnish: every call Route makes in its product path goes to
+it, and the only closed models we touched were the baseline we measured against.
 
-**In the product path:**
-- **`Qwen/Qwen3-30B-A3B-Instruct-2507`** — the *mechanical* tier. Retrieval, extraction and
-  mechanical QA: the three job types that dominate agent traffic. This is the model that serves
-  the majority of real calls.
-- **`Qwen/Qwen3-235B-A22B-Instruct-2507`** — the *reasoning* tier. Investigation, research and
-  implementation jobs, and the documented default for any job not named in the policy, so an
-  unknown job is never silently downgraded to the cheapest model or silently escalated to a
-  frontier one.
+IN THE PRODUCT PATH
 
-**In the measurement path:**
-- **`deepseek-ai/DeepSeek-V4-Pro`** — two roles. It is the strong baseline in the head-to-head,
-  and it is the **judge**: it grades both arms against each fixture's rubric, blind to which model
-  produced the answer.
-- **19 Token Factory text models swept end to end** to derive the policy rather than assert it:
-  Qwen3-30B, Qwen3-235B, Qwen3.5-397B, gpt-oss-120b, GLM-5.3, GLM-5.3-Flash, DeepSeek-V4-Pro,
-  DeepSeek-V4-Flash, DeepSeek-V4.1-Flash, Kimi-K3, Kimi-K2.6, Kimi-K2.7-Code, Hermes-4-405B,
-  Nemotron-3-Nano, Nemotron-3.5-Lightning, Nemotron-3-Super, Nemotron-3-Ultra, MiniMax-M3,
-  gemma-3-27b. Embedding and vision models were excluded as they cannot do these jobs.
+• google/gemma-3-27b-it — the "simple" tier, and the model that serves the majority of real
+  traffic. Extraction (pull a fact or a figure out of a stack trace, a config file or a long
+  answer), retrieval (find the value in a file), and classification-style checks (did this pass,
+  does this parse, is this a bug). We did not choose it. The sweep did — see below.
 
-**Why more than one:** different jobs have different costs of being wrong. Routing everything to
-the cheapest model would be a worse product than routing nothing — the point is a declared tier
-per job, with the assignment derived from measurement.
+• Qwen/Qwen3-235B-A22B-Instruct-2507 — the "thinking" tier: codebase investigation, research and
+  implementation, plus the documented default for any job not named in the policy, so an unknown
+  job is never silently dropped to the cheapest model nor silently escalated to the dearest.
 
-**Closed models:** yes, and measured — claude-haiku-4-5, claude-sonnet-5 and claude-opus-5 were
-called directly over the Anthropic API as the comparison baseline, at a total cost of $0.0683. They
-are the baseline, not part of the product path. Previously: none were called. `claude-opus-5` is named in `policy.yaml` for the critical
-tier (code review) but was never invoked — no key was available, so that path is configured and
-untested, and the frontier cost comparison is arithmetic over real token counts, labelled
-*computed* everywhere it appears rather than presented as an experiment.
+Two models rather than one because the jobs differ in what it costs to be wrong. Routing
+everything to the cheapest model would be a worse product than routing nothing: our own
+measurement shows the cheap tier giving up real accuracy on harder work, which is precisely why
+the policy is tiered instead of flat.
 
-Model IDs and prices were read from the Token Factory API itself
-(`GET /v1/models?verbose=true`), not from third-party aggregators.
+IN THE MEASUREMENT PATH
 
----
+• deepseek-ai/DeepSeek-V4-Pro — the blind judge. It grades every arm of every experiment against
+  each task's rubric without being told which model produced the answer, and it doubles as the
+  strong open-weight baseline in the head-to-head.
+
+• Qwen/Qwen3-30B-A3B-Instruct-2507 — the self-consistency gate for the escalation experiment, and
+  a cautionary tale: it was the hand-picked mechanical model until realistic fixtures dropped it
+  from 95% to 76%, at which point the sweep replaced it with gemma.
+
+• 19 Token Factory text models scored end to end to derive the policy rather than assert it:
+  gemma-3-27b-it, gpt-oss-120b, Qwen3-30B, Qwen3-235B, Qwen3.5-397B, DeepSeek-V4-Pro,
+  DeepSeek-V4-Flash, DeepSeek-V4.1-Flash, GLM-5.3, GLM-5.3-Flash, Kimi-K3, Kimi-K2.6,
+  Kimi-K2.7-Code, Hermes-4-405B, MiniMax-M3, Nemotron-3-Nano, Nemotron-3.5-Lightning,
+  Nemotron-3-Super, Nemotron-3-Ultra. Embedding and vision models were excluded because they
+  cannot do these jobs; we use no embeddings anywhere.
+
+Model IDs and prices come from the Token Factory API itself (GET /v1/models?verbose=true), not
+from third-party aggregators, so every cost figure we publish is priced at the source.
+
+CLOSED MODELS
+
+Yes, and we name them. claude-haiku-4-5, claude-sonnet-5 and claude-opus-5 were called directly
+over the Anthropic API as the comparison baseline — 21 tasks each, same blind judge, total spend
+$0.0683. They exist in our results to be measured against, not to serve traffic. claude-opus-5 is
+also configured in policy.yaml for the one high-stakes job (code review) and has never been
+invoked, which we say plainly rather than counting it as shipped.
 
 ## Measurable model advantage
 

@@ -41,43 +41,52 @@ the question every European company is about to be asked about where its source 
 
 ## Models and Token Factory use
 
-Token Factory is the engine, not an accessory. Every call Route actually makes in production goes
-to it.
+Token Factory is the engine, not a garnish: every call Route makes in its product path goes to
+it, and the only closed models we touched were the baseline we measured against.
 
-**In the product path:**
-- **`Qwen/Qwen3-30B-A3B-Instruct-2507`** — the *mechanical* tier. Retrieval, extraction and
-  mechanical QA: the three job types that dominate agent traffic. This is the model that serves
-  the majority of real calls.
-- **`Qwen/Qwen3-235B-A22B-Instruct-2507`** — the *reasoning* tier. Investigation, research and
-  implementation jobs, and the documented default for any job not named in the policy, so an
-  unknown job is never silently downgraded to the cheapest model or silently escalated to a
-  frontier one.
+IN THE PRODUCT PATH
 
-**In the measurement path:**
-- **`deepseek-ai/DeepSeek-V4-Pro`** — two roles. It is the strong baseline in the head-to-head,
-  and it is the **judge**: it grades both arms against each fixture's rubric, blind to which model
-  produced the answer.
-- **19 Token Factory text models swept end to end** to derive the policy rather than assert it:
-  Qwen3-30B, Qwen3-235B, Qwen3.5-397B, gpt-oss-120b, GLM-5.3, GLM-5.3-Flash, DeepSeek-V4-Pro,
-  DeepSeek-V4-Flash, DeepSeek-V4.1-Flash, Kimi-K3, Kimi-K2.6, Kimi-K2.7-Code, Hermes-4-405B,
-  Nemotron-3-Nano, Nemotron-3.5-Lightning, Nemotron-3-Super, Nemotron-3-Ultra, MiniMax-M3,
-  gemma-3-27b. Embedding and vision models were excluded as they cannot do these jobs.
+• google/gemma-3-27b-it — the "simple" tier, and the model that serves the majority of real
+  traffic. Extraction (pull a fact or a figure out of a stack trace, a config file or a long
+  answer), retrieval (find the value in a file), and classification-style checks (did this pass,
+  does this parse, is this a bug). We did not choose it. The sweep did — see below.
 
-**Why more than one:** different jobs have different costs of being wrong. Routing everything to
-the cheapest model would be a worse product than routing nothing — the point is a declared tier
-per job, with the assignment derived from measurement.
+• Qwen/Qwen3-235B-A22B-Instruct-2507 — the "thinking" tier: codebase investigation, research and
+  implementation, plus the documented default for any job not named in the policy, so an unknown
+  job is never silently dropped to the cheapest model nor silently escalated to the dearest.
 
-**Closed models:** yes, and measured — claude-haiku-4-5, claude-sonnet-5 and claude-opus-5 were
-called directly over the Anthropic API as the comparison baseline, at a total cost of $0.0683. They
-are the baseline, not part of the product path. Previously: none were called. `claude-opus-5` is named in `policy.yaml` for the critical
-tier (code review) but was never invoked — no key was available, so that path is configured and
-untested, and the frontier cost comparison is arithmetic over real token counts, labelled
-*computed* everywhere it appears rather than presented as an experiment.
+Two models rather than one because the jobs differ in what it costs to be wrong. Routing
+everything to the cheapest model would be a worse product than routing nothing: our own
+measurement shows the cheap tier giving up real accuracy on harder work, which is precisely why
+the policy is tiered instead of flat.
 
-Model IDs and prices were read from the Token Factory API itself
-(`GET /v1/models?verbose=true`), not from third-party aggregators.
+IN THE MEASUREMENT PATH
 
----
+• deepseek-ai/DeepSeek-V4-Pro — the blind judge. It grades every arm of every experiment against
+  each task's rubric without being told which model produced the answer, and it doubles as the
+  strong open-weight baseline in the head-to-head.
+
+• Qwen/Qwen3-30B-A3B-Instruct-2507 — the self-consistency gate for the escalation experiment, and
+  a cautionary tale: it was the hand-picked mechanical model until realistic fixtures dropped it
+  from 95% to 76%, at which point the sweep replaced it with gemma.
+
+• 19 Token Factory text models scored end to end to derive the policy rather than assert it:
+  gemma-3-27b-it, gpt-oss-120b, Qwen3-30B, Qwen3-235B, Qwen3.5-397B, DeepSeek-V4-Pro,
+  DeepSeek-V4-Flash, DeepSeek-V4.1-Flash, GLM-5.3, GLM-5.3-Flash, Kimi-K3, Kimi-K2.6,
+  Kimi-K2.7-Code, Hermes-4-405B, MiniMax-M3, Nemotron-3-Nano, Nemotron-3.5-Lightning,
+  Nemotron-3-Super, Nemotron-3-Ultra. Embedding and vision models were excluded because they
+  cannot do these jobs; we use no embeddings anywhere.
+
+Model IDs and prices come from the Token Factory API itself (GET /v1/models?verbose=true), not
+from third-party aggregators, so every cost figure we publish is priced at the source.
+
+CLOSED MODELS
+
+Yes, and we name them. claude-haiku-4-5, claude-sonnet-5 and claude-opus-5 were called directly
+over the Anthropic API as the comparison baseline — 21 tasks each, same blind judge, total spend
+$0.0683. They exist in our results to be measured against, not to serve traffic. claude-opus-5 is
+also configured in policy.yaml for the one high-stakes job (code review) and has never been
+invoked, which we say plainly rather than counting it as shipped.
 
 ## Measurable model advantage
 
