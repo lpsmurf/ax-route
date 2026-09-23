@@ -123,7 +123,7 @@ typed in by hand. And the headline, measured on the same tasks by the same blind
 <strong>claude-opus-5</strong> scores, at <strong>159&times; less</strong>.</p>
 <div class="kpis">
  <div class="kpi"><div class="v">${usd(e.spend.total_usd)}</div><div class="k">spent on AI, ${e.spend.requests.toLocaleString()} requests</div><div class="n">estate.json</div></div>
- <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">could move to a cheaper model</div><div class="n">estate.json</div></div>
+ <div class="kpi"><div class="v good">${usd(sm.addressable_usd)}</div><div class="k">overspend &mdash; same work, cheaper model</div><div class="n">estate.json</div></div>
  <div class="kpi"><div class="v">${e.spend.projects.length}</div><div class="k">projects it went across</div><div class="n">estate.json</div></div>
  <div class="kpi"><div class="v warn">${sm.roles_untested}</div><div class="k">jobs not yet tested &mdash; not claimed safe</div><div class="n">estate.json</div></div>
 </div>
@@ -169,7 +169,7 @@ V.projects=e?`
 have run on a cheaper model. Project names are client names, so these are labels &mdash;
 <span class="num">route audit --reveal</span> shows the real ones on your own machine.</p>
 <div class="panel">
- <table><tr><th>project</th><th>requests</th><th>days active</th><th>paid</th><th>could move</th><th>share of spend</th></tr>
+ <table><tr><th>project</th><th>requests</th><th>days active</th><th>paid</th><th>overspend</th><th>share of spend</th></tr>
  ${e.spend.projects.slice(0,16).map(p=>{const sh=(p.cost_usd/e.spend.total_usd*100);return `<tr>
    <td class="num">${esc(p.label)}</td><td class="num">${p.requests.toLocaleString()}</td>
    <td class="num dim">${p.days}</td><td class="num">${usd(p.cost_usd)}</td>
