@@ -47,13 +47,25 @@ export function lookup(model, t = table()) {
   return best ? all[best] : null;
 }
 
-// usage: {input, output, cache_read} in tokens. Returns USD or null if unpriced.
+// usage: {input, output, cache_read, cache_create} in tokens, where `input` is the
+// NON-cached input only — cached tokens are counted in their own fields, never inside `input`.
+// Returns USD, or null if the model has no published price.
+//
+// An earlier version subtracted `cache_read` from `input` before pricing it, which given those
+// semantics cancelled the cache term to zero and billed every cached token at nothing. On real
+// Claude Code traffic, where cache reads outnumber fresh input roughly fifty to one, that
+// undercounted the bill by most of it.
 export function cost(model, usage) {
   const p = lookup(model);
   if (!p || p.input === undefined || p.output === undefined) return null;
-  const inTok = usage.input || 0, outTok = usage.output || 0, cached = usage.cache_read || 0;
-  const cachedRate = p.cache_read !== undefined ? p.cache_read : p.input;
-  return ((inTok - cached) * p.input + cached * cachedRate + outTok * p.output) / 1e6;
+  const input = usage.input || 0;
+  const output = usage.output || 0;
+  const cacheRead = usage.cache_read || 0;
+  const cacheWrite = usage.cache_create || 0;
+  // A provider that publishes no cache rate bills cached tokens at the ordinary input rate.
+  const readRate = p.cache_read !== undefined ? p.cache_read : p.input;
+  const writeRate = p.cache_write !== undefined ? p.cache_write : p.input;
+  return (input * p.input + cacheRead * readRate + cacheWrite * writeRate + output * p.output) / 1e6;
 }
 
 export const isPriced = (model) => lookup(model) !== null;

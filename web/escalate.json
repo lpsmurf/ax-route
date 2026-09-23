@@ -1,0 +1,230 @@
+{
+  "schema": "route.escalate.v1",
+  "generated_at": "2026-09-23T12:06:53.011Z",
+  "cheap_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+  "strong_model": "deepseek-ai/DeepSeek-V4-Pro",
+  "gate_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+  "judge": "deepseek-ai/DeepSeek-V4-Pro",
+  "fixtures": 21,
+  "escalated": 4,
+  "escalation_rate_pct": 19,
+  "match_rate_pct": 85.7,
+  "judge_pass_pct": 81,
+  "cost_usd": 0.001391,
+  "latency_p50_ms": 1308,
+  "latency_p95_ms": 9114,
+  "note": "Two cheap attempts on every task; the strong model runs only where they disagree. Both cheap calls are included in cost_usd. An earlier gate that asked the cheap model to self-assess escalated 1 task in 21 and changed nothing — a wrong answer from a small model is usually well-formed.",
+  "rows": [
+    {
+      "id": "r01",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "15",
+      "match": true,
+      "cost_usd": 0.0000488,
+      "latency_ms": 8181,
+      "judge": "PASS"
+    },
+    {
+      "id": "r02",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "claude-opus-5",
+      "match": true,
+      "cost_usd": 0.000034800000000000006,
+      "latency_ms": 9114,
+      "judge": "PASS"
+    },
+    {
+      "id": "r03",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "null",
+      "match": true,
+      "cost_usd": 0.0000218,
+      "latency_ms": 608,
+      "judge": "PASS"
+    },
+    {
+      "id": "r04",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "13464f1",
+      "match": true,
+      "cost_usd": 0.000028100000000000005,
+      "latency_ms": 9229,
+      "judge": "PASS"
+    },
+    {
+      "id": "r05",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "497",
+      "match": true,
+      "cost_usd": 0.0000195,
+      "latency_ms": 8787,
+      "judge": "PASS"
+    },
+    {
+      "id": "r06",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "1024000",
+      "match": true,
+      "cost_usd": 0.000036400000000000004,
+      "latency_ms": 2713,
+      "judge": "PASS"
+    },
+    {
+      "id": "r07",
+      "job": "memory-retrieval",
+      "escalated": false,
+      "text": "8787",
+      "match": true,
+      "cost_usd": 0.0000254,
+      "latency_ms": 935,
+      "judge": "PASS"
+    },
+    {
+      "id": "r08",
+      "job": "learning-extractor",
+      "escalated": false,
+      "text": "{\"code\": \"ERR_MODULE_NOT_FOUND\", \"missing\": \"/Users/mac/dev/projects/ax-route/missing.mjs\"}",
+      "match": true,
+      "cost_usd": 0.0000416,
+      "latency_ms": 4906,
+      "judge": "FAIL"
+    },
+    {
+      "id": "r09",
+      "job": "learning-extractor",
+      "escalated": false,
+      "text": "nope.json",
+      "match": true,
+      "cost_usd": 0.000017,
+      "latency_ms": 882,
+      "judge": "PASS"
+    },
+    {
+      "id": "r10",
+      "job": "learning-extractor",
+      "escalated": true,
+      "text": "The server now refuses to start if the port is already in use and rounds cost values in the ledger to prevent stale processes from serving incorrect cached prices.",
+      "match": true,
+      "cost_usd": 0.00032324999999999997,
+      "latency_ms": 3270,
+      "judge": "FAIL"
+    },
+    {
+      "id": "r11",
+      "job": "learning-extractor",
+      "escalated": false,
+      "text": "{\"model\": \"Qwen/Qwen3-235B-A22B-Instruct-2507\", \"judge_pct\": 95}",
+      "match": false,
+      "cost_usd": 0.000052300000000000004,
+      "latency_ms": 6550,
+      "judge": "PASS"
+    },
+    {
+      "id": "r12",
+      "job": "learning-extractor",
+      "escalated": true,
+      "text": "121967",
+      "match": false,
+      "cost_usd": 0.00015670000000000001,
+      "latency_ms": 2144,
+      "judge": "FAIL"
+    },
+    {
+      "id": "r13",
+      "job": "learning-extractor",
+      "escalated": false,
+      "text": "0.000003",
+      "match": true,
+      "cost_usd": 0.0000344,
+      "latency_ms": 1308,
+      "judge": "PASS"
+    },
+    {
+      "id": "r14",
+      "job": "learning-extractor",
+      "escalated": false,
+      "text": "haiku, sonnet, opus",
+      "match": true,
+      "cost_usd": 0.0000231,
+      "latency_ms": 864,
+      "judge": "PASS"
+    },
+    {
+      "id": "r15",
+      "job": "qa-test",
+      "escalated": true,
+      "text": "BUG",
+      "match": true,
+      "cost_usd": 0.00029525,
+      "latency_ms": 1235,
+      "judge": "PASS"
+    },
+    {
+      "id": "r16",
+      "job": "qa-test",
+      "escalated": false,
+      "text": "YES",
+      "match": true,
+      "cost_usd": 0.0000198,
+      "latency_ms": 471,
+      "judge": "PASS"
+    },
+    {
+      "id": "r17",
+      "job": "qa-test",
+      "escalated": false,
+      "text": "FAILURE",
+      "match": true,
+      "cost_usd": 0.0000169,
+      "latency_ms": 601,
+      "judge": "PASS"
+    },
+    {
+      "id": "r18",
+      "job": "qa-test",
+      "escalated": false,
+      "text": "reasoning",
+      "match": true,
+      "cost_usd": 0.000026300000000000002,
+      "latency_ms": 919,
+      "judge": "PASS"
+    },
+    {
+      "id": "r19",
+      "job": "qa-test",
+      "escalated": true,
+      "text": "YES",
+      "match": false,
+      "cost_usd": 0.00012795,
+      "latency_ms": 1615,
+      "judge": "FAIL"
+    },
+    {
+      "id": "r20",
+      "job": "qa-test",
+      "escalated": false,
+      "text": "DIRTY",
+      "match": true,
+      "cost_usd": 0.000023300000000000004,
+      "latency_ms": 832,
+      "judge": "PASS"
+    },
+    {
+      "id": "r21",
+      "job": "qa-test",
+      "escalated": false,
+      "text": "OK",
+      "match": true,
+      "cost_usd": 0.000017999999999999997,
+      "latency_ms": 739,
+      "judge": "PASS"
+    }
+  ],
+  "source": "bench/fixtures/mechanical.json"
+}

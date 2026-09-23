@@ -33,7 +33,10 @@ async function call({ model, base_url, key_env }, messages, max_tokens = 300) {
   const body = await r.json().catch(() => ({}));
   const msg = body.choices?.[0]?.message || {};
   const u = body.usage || {};
-  const tokens = { input: u.prompt_tokens ?? 0, output: u.completion_tokens ?? 0, cache_read: u.prompt_tokens_details?.cached_tokens ?? 0 };
+  // OpenAI-wire usage: prompt_tokens already includes cached_tokens, so the non-cached
+  // input is the difference. Passing prompt_tokens whole would bill the cached part twice.
+  const cached = u.prompt_tokens_details?.cached_tokens ?? 0;
+  const tokens = { input: Math.max(0, (u.prompt_tokens ?? 0) - cached), output: u.completion_tokens ?? 0, cache_read: cached };
   return {
     ok: r.status === 200,
     status: r.status,

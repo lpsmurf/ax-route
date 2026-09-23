@@ -75,13 +75,14 @@ export async function spendByProject() {
       const model = r.message?.model; if (!model || model === '<synthetic>') return;
       const proj = r.cwd ? basename(r.cwd) : 'unknown';
       const usage = {
-        input: (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0),
+        input: u.input_tokens || 0,
         output: u.output_tokens || 0,
         cache_read: u.cache_read_input_tokens || 0,
+        cache_create: u.cache_creation_input_tokens || 0,
       };
       requests++;
-      const p = (byProj[proj] ||= { project: proj, requests: 0, input: 0, output: 0, cache_read: 0, cost_usd: 0, models: {}, days: new Set() });
-      p.requests++; p.input += usage.input; p.output += usage.output; p.cache_read += usage.cache_read;
+      const p = (byProj[proj] ||= { project: proj, requests: 0, input: 0, output: 0, cache_read: 0, cache_create: 0, cost_usd: 0, models: {}, days: new Set() });
+      p.requests++; p.input += usage.input; p.output += usage.output; p.cache_read += usage.cache_read; p.cache_create += usage.cache_create;
       p.cost_usd += cost(model, usage) || 0;
       p.models[model] = (p.models[model] || 0) + 1;
       if (r.timestamp) p.days.add(r.timestamp.slice(0, 10));
@@ -135,7 +136,7 @@ export async function run({ reveal = false } = {}) {
   const win = sweep?.cheapest_passing;
 
   const projects = spend.projects.map((p, i) => {
-    const routed = win ? cost(win.model, { input: p.input, output: p.output, cache_read: p.cache_read }) : null;
+    const routed = win ? cost(win.model, { input: p.input, output: p.output, cache_read: p.cache_read, cache_create: p.cache_create }) : null;
     return {
       label: reveal ? p.project : anon(p.project, i),
       revealed: reveal,

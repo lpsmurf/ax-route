@@ -48,7 +48,7 @@ async function call(model, messages, max_tokens = MAX_TOKENS) {
       ok: r.status === 200,
       text: (b.choices?.[0]?.message?.content ?? '').trim(),
       latency_ms: Date.now() - t0,
-      tokens: { input: u.prompt_tokens ?? 0, output: u.completion_tokens ?? 0, cache_read: 0 },
+      tokens: { input: Math.max(0, (u.prompt_tokens ?? 0) - (u.prompt_tokens_details?.cached_tokens ?? 0)), output: u.completion_tokens ?? 0, cache_read: u.prompt_tokens_details?.cached_tokens ?? 0 },
     };
   } catch (e) {
     return { ok: false, text: '', latency_ms: Date.now() - t0, tokens: { input: 0, output: 0, cache_read: 0 }, error: e.message };

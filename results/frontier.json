@@ -1,0 +1,62 @@
+{
+  "schema": "route.frontier.v1",
+  "generated_at": "2026-09-23T12:09:45.318Z",
+  "note": "Measured, not computed. Closed models called directly over the Anthropic API; graded by the same blind judge as every other arm.",
+  "judge": "deepseek-ai/DeepSeek-V4-Pro",
+  "judge_blind": true,
+  "fixtures": 21,
+  "arms": {
+    "claude-haiku-4-5-20251001": {
+      "model": "claude-haiku-4-5-20251001",
+      "provider": "anthropic",
+      "n": 21,
+      "ok": 21,
+      "match_rate_pct": 90.5,
+      "judge_pass_pct": 90.5,
+      "tokens_in": 2537,
+      "tokens_out": 232,
+      "cost_usd": 0.003697,
+      "latency_p50_ms": 814,
+      "latency_p95_ms": 1429,
+      "errors": []
+    },
+    "claude-sonnet-5": {
+      "model": "claude-sonnet-5",
+      "provider": "anthropic",
+      "n": 21,
+      "ok": 21,
+      "match_rate_pct": 95.2,
+      "judge_pass_pct": 81,
+      "tokens_in": 3234,
+      "tokens_out": 747,
+      "cost_usd": 0.013938,
+      "latency_p50_ms": 1693,
+      "latency_p95_ms": 2453,
+      "errors": []
+    },
+    "claude-opus-5": {
+      "model": "claude-opus-5",
+      "provider": "anthropic",
+      "n": 21,
+      "ok": 21,
+      "match_rate_pct": 100,
+      "judge_pass_pct": 95.2,
+      "tokens_in": 3234,
+      "tokens_out": 1379,
+      "cost_usd": 0.050645,
+      "latency_p50_ms": 2564,
+      "latency_p95_ms": 5093,
+      "errors": []
+    }
+  },
+  "open_weight_arm": {
+    "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "provider": "nebius",
+    "match_rate_pct": 85.7,
+    "judge_pass_pct": 81,
+    "cost_usd": 0.000289,
+    "latency_p50_ms": 794
+  },
+  "total_spend_usd": 0.0683,
+  "source": "bench/fixtures/mechanical.json"
+}

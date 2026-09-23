@@ -31,6 +31,16 @@ switch (cmd) {
     await run({ reveal: args.includes('--reveal') });
     break;
   }
+  case 'escalate': {
+    const { run } = await import('../src/escalate.mjs');
+    await run();
+    break;
+  }
+  case 'frontier': {
+    const { run } = await import('../src/frontier.mjs');
+    await run();
+    break;
+  }
   case 'sweep': {
     const { run } = await import('../src/sweep.mjs');
     await run({ bar: Number(flag('bar', 90)) });
@@ -57,6 +67,8 @@ GOING DEEPER — prove it on your own workload (needs NEBIUS_API_KEY):
 
   route sweep [--bar 90]      score every Token Factory model, pick the cheapest that passes
   route bench [--n 20]        head-to-head against a stronger model, blind-judged
+  route frontier              the same tasks on Claude, measured (needs ANTHROPIC_API_KEY)
+  route escalate              cheap-first with an automatic upgrade when the answer looks weak
   route replay                re-price your whole history under the policy
   route audit --reveal        same audit, with real project names instead of labels
 

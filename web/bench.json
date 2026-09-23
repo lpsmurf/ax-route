@@ -1,152 +1,136 @@
 {
   "schema": "route.bench.v1",
-  "generated_at": "2026-09-23T10:34:20.999Z",
-  "fixtures_note": "Hand-authored against real ax-harness content. These are representative of the mechanical share of agent work (retrieval, extraction, mechanical QA) — the jobs the policy routes to Token Factory. They are labelled as authored, not sampled: the replay supplies the real distribution, these supply the quality test.",
-  "fixture_count": 20,
+  "generated_at": "2026-09-23T11:50:11.661Z",
+  "fixtures_note": "Real agent work, not toy questions. Every fixture embeds actual content from these repositories — source files, git history, node stack traces, YAML config, and raw Claude Code usage records — and asks the kind of question an agent subtask genuinely gets. Replaces an earlier set of trivial prompts ('does {\"a\":1} parse') that measured almost nothing.",
+  "fixture_count": 21,
   "judge": "deepseek-ai/DeepSeek-V4-Pro",
   "judge_blind": true,
   "arms": {
     "routed": {
       "model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
       "provider": "nebius",
-      "n": 20,
-      "ok": 20,
-      "match_rate_pct": 90,
-      "judge_pass_pct": 95,
+      "n": 21,
+      "ok": 21,
+      "match_rate_pct": 85.7,
+      "judge_pass_pct": 81,
       "disagreements": [
-        "m06",
-        "m09",
-        "m16"
+        "r08",
+        "r10",
+        "r11"
       ],
-      "tokens_in": 937,
-      "tokens_out": 173,
-      "cost_usd": 0.000146,
+      "tokens_in": 2358,
+      "tokens_out": 177,
+      "cost_usd": 0.000289,
       "cost_note": null,
-      "latency_p50_ms": 998,
-      "latency_p95_ms": 7651,
+      "latency_p50_ms": 794,
+      "latency_p95_ms": 4488,
       "rows": [
         {
-          "id": "m01",
+          "id": "r01",
           "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "126",
-          "latency_ms": 1306,
+          "text": "15",
+          "latency_ms": 952,
           "tokens": {
-            "input": 60,
-            "output": 4,
+            "input": 231,
+            "output": 3,
             "cache_read": 0
           },
-          "cost_usd": 0.0000072000000000000005,
+          "cost_usd": 0.000024,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m02",
+          "id": "r02",
           "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "opus",
-          "latency_ms": 998,
+          "text": "claude-opus-5",
+          "latency_ms": 4018,
           "tokens": {
-            "input": 65,
+            "input": 149,
+            "output": 7,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000017,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r03",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "null",
+          "latency_ms": 4031,
+          "tokens": {
+            "input": 99,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.0000071,
+          "cost_usd": 0.0000105,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m03",
+          "id": "r04",
           "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "7777",
-          "latency_ms": 1221,
+          "text": "13464f1",
+          "latency_ms": 4601,
           "tokens": {
-            "input": 56,
-            "output": 5,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000007100000000000001,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m04",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "AGENTS.md",
-          "latency_ms": 905,
-          "tokens": {
-            "input": 46,
-            "output": 4,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000058,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m05",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "2000.19",
-          "latency_ms": 1001,
-          "tokens": {
-            "input": 75,
+            "input": 112,
             "output": 8,
             "cache_read": 0
           },
-          "cost_usd": 0.0000099,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m06",
-          "job": "learning-extractor",
-          "ok": true,
-          "status": 200,
-          "text": "Trigger: mdfind must be scoped to specific directories to reduce execution time from 67s to 1.4s.",
-          "latency_ms": 1145,
-          "tokens": {
-            "input": 52,
-            "output": 28,
-            "cache_read": 0
-          },
           "cost_usd": 0.000013600000000000002,
-          "match": false,
-          "judge": "PASS"
-        },
-        {
-          "id": "m07",
-          "job": "learning-extractor",
-          "ok": true,
-          "status": 200,
-          "text": "The fix is to set accept-dns=false and add an /etc/hosts entry.",
-          "latency_ms": 988,
-          "tokens": {
-            "input": 52,
-            "output": 19,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000109,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m08",
-          "job": "learning-extractor",
+          "id": "r05",
+          "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "{\"tool\": \"claude\", \"cost\": 1787.94}",
-          "latency_ms": 1611,
+          "text": "497",
+          "latency_ms": 794,
           "tokens": {
-            "input": 63,
-            "output": 20,
+            "input": 81,
+            "output": 4,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000009299999999999999,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r06",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "1024000",
+          "latency_ms": 453,
+          "tokens": {
+            "input": 154,
+            "output": 8,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000017800000000000002,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r07",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "8787",
+          "latency_ms": 415,
+          "tokens": {
+            "input": 108,
+            "output": 5,
             "cache_read": 0
           },
           "cost_usd": 0.0000123,
@@ -154,194 +138,226 @@
           "judge": "PASS"
         },
         {
-          "id": "m09",
+          "id": "r08",
           "job": "learning-extractor",
           "ok": true,
           "status": 200,
-          "text": "The router directs each agent step to the cheapest available model capable of handling it, resorting to a more advanced model only when quality thresholds are not met, while meticulously logging each decision and its associated cost.",
-          "latency_ms": 2287,
+          "text": "{\"code\": \"ERR_MODULE_NOT_FOUND\", \"missing\": \"/Users/mac/dev/projects/ax-route/missing.mjs\"}",
+          "latency_ms": 4099,
           "tokens": {
-            "input": 55,
-            "output": 42,
+            "input": 126,
+            "output": 26,
             "cache_read": 0
           },
-          "cost_usd": 0.000018100000000000003,
-          "match": false,
-          "judge": "PASS"
-        },
-        {
-          "id": "m10",
-          "job": "learning-extractor",
-          "ok": true,
-          "status": 200,
-          "text": "haiku, sonnet, opus",
-          "latency_ms": 1795,
-          "tokens": {
-            "input": 46,
-            "output": 9,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000073,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m11",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "NO",
-          "latency_ms": 954,
-          "tokens": {
-            "input": 35,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000041,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m12",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "YES",
-          "latency_ms": 7651,
-          "tokens": {
-            "input": 34,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000004,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m13",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "0",
-          "latency_ms": 401,
-          "tokens": {
-            "input": 33,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000003900000000000001,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m14",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "BUG",
-          "latency_ms": 229,
-          "tokens": {
-            "input": 31,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000037,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m15",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "OK",
-          "latency_ms": 264,
-          "tokens": {
-            "input": 31,
-            "output": 2,
-            "cache_read": 16
-          },
-          "cost_usd": 0.0000037,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m16",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "</span></div>",
-          "latency_ms": 340,
-          "tokens": {
-            "input": 25,
-            "output": 6,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000042999999999999995,
+          "cost_usd": 0.0000204,
           "match": true,
           "judge": "FAIL"
         },
         {
-          "id": "m17",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "22 Sep 2026",
-          "latency_ms": 442,
-          "tokens": {
-            "input": 49,
-            "output": 9,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000007599999999999999,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m18",
+          "id": "r09",
           "job": "learning-extractor",
           "ok": true,
           "status": 200,
-          "text": "34",
-          "latency_ms": 243,
+          "text": "nope.json",
+          "latency_ms": 433,
           "tokens": {
-            "input": 50,
-            "output": 3,
+            "input": 69,
+            "output": 4,
             "cache_read": 0
           },
-          "cost_usd": 0.0000059,
+          "cost_usd": 0.0000081,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m19",
+          "id": "r10",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "The commit prevents server startup on a busy port, exits with a command to clear the port, and rounds ledger costs to fix invisible pricing issues caused by stale proxies.",
+          "latency_ms": 4488,
+          "tokens": {
+            "input": 106,
+            "output": 34,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000208,
+          "match": true,
+          "judge": "FAIL"
+        },
+        {
+          "id": "r11",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "{\"model\": \"Qwen/Qwen3-235B-A22B-Instruct-2507\", \"judge_pct\": 95}",
+          "latency_ms": 979,
+          "tokens": {
+            "input": 152,
+            "output": 35,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000257,
+          "match": false,
+          "judge": "PASS"
+        },
+        {
+          "id": "r12",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "196067",
+          "latency_ms": 392,
+          "tokens": {
+            "input": 76,
+            "output": 7,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000097,
+          "match": false,
+          "judge": "FAIL"
+        },
+        {
+          "id": "r13",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "0.000003",
+          "latency_ms": 420,
+          "tokens": {
+            "input": 141,
+            "output": 9,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000016800000000000002,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r14",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "haiku, sonnet, opus",
+          "latency_ms": 326,
+          "tokens": {
+            "input": 84,
+            "output": 9,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000111,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r15",
           "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "VALID",
-          "latency_ms": 6828,
+          "text": "OK",
+          "latency_ms": 361,
           "tokens": {
-            "input": 38,
+            "input": 145,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.0000044,
+          "cost_usd": 0.0000151,
+          "match": false,
+          "judge": "FAIL"
+        },
+        {
+          "id": "r16",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "YES",
+          "latency_ms": 2728,
+          "tokens": {
+            "input": 89,
+            "output": 2,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000095,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m20",
-          "job": "memory-retrieval",
+          "id": "r17",
+          "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "EU",
-          "latency_ms": 168,
+          "text": "FAILURE",
+          "latency_ms": 402,
           "tokens": {
-            "input": 41,
+            "input": 74,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.0000047,
+          "cost_usd": 0.000008,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r18",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "reasoning",
+          "latency_ms": 3495,
+          "tokens": {
+            "input": 118,
+            "output": 3,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000127,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r19",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "NO",
+          "latency_ms": 304,
+          "tokens": {
+            "input": 61,
+            "output": 2,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0000067,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r20",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "DIRTY",
+          "latency_ms": 3550,
+          "tokens": {
+            "input": 103,
+            "output": 3,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000011200000000000001,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r21",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "OK",
+          "latency_ms": 305,
+          "tokens": {
+            "input": 80,
+            "output": 2,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000008599999999999999,
           "match": true,
           "judge": "PASS"
         }
@@ -350,128 +366,268 @@
     "strong": {
       "model": "deepseek-ai/DeepSeek-V4-Pro",
       "provider": "nebius",
-      "n": 20,
-      "ok": 20,
-      "match_rate_pct": 85,
-      "judge_pass_pct": 90,
-      "disagreements": [
-        "m06",
-        "m09",
-        "m16"
-      ],
-      "tokens_in": 832,
-      "tokens_out": 159,
-      "cost_usd": 0.002013,
+      "n": 21,
+      "ok": 21,
+      "match_rate_pct": 90.5,
+      "judge_pass_pct": 90.5,
+      "disagreements": [],
+      "tokens_in": 2192,
+      "tokens_out": 139,
+      "cost_usd": 0.004323,
       "cost_note": null,
-      "latency_p50_ms": 993,
-      "latency_p95_ms": 1384,
+      "latency_p50_ms": 1013,
+      "latency_p95_ms": 1276,
       "rows": [
         {
-          "id": "m01",
+          "id": "r01",
           "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "126",
-          "latency_ms": 874,
+          "text": "15",
+          "latency_ms": 1003,
           "tokens": {
-            "input": 55,
+            "input": 200,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.00010325,
+          "cost_usd": 0.000357,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m02",
+          "id": "r02",
           "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "opus",
-          "latency_ms": 846,
+          "text": "claude-opus-5",
+          "latency_ms": 966,
           "tokens": {
-            "input": 62,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0001155,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m03",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "7777",
-          "latency_ms": 814,
-          "tokens": {
-            "input": 47,
-            "output": 3,
-            "cache_read": 0
-          },
-          "cost_usd": 0.00009275,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m04",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "AGENTS.md",
-          "latency_ms": 897,
-          "tokens": {
-            "input": 42,
-            "output": 4,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000875,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m05",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "$2,000.19",
-          "latency_ms": 868,
-          "tokens": {
-            "input": 59,
+            "input": 136,
             "output": 7,
             "cache_read": 0
           },
-          "cost_usd": 0.00012775,
+          "cost_usd": 0.0002625,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m06",
-          "job": "learning-extractor",
+          "id": "r03",
+          "job": "memory-retrieval",
           "ok": true,
           "status": 200,
-          "text": "Trigger: Scoping `mdfind` to specific directories reduces execution time from 67 seconds to 1.4 seconds.",
-          "latency_ms": 1275,
+          "text": "null",
+          "latency_ms": 930,
           "tokens": {
-            "input": 50,
-            "output": 27,
+            "input": 95,
+            "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.000182,
-          "match": false,
+          "cost_usd": 0.00017325,
+          "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m07",
+          "id": "r04",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "13464f1",
+          "latency_ms": 900,
+          "tokens": {
+            "input": 97,
+            "output": 5,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00018725,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r05",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "497",
+          "latency_ms": 865,
+          "tokens": {
+            "input": 80,
+            "output": 2,
+            "cache_read": 0
+          },
+          "cost_usd": 0.000147,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r06",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "1024000",
+          "latency_ms": 1135,
+          "tokens": {
+            "input": 137,
+            "output": 4,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00025375,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r07",
+          "job": "memory-retrieval",
+          "ok": true,
+          "status": 200,
+          "text": "8787",
+          "latency_ms": 1101,
+          "tokens": {
+            "input": 108,
+            "output": 3,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0001995,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r08",
           "job": "learning-extractor",
           "ok": true,
           "status": 200,
-          "text": "Setting `accept-dns=false` and adding an `/etc/hosts` entry resolves the issue.",
-          "latency_ms": 1236,
+          "text": "{\"code\": \"ERR_MODULE_NOT_FOUND\", \"missing\": \"missing.mjs\"}",
+          "latency_ms": 1191,
           "tokens": {
-            "input": 47,
-            "output": 21,
+            "input": 130,
+            "output": 20,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0002975,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r09",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "nope.json",
+          "latency_ms": 1114,
+          "tokens": {
+            "input": 69,
+            "output": 4,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00013475,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r10",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "The server now refuses to start if the port is already in use, exiting with a command to free it, and cost values in the ledger are rounded.",
+          "latency_ms": 1350,
+          "tokens": {
+            "input": 99,
+            "output": 32,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00028525,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r11",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "{\"model\": \"moonshotai/Kimi-K3\", \"judge_pct\": 95}",
+          "latency_ms": 1276,
+          "tokens": {
+            "input": 129,
+            "output": 23,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00030625,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r12",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "121967",
+          "latency_ms": 1231,
+          "tokens": {
+            "input": 72,
+            "output": 3,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0001365,
+          "match": false,
+          "judge": "FAIL"
+        },
+        {
+          "id": "r13",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "0.000003",
+          "latency_ms": 1060,
+          "tokens": {
+            "input": 119,
+            "output": 5,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00022575,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r14",
+          "job": "learning-extractor",
+          "ok": true,
+          "status": 200,
+          "text": "haiku, sonnet, opus",
+          "latency_ms": 1013,
+          "tokens": {
+            "input": 80,
+            "output": 9,
+            "cache_read": 0
+          },
+          "cost_usd": 0.0001715,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r15",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "BUG",
+          "latency_ms": 924,
+          "tokens": {
+            "input": 147,
+            "output": 2,
+            "cache_read": 0
+          },
+          "cost_usd": 0.00026425,
+          "match": true,
+          "judge": "PASS"
+        },
+        {
+          "id": "r16",
+          "job": "qa-test",
+          "ok": true,
+          "status": 200,
+          "text": "YES",
+          "latency_ms": 1124,
+          "tokens": {
+            "input": 85,
+            "output": 2,
             "cache_read": 0
           },
           "cost_usd": 0.00015575,
@@ -479,210 +635,82 @@
           "judge": "PASS"
         },
         {
-          "id": "m08",
-          "job": "learning-extractor",
+          "id": "r17",
+          "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "{\"tool\": \"claude\", \"cost\": 1787.94}",
-          "latency_ms": 1080,
+          "text": "FAILURE",
+          "latency_ms": 1185,
           "tokens": {
-            "input": 51,
-            "output": 17,
+            "input": 77,
+            "output": 3,
             "cache_read": 0
           },
-          "cost_usd": 0.00014875,
+          "cost_usd": 0.00014525,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m09",
-          "job": "learning-extractor",
+          "id": "r18",
+          "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "A router dispatches each agent step to the least expensive open-weight model capable of handling it, only escalating to a frontier model if a quality check fails, while logging every decision along with its cost.",
-          "latency_ms": 1252,
+          "text": "reasoning",
+          "latency_ms": 1005,
           "tokens": {
-            "input": 50,
-            "output": 41,
+            "input": 120,
+            "output": 3,
             "cache_read": 0
           },
-          "cost_usd": 0.000231,
-          "match": false,
-          "judge": "PASS"
-        },
-        {
-          "id": "m10",
-          "job": "learning-extractor",
-          "ok": true,
-          "status": 200,
-          "text": "haiku, sonnet, opus",
-          "latency_ms": 993,
-          "tokens": {
-            "input": 42,
-            "output": 9,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000105,
+          "cost_usd": 0.0002205,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m11",
+          "id": "r19",
           "job": "qa-test",
           "ok": true,
           "status": 200,
           "text": "NO",
-          "latency_ms": 832,
+          "latency_ms": 977,
           "tokens": {
-            "input": 31,
+            "input": 61,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.00006125,
+          "cost_usd": 0.00011375,
           "match": true,
           "judge": "PASS"
         },
         {
-          "id": "m12",
+          "id": "r20",
           "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "YES",
-          "latency_ms": 793,
+          "text": "CLEAN",
+          "latency_ms": 942,
           "tokens": {
-            "input": 30,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000595,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m13",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "0",
-          "latency_ms": 757,
-          "tokens": {
-            "input": 30,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.0000595,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m14",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "BUG",
-          "latency_ms": 866,
-          "tokens": {
-            "input": 28,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000056,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m15",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "OK",
-          "latency_ms": 669,
-          "tokens": {
-            "input": 28,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000056,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m16",
-          "job": "qa-test",
-          "ok": true,
-          "status": 200,
-          "text": "</span>",
-          "latency_ms": 1384,
-          "tokens": {
-            "input": 21,
+            "input": 73,
             "output": 4,
             "cache_read": 0
           },
-          "cost_usd": 0.00005075,
-          "match": true,
-          "judge": "FAIL"
-        },
-        {
-          "id": "m17",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "22 Sep 2026",
-          "latency_ms": 1358,
-          "tokens": {
-            "input": 40,
-            "output": 6,
-            "cache_read": 0
-          },
-          "cost_usd": 0.000091,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m18",
-          "job": "learning-extractor",
-          "ok": true,
-          "status": 200,
-          "text": "3",
-          "latency_ms": 1317,
-          "tokens": {
-            "input": 45,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.00008575,
+          "cost_usd": 0.00014175,
           "match": false,
           "judge": "FAIL"
         },
         {
-          "id": "m19",
+          "id": "r21",
           "job": "qa-test",
           "ok": true,
           "status": 200,
-          "text": "VALID",
-          "latency_ms": 1291,
+          "text": "OK",
+          "latency_ms": 553,
           "tokens": {
-            "input": 37,
+            "input": 78,
             "output": 2,
             "cache_read": 0
           },
-          "cost_usd": 0.00007175,
-          "match": true,
-          "judge": "PASS"
-        },
-        {
-          "id": "m20",
-          "job": "memory-retrieval",
-          "ok": true,
-          "status": 200,
-          "text": "EU",
-          "latency_ms": 1253,
-          "tokens": {
-            "input": 37,
-            "output": 2,
-            "cache_read": 0
-          },
-          "cost_usd": 0.00007175,
+          "cost_usd": 0.0001435,
           "match": true,
           "judge": "PASS"
         }

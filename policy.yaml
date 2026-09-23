@@ -12,8 +12,14 @@ providers:
   anthropic: { base_url: "https://api.anthropic.com/v1", key_env: "ANTHROPIC_API_KEY", region: "US" }
 
 # Cheapest first. A job may be pinned to a tier; nothing is promoted silently.
+#
+# The mechanical model is NOT hand-picked. `route sweep` scores every Token Factory model on
+# the fixtures and this is the cheapest that cleared the bar: google/gemma-3-27b-it
+# at 95.2% blind-judge pass, $0.0152 per 1,000 tasks.
+# The previous entry here was Qwen3-30B, chosen by hand. When the fixtures were rewritten from
+# toy questions to real ones it scored 76.2% and failed the bar, so the sweep replaced it.
 tiers:
-  mechanical: { model: "Qwen/Qwen3-30B-A3B-Instruct-2507", provider: nebius }
+  mechanical: { model: "google/gemma-3-27b-it", provider: nebius }
   reasoning: { model: "Qwen/Qwen3-235B-A22B-Instruct-2507", provider: nebius }
   critical: { model: "claude-opus-5", provider: anthropic }
 

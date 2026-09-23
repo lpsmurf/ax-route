@@ -1,6 +1,6 @@
 {
   "schema": "route.replay.v1",
-  "generated_at": "2026-09-23T10:35:42.362Z",
+  "generated_at": "2026-09-23T11:47:57.461Z",
   "source": "~/.claude/projects/**/*.jsonl (local Claude Code transcripts, deduped on requestId)",
   "privacy": "aggregates only — no project names, paths or prompt text",
   "window": {
@@ -9,73 +9,79 @@
     "days": 50
   },
   "transcripts": 72,
-  "requests": 3865,
+  "requests": 3985,
   "unpriced_requests": 66,
-  "actual_cost_usd": 164.4,
+  "actual_cost_usd": 664.87,
   "by_model": [
     {
       "model": "claude-opus-5",
-      "requests": 2533,
-      "share_pct": 65.54,
-      "tokens_in": 14683598,
-      "tokens_out": 2258205,
-      "cache_read": 740697687,
-      "cost_usd": 129.8731,
+      "requests": 2653,
+      "share_pct": 66.57,
+      "tokens_in": 5332,
+      "tokens_out": 2418841,
+      "cache_read": 783117108,
+      "cache_create": 14905021,
+      "cost_usd": 545.2126,
       "priced": true
     },
     {
       "model": "claude-sonnet-5",
       "requests": 1127,
-      "share_pct": 29.16,
-      "tokens_in": 10937959,
+      "share_pct": 28.28,
+      "tokens_in": 18746,
       "tokens_out": 454131,
       "cache_read": 348598309,
-      "cost_usd": 26.4172,
+      "cache_create": 10919213,
+      "cost_usd": 101.5965,
       "priced": true
     },
     {
       "model": "claude-opus-4-8",
       "requests": 134,
-      "share_pct": 3.47,
-      "tokens_in": 796261,
+      "share_pct": 3.36,
+      "tokens_in": 66796,
       "tokens_out": 162232,
       "cache_read": 18026642,
-      "cost_usd": 8.0371,
+      "cache_create": 729465,
+      "cost_usd": 17.9623,
       "priced": true
     },
     {
       "model": "claude-haiku-4-5-20251001",
       "requests": 5,
       "share_pct": 0.13,
-      "tokens_in": 73127,
+      "tokens_in": 50,
       "tokens_out": 781,
       "cache_read": 42867,
-      "cost_usd": 0.077,
+      "cache_create": 73077,
+      "cost_usd": 0.0996,
       "priced": true
     },
     {
       "model": "claude-opus-4-7",
       "requests": 25,
-      "share_pct": 0.65,
-      "tokens_in": 64501,
+      "share_pct": 0.63,
+      "tokens_in": 80,
       "tokens_out": 16045,
       "cache_read": 1272290,
+      "cache_create": 64421,
       "cost_usd": null,
       "priced": false
     },
     {
       "model": "claude-fable-5",
       "requests": 41,
-      "share_pct": 1.06,
-      "tokens_in": 277183,
+      "share_pct": 1.03,
+      "tokens_in": 1542,
       "tokens_out": 29861,
       "cache_read": 3519853,
+      "cache_create": 275641,
       "cost_usd": null,
       "priced": false
     }
   ],
   "cheapest_tier_requests": 5,
-  "cheapest_tier_share_pct": 0.129,
+  "cheapest_tier_share_pct": 0.125,
   "routed_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
   "routed_price": {
     "input": 0.1,
@@ -84,25 +90,25 @@
     "source": "nebius api /v1/models?verbose=true 2026-09-23",
     "confidence": "high"
   },
-  "all_routed_cost_usd": 3.56,
+  "all_routed_cost_usd": 119.09,
   "counterfactual_band": [
     {
       "mechanical_share": 0.25,
-      "cost_usd": 124.19,
-      "saved_usd": 40.21,
-      "saved_pct": 24.5
+      "cost_usd": 528.43,
+      "saved_usd": 136.45,
+      "saved_pct": 20.5
     },
     {
       "mechanical_share": 0.5,
-      "cost_usd": 83.98,
-      "saved_usd": 80.42,
-      "saved_pct": 48.9
+      "cost_usd": 391.98,
+      "saved_usd": 272.89,
+      "saved_pct": 41
     },
     {
       "mechanical_share": 0.75,
-      "cost_usd": 43.77,
-      "saved_usd": 120.63,
-      "saved_pct": 73.4
+      "cost_usd": 255.53,
+      "saved_usd": 409.34,
+      "saved_pct": 61.6
     }
   ],
   "band_note": "Scenario, not a measurement. Shows the bill if that share of tokens had been routed to Token Factory at published rates; the rest stays on the model that actually ran."

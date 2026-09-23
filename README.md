@@ -134,13 +134,14 @@ Arithmetic over the measured token counts, no frontier calls made:
 
 ### Replay of real work — measured
 
-3,865 deduped requests over 50 days, priced from raw token counts: **$164.40**.
+3,985 deduped requests over 50 days, priced from raw token counts:
+**$664.87**.
 
 | mechanical share routed | bill becomes | saved |
 |---|---|---|
-| 25% | $124.19 | $40.21 (24.5%) |
-| 50% | $83.98 | $80.42 (48.9%) |
-| 75% | $43.77 | $120.63 (73.4%) |
+| 25% | $528.43 | $136.45 (20.5%) |
+| 50% | $391.98 | $272.89 (41%) |
+| 75% | $255.53 | $409.34 (61.6%) |
 
 A scenario, not a measurement — and labelled that way on the dashboard. Independent support for
 the low end: the harness's own accounting already carried a `cheaperShare: 0.3` estimate before
@@ -222,6 +223,20 @@ Named honestly, because a demo that overstates its reach is worth less than one 
 - **A frontier arm in the benchmark.** No frontier key was available during the build, so the
   strong arm is the largest open model on Token Factory and the frontier comparison is arithmetic
   over measured tokens. Labelled computed wherever it appears.
+
+## A correction, on the record
+
+An earlier version of this repository reported the replay at **$164.40**. That was wrong and the
+real figure is **$664.87**. `cost()` subtracted cached tokens from the input count before pricing
+them, and because the caller passes non-cached input, the cache term cancelled to zero — every
+cached token was billed at nothing. On real Claude Code traffic cache reads outnumber fresh input
+by roughly fifty to one, so the error hid about three quarters of the bill.
+
+It surfaced while writing a benchmark fixture that asks a model to spot exactly that bug
+(`r15` in `bench/fixtures/mechanical.json`). Fixing it made the problem this project describes
+four times larger. Cache rates are now explicit per model in `prices.yaml` rather than defaulted,
+and the OpenAI-wire call sites split `prompt_tokens` from `cached_tokens` so neither is counted
+twice.
 
 ## Lineage
 

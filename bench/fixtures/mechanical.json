@@ -1,26 +1,89 @@
 {
-  "note": "Hand-authored against real ax-harness content. These are representative of the mechanical share of agent work (retrieval, extraction, mechanical QA) — the jobs the policy routes to Token Factory. They are labelled as authored, not sampled: the replay supplies the real distribution, these supply the quality test.",
+  "note": "Real agent work, not toy questions. Every fixture embeds actual content from these repositories — source files, git history, node stack traces, YAML config, and raw Claude Code usage records — and asks the kind of question an agent subtask genuinely gets. Replaces an earlier set of trivial prompts ('does {\"a\":1} parse') that measured almost nothing.",
   "authored": "2026-09-23",
   "fixtures": [
-    { "id": "m01", "job": "memory-retrieval", "prompt": "From the text below, answer only with the number of skills. Text: 'AX is an agent distro: a portable directory that holds your skills, your agents and your memory as plain Markdown. Currently 126 skills and 8 subagents.'", "expect": "126", "rubric": "Answer must contain 126 and must not contain 8 as the primary answer." },
-    { "id": "m02", "job": "memory-retrieval", "prompt": "From this config, reply with only the model tier assigned to code-review. Config: 'code-review: opus, core-investigator: sonnet, dreamer: sonnet, implementer: sonnet, learning-extractor: haiku, qa-test: haiku'", "expect": "opus", "rubric": "Answer must be opus." },
-    { "id": "m03", "job": "memory-retrieval", "prompt": "Reply with only the port number. Text: 'Zero-dep node:http server on AX_DASH_PORT (default 7777). Peer fan-out fetches over Tailscale with a 1200 ms timeout.'", "expect": "7777", "rubric": "Answer must be 7777, not 1200." },
-    { "id": "m04", "job": "memory-retrieval", "prompt": "Reply with only the filename that is the contract. Text: 'AGENTS.md is the contract, .agents/ holds the skills and subagents, memory/ holds what has been learned.'", "expect": "AGENTS.md", "rubric": "Answer must be AGENTS.md." },
-    { "id": "m05", "job": "memory-retrieval", "prompt": "Reply with only the total dollar figure. Text: 'Measured over 103 days: claude $1,787.94, codex $198.66, kimi $13.59, for a total of $2,000.19 of agent spend.'", "expect": "2000.19", "rubric": "Answer must contain 2000.19 or $2,000.19." },
-    { "id": "m06", "job": "learning-extractor", "prompt": "Extract the single lesson as one sentence starting with 'Trigger:'. Text: 'mdfind must be scoped or it takes 67s. Scoping it to specific directories brought it to 1.4s.'", "expect": "scope mdfind", "rubric": "Must mention scoping mdfind and convey that unscoped is slow. One sentence." },
-    { "id": "m07", "job": "learning-extractor", "prompt": "Extract the fix as one short sentence. Text: 'Tailscale MagicDNS wedges on macOS and causes 60s DNS hangs; the fix is accept-dns=false plus an /etc/hosts entry.'", "expect": "accept-dns=false", "rubric": "Must name accept-dns=false and /etc/hosts." },
-    { "id": "m08", "job": "learning-extractor", "prompt": "Reply with only a JSON object {\"tool\":..., \"cost\":...} for the highest-spending tool. Text: 'claude $1787.94, codex $198.66, kimi $13.59'", "expect": "claude", "rubric": "Valid JSON, tool is claude, cost is 1787.94." },
-    { "id": "m09", "job": "learning-extractor", "prompt": "Summarise in exactly one sentence: 'The router sends each agent step to the cheapest open-weight model that can do that job, escalating to a frontier model only when a quality gate fails, and logs every decision with its cost.'", "expect": "router cheapest escalate", "rubric": "Exactly one sentence, conveys cheapest-capable routing plus escalation plus logging." },
-    { "id": "m10", "job": "learning-extractor", "prompt": "List only the three tier names, comma separated. Text: 'Tiers, cheapest first: haiku for retrieval and extraction, sonnet for investigation and implementation, opus for review.'", "expect": "haiku, sonnet, opus", "rubric": "Exactly the three names in cheapest-first order." },
-    { "id": "m11", "job": "qa-test", "prompt": "Does this JSON parse? Reply only YES or NO. {\"a\": 1, \"b\": [2, 3],}", "expect": "NO", "rubric": "Must be NO (trailing comma)." },
-    { "id": "m12", "job": "qa-test", "prompt": "Does this JSON parse? Reply only YES or NO. {\"a\": 1, \"b\": [2, 3]}", "expect": "YES", "rubric": "Must be YES." },
-    { "id": "m13", "job": "qa-test", "prompt": "Reply only with the exit code this shell line returns on success: 'gitleaks detect --no-banner && echo clean'", "expect": "0", "rubric": "Must be 0." },
-    { "id": "m14", "job": "qa-test", "prompt": "This function should return the sum. Reply only BUG or OK. function sum(a,b){ return a - b }", "expect": "BUG", "rubric": "Must be BUG." },
-    { "id": "m15", "job": "qa-test", "prompt": "This function should return the sum. Reply only BUG or OK. function sum(a,b){ return a + b }", "expect": "OK", "rubric": "Must be OK." },
-    { "id": "m16", "job": "qa-test", "prompt": "Reply only with the missing closing tag: '<div><span>hello</div>'", "expect": "</span>", "rubric": "Must name the span closing tag." },
-    { "id": "m17", "job": "memory-retrieval", "prompt": "Reply with only the date. Text: 'Real figures from the audit that started this project (22 Sep 2026): 27 CLAUDE.md files scattered across one machine.'", "expect": "22 Sep 2026", "rubric": "Must be 22 Sep 2026." },
-    { "id": "m18", "job": "learning-extractor", "prompt": "Reply with only the count of duplicated skills. Text: 'Skills duplicated across repos: 34. Times one project had been cloned into different folders: 5. Agent memory silos: 7.'", "expect": "34", "rubric": "Must be 34." },
-    { "id": "m19", "job": "qa-test", "prompt": "Reply only VALID or INVALID: is 'https://api.studio.nebius.com/v1/chat/completions' a well-formed absolute URL?", "expect": "VALID", "rubric": "Must be VALID." },
-    { "id": "m20", "job": "memory-retrieval", "prompt": "Reply with only the region. Text: 'Nebius Token Factory serves from the EU, which means code never leaves the EU — a wedge for European companies.'", "expect": "EU", "rubric": "Must be EU." }
+    { "id": "r01", "job": "memory-retrieval",
+      "prompt": "From this price table, reply with ONLY the output price per 1M tokens of the model with the HIGHEST output price.\n\n  openai/gpt-oss-120b: { input: 0.15, output: 0.6, ctx: 131072 }\n  zai-org/GLM-5.3-Flash: { input: 0.15, output: 0.5, ctx: 1024000 }\n  Qwen/Qwen3-30B-A3B-Instruct-2507: { input: 0.1, output: 0.3, ctx: 262144 }\n  moonshotai/Kimi-K3: { input: 3, output: 15, ctx: 1024000 }\n  deepseek-ai/DeepSeek-V4-Pro: { input: 1.75, output: 3.5, ctx: 1048576 }",
+      "expect": "15", "rubric": "Must be 15 (Kimi-K3's output price). Not 3, not 3.5." },
+
+    { "id": "r02", "job": "memory-retrieval",
+      "prompt": "From this policy file, reply with ONLY the model that a job of tier 'critical' is routed to.\n\ntiers:\n  mechanical: { model: \"Qwen/Qwen3-30B-A3B-Instruct-2507\", provider: nebius }\n  reasoning: { model: \"Qwen/Qwen3-235B-A22B-Instruct-2507\", provider: nebius }\n  critical: { model: \"claude-opus-5\", provider: anthropic }\n\njobs:\n  qa-test: { tier: mechanical }\n  implementer: { tier: reasoning }\n  code-review: { tier: critical }",
+      "expect": "claude-opus-5", "rubric": "Must be claude-opus-5." },
+
+    { "id": "r03", "job": "memory-retrieval",
+      "prompt": "Read this function. Reply with ONLY what it returns when the model has no published price.\n\nexport function cost(model, usage) {\n  const p = lookup(model);\n  if (!p || p.input === undefined || p.output === undefined) return null;\n  const input = usage.input || 0;\n  const output = usage.output || 0;\n  return (input * p.input + output * p.output) / 1e6;\n}",
+      "expect": "null", "rubric": "Must say null (not 0, not undefined, not an error)." },
+
+    { "id": "r04", "job": "memory-retrieval",
+      "prompt": "From this git log, reply with ONLY the short hash of the commit that mentions the dashboard.\n\n13464f1 Rebuild the dashboard as the product, for people who are not engineers\n48f02f4 Stage script leads with the audit, and answers the LiteLLM question\nb20e294 Audit the estate before routing anything\n7bfe61b Add the pitch deck and the submission form answers\n79c4c38 Add the stage script",
+      "expect": "13464f1", "rubric": "Must be 13464f1." },
+
+    { "id": "r05", "job": "memory-retrieval",
+      "prompt": "From this usage record, reply with ONLY the number of output tokens.\n\n{\"model\":\"claude-sonnet-5\",\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":75965,\"cache_read_input_tokens\":0,\"output_tokens\":497,\"output_tokens_details\":{\"thinking_tokens\":81},\"service_tier\":\"standard\"}}",
+      "expect": "497", "rubric": "Must be 497. Not 81, not 75965, not 2." },
+
+    { "id": "r06", "job": "memory-retrieval",
+      "prompt": "From this config, reply with ONLY the context length of zai-org/GLM-5.3-Flash.\n\n  openai/gpt-oss-120b: { input: 0.15, output: 0.6, ctx: 131072, confidence: high }\n  zai-org/GLM-5.3-Flash: { input: 0.15, output: 0.5, ctx: 1024000, confidence: high }\n  moonshotai/Kimi-K3: { input: 3, output: 15, ctx: 1024000, confidence: high }",
+      "expect": "1024000", "rubric": "Must be 1024000, not 131072." },
+
+    { "id": "r07", "job": "memory-retrieval",
+      "prompt": "Read this server code and reply with ONLY the default port number it listens on.\n\nexport function serve(port = Number(process.env.ROUTE_PORT) || 8787) {\n  const server = createServer(async (req, res) => {\n    const url = new URL(req.url, 'http://localhost');\n    if (req.method === 'POST' && url.pathname === '/v1/chat/completions') return handleCompletion(req, res);\n  });\n  server.listen(port);\n}",
+      "expect": "8787", "rubric": "Must be 8787." },
+
+    { "id": "r08", "job": "learning-extractor",
+      "prompt": "Read this stack trace and reply with ONLY a JSON object of the form {\"code\": ..., \"missing\": ...} naming the error code and the module that could not be found.\n\nnode:internal/modules/esm/resolve:283\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/mac/dev/projects/ax-route/missing.mjs' imported from /Users/mac/dev/projects/ax-route/[eval1]\n    at finalizeResolution (node:internal/modules/esm/resolve:283:11)",
+      "expect": "ERR_MODULE_NOT_FOUND", "rubric": "Valid JSON. code must be ERR_MODULE_NOT_FOUND and missing must name missing.mjs." },
+
+    { "id": "r09", "job": "learning-extractor",
+      "prompt": "Read this output and reply with ONLY the name of the module that is missing.\n\nnode:internal/modules/cjs/loader:1210\n  throw err;\n  ^\n\nError: Cannot find module './nope.json'\nRequire stack:\n- /Users/mac/dev/projects/ax-route/[eval]",
+      "expect": "nope.json", "rubric": "Must name ./nope.json or nope.json." },
+
+    { "id": "r10", "job": "learning-extractor",
+      "prompt": "Summarise this commit in exactly one sentence, no preamble.\n\ncommit 6596ec9\n    Refuse to start on a busy port, and round cost in the ledger\n\n    A stale proxy holding the port meant a second server never bound, so calls\n    kept reaching the old process and its cached price table. The costs looked\n    wrong for a reason that was invisible from the outside. Bind failure now\n    exits with the command to clear the port.",
+      "expect": "port", "rubric": "Exactly one sentence. Must convey that the server now fails clearly when the port is already in use. Mentioning the ledger rounding is acceptable but not required." },
+
+    { "id": "r11", "job": "learning-extractor",
+      "prompt": "Read this benchmark row and reply with ONLY a JSON object {\"model\": ..., \"judge_pct\": ...}.\n\n  Qwen/Qwen3-235B-A22B-Instruct-2507       .................... match    95%  judge    95%  $0.0145/1k\n  MiniMaxAI/MiniMax-M3                     .................... match    95%  judge    95%  $0.1492/1k\n  moonshotai/Kimi-K3                       .................... match    90%  judge    95%  $2.5909/1k",
+      "expect": "Kimi-K3", "rubric": "Valid JSON for ONE model with its judge percentage. Any of the three rows is acceptable if model and judge_pct agree with the text." },
+
+    { "id": "r12", "job": "learning-extractor",
+      "prompt": "From this record, reply with ONLY the total number of input-side tokens, that is input_tokens plus cache_creation_input_tokens plus cache_read_input_tokens.\n\n{\"usage\":{\"input_tokens\":2,\"cache_creation_input_tokens\":75965,\"cache_read_input_tokens\":120000,\"output_tokens\":497}}",
+      "expect": "195967", "rubric": "Must be 195967 (2 + 75965 + 120000). Output tokens must not be included." },
+
+    { "id": "r13", "job": "learning-extractor",
+      "prompt": "Read this ledger line and reply with ONLY the cost in dollars as it appears.\n\n{\"ts\":\"2026-09-23T10:56:42.049Z\",\"job\":\"qa-test\",\"tier\":\"mechanical\",\"model\":\"Qwen/Qwen3-30B-A3B-Instruct-2507\",\"provider\":\"nebius\",\"region\":\"EU (Finland)\",\"status\":200,\"latency_ms\":1064,\"tokens\":{\"input\":24,\"output\":2},\"cost_usd\":0.000003,\"outcome\":\"ok\"}",
+      "expect": "0.000003", "rubric": "Must be 0.000003. Not the latency, not the status." },
+
+    { "id": "r14", "job": "learning-extractor",
+      "prompt": "Reply with ONLY the three tier names in cheapest-first order, comma separated.\n\n# Tiers, cheapest first. Pick the lowest one that can actually do the job.\ntiers:\n  - haiku     # retrieval, extraction, mechanical QA\n  - sonnet    # investigation, research, implementation\n  - opus      # review, and anything where being wrong is expensive",
+      "expect": "haiku, sonnet, opus", "rubric": "Exactly haiku, sonnet, opus in that order." },
+
+    { "id": "r15", "job": "qa-test",
+      "prompt": "This function should return the total cost in dollars. Cached tokens must be billed at the cache rate. Reply with ONLY BUG or OK.\n\nexport function cost(model, usage) {\n  const p = lookup(model);\n  const inTok = usage.input || 0, cached = usage.cache_read || 0;\n  const cachedRate = p.cache_read !== undefined ? p.cache_read : p.input;\n  return ((inTok - cached) * p.input + cached * cachedRate + (usage.output||0) * p.output) / 1e6;\n}\n\nNote: `usage.input` counts NON-cached input only; cached tokens are counted separately in usage.cache_read.",
+      "expect": "BUG", "rubric": "Must be BUG. Subtracting cached from an input that already excludes it is wrong." },
+
+    { "id": "r16", "job": "qa-test",
+      "prompt": "Reply with ONLY YES or NO: does this code correctly handle a request body that is not valid JSON?\n\nconst raw = await readBody(req);\nlet body;\ntry { body = JSON.parse(raw); } catch {\n  res.writeHead(400, { 'content-type': 'application/json' });\n  return res.end(JSON.stringify({ error: { message: 'invalid JSON body' } }));\n}",
+      "expect": "YES", "rubric": "Must be YES — the try/catch returns a 400." },
+
+    { "id": "r17", "job": "qa-test",
+      "prompt": "Reply with ONLY the exit status word SUCCESS or FAILURE for this command run.\n\n$ node --input-type=module -e \"import x from './missing.mjs'\"\nnode:internal/modules/esm/resolve:283\n    throw new ERR_MODULE_NOT_FOUND(\n          ^\nError [ERR_MODULE_NOT_FOUND]: Cannot find module",
+      "expect": "FAILURE", "rubric": "Must be FAILURE." },
+
+    { "id": "r18", "job": "qa-test",
+      "prompt": "Reply with ONLY the tier name this resolver returns for a job that is NOT listed in the policy.\n\nexport function resolve(job, p = policy()) {\n  const known = p.jobs?.[job];\n  const tierName = known?.tier || p.default_tier;\n  const tier = p.tiers?.[tierName];\n  if (!tier) throw new Error(`policy: no tier \"${tierName}\"`);\n  return { tier: tierName, model: tier.model };\n}\n\nThe policy file ends with:  default_tier: reasoning",
+      "expect": "reasoning", "rubric": "Must be reasoning." },
+
+    { "id": "r19", "job": "qa-test",
+      "prompt": "Reply with ONLY YES or NO: is this comparison case sensitive?\n\nconst norm = (s) => String(s).toLowerCase().replace(/[\\s,$\"'`*]/g, '');\nconst matched = (text, expect) => norm(text).includes(norm(expect));",
+      "expect": "NO", "rubric": "Must be NO — both sides are lowercased." },
+
+    { "id": "r20", "job": "qa-test",
+      "prompt": "Reply with ONLY CLEAN or DIRTY for this working tree.\n\n$ git status --short\n?? memory/vault/lessons/mem_20260922_771868303f4940a98915.md\n?? memory/vault/lessons/mem_20260923_f406a3ef1d164220a129.md",
+      "expect": "DIRTY", "rubric": "Must be DIRTY — two untracked files are present." },
+
+    { "id": "r21", "job": "qa-test",
+      "prompt": "This loop is meant to find the LONGEST key that is a prefix of `model`. Reply with ONLY BUG or OK.\n\nlet best = null;\nfor (const key of Object.keys(all)) {\n  if (model.startsWith(key) && (!best || key.length > best.length)) best = key;\n}\nreturn best ? all[best] : null;",
+      "expect": "OK", "rubric": "Must be OK — it keeps the longest matching prefix." }
   ]
 }

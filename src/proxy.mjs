@@ -60,10 +60,12 @@ export async function handleCompletion(req, res) {
   }
   const latency_ms = Date.now() - started;
 
+  const cached = usage?.prompt_tokens_details?.cached_tokens ?? 0;
+  // prompt_tokens includes the cached part on the OpenAI wire; split it so neither is double-billed.
   const tokens = usage ? {
-    input: usage.prompt_tokens ?? 0,
+    input: Math.max(0, (usage.prompt_tokens ?? 0) - cached),
     output: usage.completion_tokens ?? 0,
-    cache_read: usage.prompt_tokens_details?.cached_tokens ?? 0,
+    cache_read: cached,
   } : null;
 
   append({

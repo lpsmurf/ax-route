@@ -105,6 +105,7 @@ const PLAIN={
 (async()=>{
 const [estate,sweep,bench,replay,harness]=await Promise.all([
   load('estate.json'),load('sweep.json'),load('bench.json'),load('replay.json'),load('harness-usage.json')]);
+const [frontier,escalate]=await Promise.all([load('frontier.json'),load('escalate.json')]);
 const M=document.getElementById('main');
 const V={};
 const e=estate,sm=e&&e.summary;
@@ -128,23 +129,30 @@ ${e?`
 <h2>The one thing to do</h2>
 <div class="panel">
  <p class="big">Three of the eight jobs your AI does are <strong>simple</strong> &mdash; looking
- things up, pulling a fact out of text, checking whether something passes. A model costing
- <strong>${ratio}&times; less</strong> got them right just as often. You are paying top rates for
- all three.</p>
+ things up, pulling a fact out of text, checking whether something passes. On those,
+ <strong>google/gemma-3-27b-it</strong> scores <strong>95.2%</strong> at
+ <strong>$0.0152 per 1,000 tasks</strong>. Claude Haiku, measured on the
+ same tasks, scores <strong>85.7%</strong> and costs
+ <strong>12&times;</strong> more.</p>
+ <p class="note" style="margin-top:0"><strong>We did not pick that model &mdash; the measurement
+ did, and it overruled us.</strong> An earlier version of this page recommended Qwen3-30B, chosen
+ by hand. When the test tasks were rewritten from toy questions to real ones (actual stack traces,
+ config files, source) it scored 76.2% and failed the bar. The sweep replaced it. That is the
+ product doing its job in public.</p>
  <div class="do">
   <p style="margin:0 0 8px"><strong>If you use Cursor, Cline, Continue or the OpenAI SDK</strong> &mdash; point it at Route and the switch is automatic:</p>
   <div class="cmd">npx ax-route serve
 # then set your tool's base URL to  http://localhost:8787/v1</div>
  </div>
  <div class="do">
-  <p style="margin:0 0 8px"><strong>If you use Claude Code</strong> &mdash; it speaks a different protocol, so Route can't sit in front of it yet. But you can still stop overpaying, today, by changing one line per agent file:</p>
+  <p style="margin:0 0 8px"><strong>If you use Claude Code</strong> &mdash; it speaks a different protocol, so Route can't sit in front of it yet. You can still stop overpaying today by changing one line per agent file:</p>
   <div class="cmd">~/.claude/agents/memory-retrieval.md
 -  model: opus
-+  model: haiku      # 12x cheaper, and these jobs do not need opus</div>
++  model: haiku      # measured at 85.7% on these jobs, a fraction of the price</div>
  </div>
- <p class="note">Route tells you <em>which</em> files to change and why. It will not tell you to
- change the other five, because it has not tested them.</p>
- <div class="src">source: results/estate.json, results/sweep.json</div>
+ <p class="note">Route names which files to change. It stays silent on the other five jobs,
+ because it has not tested them.</p>
+ <div class="src">source: results/sweep.json, results/frontier.json</div>
 </div>
 <h2>Run it on your own machine</h2>
 <div class="panel">
@@ -250,9 +258,10 @@ ${bench?`<h2>Head to head <span class="tag measured">measured</span></h2>
 ${Object.entries(bench.arms).map(([k,v])=>`<tr class="${k==='routed'?'win':''}"><td class="num" style="font-size:12.5px">${esc(v.model)}<div class="dim" style="font-size:11px">${k}</div></td>
 <td class="num">${v.match_rate_pct}%</td><td class="num">${v.judge_pass_pct}%</td>
 <td class="num dim">${v.latency_p50_ms} ms</td><td class="num ${k==='routed'?'good':''}">${usd(v.cost_usd,6)}</td></tr>`).join('')}</table>
-<p class="note">n=${bench.fixture_count}. The 5-point quality gap is one question, so the claim is
-that the cheap model is <strong>not worse</strong> &mdash; not that it is better. The claim rests
-on the price gap.</p><div class="src">source: results/bench.json</div></div>`:''}
+<p class="note">n=${bench.fixture_count}, and every fixture embeds real content &mdash; source
+files, stack traces, git history, raw usage records. An earlier set of toy questions had these two
+models tied; on realistic work the cheaper one gives up ground. Both numbers are in the repo's
+history. The cost gap is ${(bench.arms.strong.cost_usd/bench.arms.routed.cost_usd).toFixed(1)}&times;.</p><div class="src">source: results/bench.json</div></div>`:''}
 ${bench?(()=>{const r=bench.arms.routed;const pr={'claude-haiku-4-5':[1,5],'claude-sonnet-5':[2,10],'claude-opus-5':[5,25],'gpt-6-astra':[10,50]};
  return `<h2>The same work at big-model prices <span class="tag computed">computed</span></h2>
  <div class="panel"><table><tr><th>model</th><th>cost for the same 20 tasks</th><th>vs the cheap one</th></tr>
@@ -270,9 +279,32 @@ ${harness?`<h2>The wider bill <span class="tag measured">measured</span></h2>
 ${harness.window.days} days across three AI tools.</p>
 <table><tr><th>tool</th><th>spend</th></tr>${Object.entries(harness.by_tool).map(([t,c])=>`<tr><td>${esc(t)}</td><td class="num">${usd(c)}</td></tr>`).join('')}</table>
 <div class="src">source: results/harness-usage.json</div></div>`:''}
+${frontier?`<h2>Against Claude, measured <span class="tag measured">measured</span></h2>
+<div class="panel"><table><tr><th>model</th><th>exact match</th><th>judge pass</th><th>p50</th><th>cost for 21 tasks</th></tr>
+${Object.values(frontier.arms).filter(a=>a.ok>0).map(a=>`<tr><td class="num" style="font-size:12.5px">${esc(a.model)}</td><td class="num">${a.match_rate_pct}%</td><td class="num">${a.judge_pass_pct}%</td><td class="num dim">${a.latency_p50_ms} ms</td><td class="num">${usd(a.cost_usd,6)}</td></tr>`).join('')}
+${frontier.open_weight_arm?`<tr class="win"><td class="num" style="font-size:12.5px">${esc(frontier.open_weight_arm.model)}<div class="dim" style="font-size:11px">open weight, Nebius</div></td><td class="num">${frontier.open_weight_arm.match_rate_pct}%</td><td class="num">${frontier.open_weight_arm.judge_pass_pct}%</td><td class="num dim">${frontier.open_weight_arm.latency_p50_ms} ms</td><td class="num good">${usd(frontier.open_weight_arm.cost_usd,6)}</td></tr>`:''}
+</table><p class="note">Real calls to the Anthropic API, graded by the same blind judge as every
+other arm. This replaces an arithmetic estimate that earlier versions of this page had to label
+computed. Total spend on the run: ${usd(frontier.total_spend_usd,4)}.</p>
+<div class="src">source: results/frontier.json</div></div>`:''}
+${escalate?`<h2>Automatic upgrading &mdash; it did not work <span class="tag computed">negative result</span></h2>
+<div class="panel"><p class="big" style="font-size:16px">Answer with the cheap model, detect a weak
+answer, and pay for the strong one only then. It escalated
+<strong>${escalate.escalation_rate_pct}%</strong> of tasks, cost
+<strong>${(escalate.cost_usd/bench.arms.routed.cost_usd).toFixed(1)}&times;</strong> more than the
+cheap model alone, and scored <strong>${escalate.judge_pass_pct}%</strong> &mdash; exactly what the
+cheap model scored by itself.</p>
+<p class="note">Two gate designs were tried. Asking the cheap model whether its own answer looked
+complete escalated 1 task in 21 and changed nothing: a wrong answer from a small model is usually
+well-formed and confident, so form does not reveal wrongness. Answering twice and escalating on
+disagreement escalated more, but not the tasks that were actually wrong. The honest conclusion is
+that a cheap, general-purpose confidence gate does not work here; a useful gate has to verify
+against the task itself &mdash; run the test, validate the schema &mdash; which is per-job work.
+It is on the record because it is the kind of feature a demo usually claims and never measures.</p>
+<div class="src">source: results/escalate.json</div></div>`:''}
 <h2>What is not built</h2>
-<div class="panel"><p class="note" style="margin-top:0">No big-model arm was measured &mdash; no
-API key was available &mdash; so that comparison is arithmetic and labelled computed. Claude Code
+<div class="panel"><p class="note" style="margin-top:0">Automatic escalation is measured and does not
+yet work, as above. Claude Code
 cannot route through Route yet; it speaks a different protocol. Repeat-work detection across repos
 is designed, not built. Five of eight jobs have no fixtures. All of this is on the record because
 a demo that overstates its reach is worth less than one that does not.</p></div>`;

@@ -53,7 +53,7 @@ export async function collect() {
       m.requests++; m.input += t.input; m.output += t.output; m.cache_read += t.cache_read; m.cache_create += t.cache_create;
       const d = (byDay[day] ||= { requests: 0, cost_usd: 0 });
       d.requests++;
-      d.cost_usd += cost(model, { input: t.input + t.cache_create, output: t.output, cache_read: t.cache_read }) || 0;
+      d.cost_usd += cost(model, { input: t.input, output: t.output, cache_read: t.cache_read, cache_create: t.cache_create }) || 0;
     });
     rl.on('close', res); rl.on('error', res);
   })));
@@ -68,12 +68,12 @@ export async function run() {
   let actual = 0, unpriced = 0;
   const models = [];
   for (const [model, m] of Object.entries(byModel)) {
-    const usage = { input: m.input + m.cache_create, output: m.output, cache_read: m.cache_read };
+    const usage = { input: m.input, output: m.output, cache_read: m.cache_read, cache_create: m.cache_create };
     const c = cost(model, usage);
     if (c === null) unpriced += m.requests; else actual += c;
     models.push({
       model, requests: m.requests, share_pct: Number((m.requests / requests * 100).toFixed(2)),
-      tokens_in: usage.input, tokens_out: usage.output, cache_read: usage.cache_read,
+      tokens_in: usage.input, tokens_out: usage.output, cache_read: usage.cache_read, cache_create: usage.cache_create,
       cost_usd: c === null ? null : Number(c.toFixed(4)),
       priced: c !== null,
     });
@@ -83,8 +83,9 @@ export async function run() {
   // Counterfactual. Routing every token is not a claim anyone should believe, so this is a
   // sensitivity band: what the bill becomes if that share of work had gone to Token Factory.
   const totalUsage = models.reduce((s, m) => ({
-    input: s.input + m.tokens_in, output: s.output + m.tokens_out, cache_read: s.cache_read + m.cache_read,
-  }), { input: 0, output: 0, cache_read: 0 });
+    input: s.input + m.tokens_in, output: s.output + m.tokens_out,
+    cache_read: s.cache_read + m.cache_read, cache_create: s.cache_create + (m.cache_create || 0),
+  }), { input: 0, output: 0, cache_read: 0, cache_create: 0 });
   const allRouted = cost(routedModel, totalUsage);
   const band = [0.25, 0.5, 0.75].map((share) => {
     const routed = allRouted * share + actual * (1 - share);
