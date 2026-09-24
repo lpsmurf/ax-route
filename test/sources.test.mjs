@@ -27,7 +27,8 @@ before(async () => {
 
   put('.claude.json', JSON.stringify({ oauthAccount: { billingType: 'stripe_subscription', userRateLimitTier: 'max_20x', emailAddress: 'x@y' } }));
   const cu = (id, extra = {}) => ({ requestId: id, cwd: '/w/alpha', timestamp: '2026-09-01T10:00:00Z', message: { model: 'claude-opus-5', usage: { input_tokens: 10000, output_tokens: 20000, cache_read_input_tokens: 100000, cache_creation_input_tokens: 5000 } }, ...extra });
-  put('.claude/projects/-w-alpha/s1.jsonl', [cu('r1'), cu('r1'), cu('r2'), { requestId: 'r3', message: { model: '<synthetic>', usage: {} } }]);
+  const partial = (id, out) => ({ ...cu(id), message: { id: 'msg_5', model: 'claude-opus-5', usage: { input_tokens: 1, output_tokens: out } } });
+  put('.claude/projects/-w-alpha/s1.jsonl', [cu('r1'), cu('r1'), cu('r2'), { requestId: 'r3', message: { model: '<synthetic>', usage: {} } }, partial('r5', 3), partial('r5', 900)]);
   put('.claude/projects/-w-alpha/s1/subagents/a.jsonl', [cu('r4')]);
 
   const tc = (at, total, last, rl) => ({ timestamp: at, type: 'event_msg', payload: { type: 'token_count', info: { total_token_usage: { total_tokens: total }, last_token_usage: last }, rate_limits: rl } });
@@ -40,6 +41,12 @@ before(async () => {
     tc(now, 150, { input_tokens: 100, cached_input_tokens: 60, output_tokens: 50 }, rl(40, 10)),
     tc(now, 400, { input_tokens: 200, cached_input_tokens: 0, output_tokens: 50 }, rl(90, 20)),
     tc(new Date(Date.now() + 1000).toISOString(), 400, null, rl(15, 21)),
+    tc(now, 120, { input_tokens: 100, cached_input_tokens: 0, output_tokens: 20 }),
+  ]);
+  put('.codex/sessions/2026/09/21/rollout-b.jsonl', [
+    { type: 'turn_context', payload: { cwd: '/w/beta', model: 'gpt-5.4' } },
+    { type: 'token_usage_record', timestamp: now, payload: { model: null, usage: { input_tokens: 70, cached_input_tokens: 10, output_tokens: 5 } } },
+    tc(now, 75, { input_tokens: 70, cached_input_tokens: 10, output_tokens: 5 }),
   ]);
 
   const session = join(H, '.kimi-code/sessions/wd_gamma_0123456789ab/session_1');
@@ -92,17 +99,20 @@ after(() => { rmSync(H, { recursive: true, force: true }); rmSync(EMPTY, { recur
 test('claude-code: dedupes request ids, skips synthetic, reads subagent transcripts, reads billing', async () => {
   const s = await claude.read(H);
   assert.equal(s.status, 'ok');
-  assert.equal(s.records.length, 3);
+  assert.equal(s.records.length, 4);
   assert.equal(s.plan, 'max_20x');
   assert.ok(s.records.every((r) => r.billing === 'subscription' && r.project === 'alpha' && r.day === '2026-09-01'));
-  assert.deepEqual([sum(s.records, 'input'), sum(s.records, 'cache_read')], [30000, 300000]);
+  assert.deepEqual([sum(s.records, 'input'), sum(s.records, 'cache_read')], [30001, 300000]);
+  assert.equal(s.records.find((r) => r.input === 1).output, 900, 'largest partial output wins');
 });
 
 test('codex: one record per new call, cached input split out, plan limits tracked', async () => {
   const s = await codex.read(H);
-  assert.equal(s.records.length, 2);
+  assert.equal(s.records.length, 4);
   assert.equal(s.plan, 'plus');
-  assert.deepEqual(s.records.map((r) => [r.input, r.cache_read, r.output]), [[40, 60, 50], [200, 0, 50]]);
+  const calls = s.records.map((r) => [r.input, r.cache_read, r.output]).sort((a, b) => a[0] - b[0] || a[2] - b[2]);
+  // a falling running total (resumed session) is a new call; per-response records win over token_count
+  assert.deepEqual(calls, [[40, 60, 50], [60, 10, 5], [100, 0, 20], [200, 0, 50]]);
   assert.ok(s.records.every((r) => r.model === 'gpt-5.4' && r.project === 'beta' && r.billing === 'subscription'));
   assert.equal(s.limits.primary.used_percent, 15);
   assert.equal(s.limits.primary.peak_30d, 90);
