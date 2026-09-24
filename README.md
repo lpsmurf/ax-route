@@ -74,8 +74,46 @@ against the plan's rate limits — moving mechanical work off it frees limits, n
 OpenClaw are model-agnostic; when they run on your Codex or Kimi plan, that usage counts against
 that plan, once.
 
+### How you pay, asked once
+
+The logs say which tools ran, and sometimes which plan. Only you know the fee. On the first
+interactive run the audit asks, per tool it found, how you pay — a listed plan, a custom monthly
+amount, or pay-per-token by API key — pre-selecting the plan the logs reveal. Answers live in
+`~/.config/ax-route/plans.json`, never in the repo; `route plans` asks again.
+
 ```
-route audit --plan codex=20,claude-code=200   # your monthly fees → value multiple per plan
+codex — 4,414 requests (incl. hermes), logs say plan "plus"
+  1) ChatGPT Plus                   $20/month
+  2) ChatGPT Pro 5x                 $100/month
+  ...
+  7) API key — pay per token
+choice [1]:
+```
+
+The audit then turns usage over the last 30 days into a monthly bill, with a verdict per plan:
+
+```
+your monthly bill — last 30 days:
+  claude-code  Claude Pro        $20.00/mo  worth $760.47 at API prices (38.0x the fee) · plan pays off
+  codex        ChatGPT Plus      $20.00/mo  worth $132.78 · peak 99% of limits → Route moves ~44% of the work off the plan
+  kimi         custom plan       $44.46/mo  worth only $6.84 at API prices → pay per token with Route ≈ $4.12/month
+  today $84.46/month · with Route $44.12/month · save $40.34 (47.8%)
+```
+
+| Verdict | Means |
+|---|---|
+| **pays off** | the plan is worth more than it costs at API prices and is not near its limits |
+| **at limits** | worth it, but capacity is the constraint — Route moves mechanical work off the plan |
+| **downgrade** | the plan's own limit data shows a smaller tier holds your peak once Route offloads work |
+| **overpaying** | paying per token, with Route routing the mechanical share, costs less than the fee |
+| **can't compare** | over 20% of the usage has no public price, so no verdict is claimed |
+
+Plan prices come from `plans.yaml`, each with its source and confidence, same rule as `prices.yaml`.
+
+```
+route plans                                   # answer the questions again
+route audit --yes                             # never ask (CI); saved answers and detection only
+route audit --plan codex=20,claude-code=200   # monthly fees as flags; flags beat saved answers
 route audit --billing openclaw=api            # correct a tool's billing when detection can't tell
 route audit --source codex,kimi               # only read these tools
 route audit --reveal                          # real project names instead of stable labels
@@ -244,7 +282,9 @@ Point any OpenAI client at `http://localhost:8787/v1` and set `x-route-job`.
 | `src/ledger.mjs` | Append-only JSONL. One line per routed call. |
 | `src/bench.mjs` | Two arms, two scorers, blind judge. |
 | `src/replay.mjs` | Real transcripts → actual cost → counterfactual band. |
-| `src/estate.mjs` | The audit. Merges every source, splits paid from API-equivalent, groups subscriptions by plan. |
+| `src/estate.mjs` | The audit. Merges every source, splits paid from API-equivalent, groups subscriptions by plan, prints the monthly bill. |
+| `src/plans.mjs` | The how-do-you-pay questionnaire, saved answers, plan-tier detection and the per-plan verdict. |
+| `plans.yaml` | Subscription tiers and monthly fees, each naming its source and confidence. |
 | `src/sources/*.mjs` | One reader per agent tool, all returning the same usage record. Add a tool by adding a file. |
 
 ## What is not built

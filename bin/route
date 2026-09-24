@@ -26,12 +26,14 @@ switch (cmd) {
     break;
   }
   case 'audit':
-  case 'estate': {
+  case 'estate':
+  case 'plans': {
     const { run } = await import('../src/estate.mjs');
-    // --plan claude-code=200,codex=20   --billing openclaw=api   --source codex,kimi
+    // --plan claude-code=200,codex=20   --billing openclaw=api   --source codex,kimi   --yes (never ask)
     const pairs = (s) => Object.fromEntries((s || '').split(',').filter(Boolean).map((kv) => kv.split('=')));
     const plans = Object.fromEntries(Object.entries(pairs(flag('plan'))).map(([k, v]) => [k, Number(v)]));
-    await run({ reveal: args.includes('--reveal'), plans, billing: pairs(flag('billing')), only: flag('source')?.split(',') });
+    const ask = cmd === 'plans' ? 'always' : args.includes('--yes') ? 'never' : 'auto';
+    await run({ reveal: args.includes('--reveal'), plans, billing: pairs(flag('billing')), only: flag('source')?.split(','), ask });
     break;
   }
   case 'escalate': {
@@ -60,7 +62,9 @@ switch (cmd) {
 START HERE — no API key needed, reads your machine, takes a few seconds:
 
   route audit                 what you spend, per tool and project, and how much can move today
-                              reads Claude Code, Codex, Kimi Code, Hermes and OpenClaw logs
+                              reads Claude Code, Codex, Kimi Code, Hermes and OpenClaw logs;
+                              the first run asks how you pay for each tool (once)
+  route plans                 answer those questions again (plan changed, new tool)
 
 THEN, to act on it:
 
@@ -81,6 +85,7 @@ GOING DEEPER — prove it on your own workload (needs NEBIUS_API_KEY):
                               correct a tool's billing mode when detection can't tell
   route audit --source codex,kimi
                               only read these tools
+  route audit --yes           never ask; use saved answers and detection only
 
 Everything writes JSON to results/ so you can diff it, chart it, or gate CI on it.
 `);

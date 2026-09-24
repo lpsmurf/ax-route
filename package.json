@@ -5,7 +5,7 @@
   "type": "module",
   "bin": { "route": "./bin/route", "ax-route": "./bin/route" },
   "engines": { "node": ">=20" },
-  "files": ["bin", "src", "policy.yaml", "prices.yaml", "results/sweep.json", "README.md"],
+  "files": ["bin", "src", "policy.yaml", "prices.yaml", "plans.yaml", "results/sweep.json", "README.md"],
   "scripts": {
     "test": "node --test test/sources.test.mjs",
     "audit": "node bin/route audit",

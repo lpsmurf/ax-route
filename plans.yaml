@@ -1,0 +1,26 @@
+# Subscription plans the audit offers in its questionnaire. USD per month, web checkout price,
+# before tax. `x` is the plan's usage allowance relative to the base tier of the same tool, used
+# only to suggest a smaller plan when the tool reports how much of its limits you actually use.
+#
+# Same rule as prices.yaml: every entry names its source and how much to trust it. A plan that is
+# not listed here can still be entered as a custom monthly amount; nothing is guessed.
+
+claude-code:
+  pro: { usd: 20, x: 1, label: "Claude Pro", source: "claude.com/pricing 2026-09-24 ($17/mo billed yearly)", confidence: high }
+  max-5x: { usd: 100, x: 5, label: "Claude Max 5x", source: "support.claude.com/en/articles/11049741 2026-09-24", confidence: high }
+  max-20x: { usd: 200, x: 20, label: "Claude Max 20x", source: "support.claude.com/en/articles/11049741 2026-09-24", confidence: high }
+
+codex:
+  plus: { usd: 20, x: 1, label: "ChatGPT Plus", source: "learn.chatgpt.com/docs/pricing 2026-09-24", confidence: high }
+  pro-5x: { usd: 100, x: 5, label: "ChatGPT Pro 5x", source: "learn.chatgpt.com/docs/pricing 2026-09-24", confidence: high }
+  pro-20x: { usd: 200, x: 20, label: "ChatGPT Pro 20x", source: "learn.chatgpt.com/docs/pricing 2026-09-24", confidence: high }
+  business: { usd: 20, x: 1, label: "ChatGPT Business (per seat)", source: "chatgpt.com/codex/pricing 2026-09-24", confidence: medium }
+  business-5x: { usd: 100, x: 5, label: "ChatGPT Business 5x (per seat)", source: "learn.chatgpt.com/docs/pricing 2026-09-24 (uses Pro 5x limits)", confidence: medium }
+
+# Kimi is renaming its membership tiers (Plus/Pro); prices are stated as unchanged. Medium until the
+# new names settle. Legacy CNY plans (¥49-¥699) are not listed — enter them as a custom amount.
+kimi:
+  moderato: { usd: 19, label: "Kimi Moderato", source: "kimi.ai/help/membership/membership-overview 2026-09-24", confidence: medium }
+  allegretto: { usd: 39, label: "Kimi Allegretto", source: "kimi.ai/help/membership/membership-overview 2026-09-24", confidence: medium }
+  allegro: { usd: 99, label: "Kimi Allegro", source: "kimi.ai/help/membership/membership-overview 2026-09-24", confidence: medium }
+  vivace: { usd: 199, label: "Kimi Vivace", source: "kimi.ai/help/membership/membership-overview 2026-09-24", confidence: medium }

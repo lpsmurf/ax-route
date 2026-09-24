@@ -15,6 +15,7 @@ import { homedir } from 'node:os';
 import { cost, lookup } from './price.mjs';
 import { policy } from './policy.mjs';
 import { collect, toolName } from './sources/index.mjs';
+import { catalog, loadAnswers, saveAnswers, questionnaire, verdict, payer, payers } from './plans.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const axHome = (home) => process.env.AX_HOME || join(home || process.env.ROUTE_HOME || homedir(), 'dev');
@@ -73,7 +74,8 @@ function value(r, win) {
 }
 
 // --- what each tool and project actually used, split by billing mode
-export function aggregate(records, win) {
+// `since` (YYYY-MM-DD) opens the 30-day window the monthly bill is computed over.
+export function aggregate(records, win, since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)) {
   const tools = {}, projects = {}, plans = {};
   for (const r of records) {
     const { worth, routed } = value(r, win);
@@ -81,8 +83,10 @@ export function aggregate(records, win) {
     const equiv = r.billing === 'api' || r.billing === 'local' ? 0 : worth ?? 0;
     // Only the mechanical share is claimable; 50% is the midpoint of the replay band.
     const gap = worth !== null && routed !== null ? Math.max(0, worth - routed) * 0.5 : 0;
-    const t = (tools[r.tool] ||= { tool: r.tool, requests: 0, tokens: 0, paid_usd: 0, equiv_usd: 0, unpriced_tokens: 0, local_tokens: 0, billing: {}, days: new Set(), models: {} });
+    const recent = Boolean(r.day && r.day >= since);
+    const t = (tools[r.tool] ||= { tool: r.tool, requests: 0, tokens: 0, paid_usd: 0, equiv_usd: 0, unpriced_tokens: 0, local_tokens: 0, paid_30d: 0, addressable_30d: 0, billing: {}, days: new Set(), models: {} });
     t.requests += r.requests; t.tokens += tokens(r); t.paid_usd += paid; t.equiv_usd += equiv;
+    if (recent && r.billing === 'api') { t.paid_30d += paid; t.addressable_30d += gap; }
     if (worth === null) t.unpriced_tokens += tokens(r);
     if (r.billing === 'local') t.local_tokens += tokens(r);
     t.billing[r.billing] = (t.billing[r.billing] || 0) + r.requests;
@@ -95,10 +99,14 @@ export function aggregate(records, win) {
     p.models[r.model] = (p.models[r.model] || 0) + r.requests;
     if (r.day) p.days.add(r.day);
     if (r.billing === 'subscription') {
-      const key = r.plan_via || r.tool;
-      const s = (plans[key] ||= { plan: key, requests: 0, equiv_usd: 0, unpriced_tokens: 0, tools: new Set(), days: new Set() });
+      const key = payer(r);
+      const s = (plans[key] ||= { plan: key, requests: 0, equiv_usd: 0, unpriced_tokens: 0, equiv_30d: 0, gap_30d: 0, tokens_30d: 0, unpriced_30d: 0, tools: new Set(), days: new Set() });
       s.requests += r.requests; s.equiv_usd += equiv; s.tools.add(r.tool);
       if (worth === null) s.unpriced_tokens += tokens(r);
+      if (recent) {
+        s.equiv_30d += equiv; s.gap_30d += gap; s.tokens_30d += tokens(r);
+        if (worth === null) s.unpriced_30d += tokens(r);
+      }
       if (r.day) s.days.add(r.day);
     }
   }
@@ -110,7 +118,8 @@ export function aggregate(records, win) {
   };
   return {
     tools: Object.values(tools).map((t) => ({
-      ...t, paid_usd: r2(t.paid_usd), equiv_usd: r2(t.equiv_usd), active_days: t.days.size, span: span(t.days),
+      ...t, paid_usd: r2(t.paid_usd), equiv_usd: r2(t.equiv_usd), paid_30d: r2(t.paid_30d), addressable_30d: r2(t.addressable_30d),
+      active_days: t.days.size, span: span(t.days),
       days: undefined, models: top(t.models),
       mode: top(t.billing)[0] || 'unknown',
     })).sort((a, b) => b.paid_usd + b.equiv_usd - (a.paid_usd + a.equiv_usd)),
@@ -123,21 +132,44 @@ export function aggregate(records, win) {
   };
 }
 
-// --- subscriptions: value received against the fee, and how hard the plan's limits are hit
-function subscriptions(plans, sources, fees) {
+// --- subscriptions: value received against the fee, how hard the limits are hit, and the verdict
+function subscriptions(plans, sources, fees, answers) {
+  const r2 = (n) => (n === null || n === undefined ? null : Number(n.toFixed(2)));
   return plans.map((p) => {
     const src = sources.find((s) => s.tool === p.plan) || {};
     const fee = fees[p.plan] ?? null;
+    const tier = answers[p.plan]?.tier || null;
     const months = p.span ? p.span.days / 30 : null;
+    const value = p.equiv_30d, routed = Math.max(0, p.equiv_30d - p.gap_30d);
+    const v = verdict({ tool: p.plan, tier, fee, value, routed, unpricedShare: p.tokens_30d ? p.unpriced_30d / p.tokens_30d : 0, limits: src.limits });
     return {
-      tool: p.plan, used_by: p.tools, tier: src.plan || null, requests: p.requests, equiv_usd: p.equiv_usd,
-      unpriced_tokens: p.unpriced_tokens, span: p.span,
+      tool: p.plan, used_by: p.tools, detected_plan: src.plan || null,
+      tier, tier_label: tier === 'custom' ? 'custom plan' : catalog()[p.plan]?.[tier]?.label || null,
+      requests: p.requests, equiv_usd: p.equiv_usd, unpriced_tokens: p.unpriced_tokens, span: p.span,
       fee_usd_month: fee,
-      fee_usd_period: fee !== null && months ? Number((fee * months).toFixed(2)) : null,
+      fee_usd_period: fee !== null && months ? r2(fee * months) : null,
       value_multiple: fee && months ? Number((p.equiv_usd / (fee * months)).toFixed(1)) : null,
+      month: { value_usd: r2(value), routed_usd: r2(routed), unpriced_share: p.tokens_30d ? r2(p.unpriced_30d / p.tokens_30d) : 0 },
+      verdict: { ...v, with_route: r2(v.with_route) },
       limits: src.limits || null,
     };
   });
+}
+
+// --- the monthly bill: what the operator pays now, and with Route, over the last 30 days
+function bill(subs, tools) {
+  const r2 = (n) => Number(n.toFixed(2));
+  const lines = [
+    ...subs.filter((s) => s.fee_usd_month !== null).map((s) => ({ tool: s.tool, kind: 'subscription', now: s.fee_usd_month, with_route: s.verdict.with_route })),
+    ...tools.filter((t) => t.paid_30d > 0).map((t) => ({ tool: t.tool, kind: 'pay-per-token', now: t.paid_30d, with_route: r2(t.paid_30d - t.addressable_30d) })),
+  ];
+  const now = r2(lines.reduce((s, l) => s + l.now, 0)), withRoute = r2(lines.reduce((s, l) => s + l.with_route, 0));
+  return {
+    window: 'last 30 days', lines,
+    now_usd_month: now, with_route_usd_month: withRoute,
+    saving_usd_month: r2(now - withRoute), saving_pct: now ? Number((((now - withRoute) / now) * 100).toFixed(1)) : 0,
+    unanswered: subs.filter((s) => s.fee_usd_month === null).map((s) => s.tool),
+  };
 }
 
 // --- which routes the evidence actually supports
@@ -174,20 +206,50 @@ const usd = (n) => (n === null || n === undefined ? '-' : '$' + (Math.abs(n) >= 
 const tok = (n) => (n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n));
 const win_ = (m) => (m >= 1440 ? `${Math.round(m / 1440)}d` : `${Math.round(m / 60)}h`);
 
-// plans: { tool: monthly fee USD }; billing: { tool: api|subscription|local } overrides detection.
-export async function run({ reveal = false, only, plans = {}, billing = {}, home, out: outPath = join(ROOT, 'results/estate.json'), print = true } = {}) {
+// Ask on an interactive terminal, and only about payers not answered before; never in CI or a pipe.
+const interactive = () => Boolean(process.stdin.isTTY && process.stdout.isTTY && !process.env.CI);
+
+// plans: { tool: monthly fee USD }; billing: { tool: api|subscription|local } — flags, which win over
+// saved questionnaire answers, which win over detection. ask: auto | always | never.
+export async function run({
+  reveal = false, only, plans = {}, billing = {}, home, ask = 'auto', prompt, now = Date.now(),
+  out: outPath = join(ROOT, 'results/estate.json'), print = true,
+} = {}) {
   const sweepPath = join(ROOT, 'results/sweep.json');
   const sweep = existsSync(sweepPath) ? JSON.parse(readFileSync(sweepPath, 'utf8')) : null;
   const inv = inventory(axHome(home));
   const sources = await collect({ only, home });
-  const override = Object.fromEntries(Object.entries(billing).map(([k, v]) => [toolName(k), v]));
-  const fees = Object.fromEntries(Object.entries(plans).map(([k, v]) => [toolName(k), v]));
-  const records = sources.flatMap((s) => (override[s.tool] ? s.records.map((r) => ({ ...r, billing: override[s.tool] })) : s.records));
+  const raw = sources.flatMap((s) => s.records);
+
+  const saved = loadAnswers(home);
+  let answers = saved || {};
+  const pending = Object.keys(payers(raw)).filter((k) => ask === 'always' || !(k in answers));
+  if (ask !== 'never' && pending.length && (prompt || interactive())) {
+    let rl = null;
+    if (!prompt) {
+      const { createInterface } = await import('node:readline/promises');
+      rl = createInterface({ input: process.stdin, output: process.stdout });
+    }
+    try { answers = await questionnaire({ records: raw, sources, answers, ask: pending, prompt: prompt || ((q) => rl.question(q)), print: print ? console.log : () => {} }); }
+    finally { rl?.close(); }
+    const p = saveAnswers(home, answers);
+    if (print) console.log(`\nsaved -> ${p}\n`);
+  }
+
+  const norm = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [toolName(k), v]));
+  const fromAnswers = (f) => Object.fromEntries(Object.entries(answers).filter(([, a]) => a && a[f] !== undefined).map(([k, a]) => [k, a[f]]));
+  const override = { ...fromAnswers('billing'), ...norm(billing) };
+  const fees = { ...fromAnswers('usd_month'), ...norm(plans) };
+  const records = raw.map((r) => {
+    const b = override[payer(r)] ?? override[r.tool];
+    return b && r.billing !== 'local' ? { ...r, billing: b } : r;
+  });
   const routes = assessRoutes(sweep);
   const win = sweep?.cheapest_passing;
-  const agg = aggregate(records, win);
+  const agg = aggregate(records, win, new Date(now - 30 * 864e5).toISOString().slice(0, 10));
   const projects = agg.projects.map((p, i) => ({ ...p, label: reveal ? p.project : anon(p.project, i), revealed: reveal, project: undefined, cost_usd: p.paid_usd }));
-  const subs = subscriptions(agg.plans, sources, fees);
+  const subs = subscriptions(agg.plans, sources, fees, answers);
+  const monthly = bill(subs, agg.tools);
   const sum = (k, xs = agg.tools) => Number(xs.reduce((s, x) => s + (x[k] || 0), 0).toFixed(2));
   const deployable = routes.filter((r) => r.status === 'deployable').length;
   const harness = inv.agents.length + inv.skills + inv.repos.length > 0;
@@ -202,6 +264,7 @@ export async function run({ reveal = false, only, plans = {}, billing = {}, home
     repos: inv.repos.map((r, i) => ({ name: reveal ? r.name : anon(r.name, i), has_remote: Boolean(r.remote) })),
     spend: { requests: sum('requests'), total_usd: sum('paid_usd'), equiv_usd: sum('equiv_usd'), projects },
     subscriptions: subs,
+    bill: monthly,
     routes,
     summary: {
       roles_total: routes.length,
@@ -234,20 +297,38 @@ export async function run({ reveal = false, only, plans = {}, billing = {}, home
       usd(t.paid_usd).padStart(9), usd(t.equiv_usd).padStart(10), (t.unpriced_tokens ? tok(t.unpriced_tokens) : '-').padStart(9));
   }
 
-  if (subs.length) {
-    console.log('\nsubscriptions — flat fee, $0 per token:');
+  if (monthly.lines.length || subs.length) {
+    console.log('\nyour monthly bill — last 30 days:');
+    const pct = (x) => `${Math.round(x * 100)}%`;
+    const say = (s) => {
+      const v = s.verdict, m = s.month;
+      switch (v.kind) {
+        case 'no-fee': return `worth ${usd(m.value_usd)} at API prices · fee unknown (run \`route plans\`)`;
+        case 'unpriced': return `${pct(m.unpriced_share)} of usage has no public price — can't compare yet`;
+        case 'overpaying': return `worth only ${usd(m.value_usd)} at API prices → pay per token with Route ≈ ${usd(v.with_route)}/month`;
+        case 'downgrade': return `worth ${usd(m.value_usd)} · with Route, ${v.to_label} fits your peak usage → ${usd(v.with_route)}/month`;
+        case 'at-limits': return `worth ${usd(m.value_usd)} · peak ${pct(v.peak)} of limits → Route moves ~${pct(v.offload)} of the work off the plan`;
+        default: return `worth ${usd(m.value_usd)} at API prices (${v.multiple.toFixed(1)}x the fee) · plan pays off`;
+      }
+    };
     for (const s of subs) {
-      const period = s.span ? ` over ${s.span.days} days` : '';
-      const fee = s.fee_usd_month === null ? `fee not set (--plan ${s.tool}=<USD/month>)` : `fee ${usd(s.fee_usd_period)} → ${s.value_multiple}x value`;
-      const worth = `worth ${usd(s.equiv_usd)} at API prices` + (s.unpriced_tokens ? ` + ${tok(s.unpriced_tokens)} unpriced tokens` : '');
       const via = s.used_by.length > 1 || s.used_by[0] !== s.tool ? ` (used by ${s.used_by.join(', ')})` : '';
-      console.log(`  ${s.tool.padEnd(12)} ${s.tier ? `tier ${s.tier} · ` : ''}${worth}${period} · ${fee}${via}`);
+      const fee = s.fee_usd_month === null ? '' : `${usd(s.fee_usd_month)}/mo`;
+      console.log(`  ${s.tool.padEnd(12)} ${(s.tier_label || s.detected_plan || 'subscription').slice(0, 24).padEnd(24)} ${fee.padStart(12)}  ${say(s)}${via}`);
       const l = s.limits;
       if (l) {
         const w = [l.primary, l.secondary].filter(Boolean).map((x) => `${win_(x.window_minutes)} ${x.used_percent}% (peak ${x.peak_30d}%)`);
-        console.log(`  ${''.padEnd(12)} limits as of ${String(l.as_of).slice(0, 10)}: ${w.join(' · ')}`);
+        console.log(`  ${''.padEnd(37)}  limits as of ${String(l.as_of).slice(0, 10)}: ${w.join(' · ')}`);
       }
     }
+    for (const l of monthly.lines.filter((x) => x.kind === 'pay-per-token')) {
+      console.log(`  ${l.tool.padEnd(12)} ${'pay per token'.padEnd(24)} ${(usd(l.now) + '/mo').padStart(12)}  with Route ≈ ${usd(l.with_route)}/month`);
+    }
+    if (monthly.lines.length) {
+      console.log(`  ${'—'.repeat(12)}`);
+      console.log(`  today ${usd(monthly.now_usd_month)}/month · with Route ${usd(monthly.with_route_usd_month)}/month · save ${usd(monthly.saving_usd_month)} (${monthly.saving_pct}%)`);
+    }
+    if (monthly.unanswered.length) console.log(`  fee unknown for ${monthly.unanswered.join(', ')} — run \`route plans\` to add it`);
   }
 
   console.log('\n' + 'project'.padEnd(14), 'tools'.padEnd(22), 'reqs'.padStart(6), 'days'.padStart(5), 'paid'.padStart(9), 'api-equiv'.padStart(10), 'movable'.padStart(9));

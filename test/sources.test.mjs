@@ -12,6 +12,7 @@ import * as hermes from '../src/sources/hermes.mjs';
 import * as openclaw from '../src/sources/openclaw.mjs';
 import * as cursor from '../src/sources/cursor.mjs';
 import { run } from '../src/estate.mjs';
+import { detectTier, verdict, loadAnswers } from '../src/plans.mjs';
 
 let H, EMPTY;
 const put = (rel, body) => {
@@ -167,7 +168,7 @@ test('audit: splits paid from API-equivalent, groups subscriptions by the plan t
   assert.ok(tool['claude-code'].equiv_usd > 0);
   assert.equal(tool.openclaw.local_tokens, 44);
   const codexPlan = out.subscriptions.find((s) => s.tool === 'codex');
-  assert.equal(codexPlan.tier, 'plus');
+  assert.equal(codexPlan.detected_plan, 'plus');
   assert.equal(codexPlan.fee_usd_month, 20);
   assert.ok(codexPlan.limits.primary);
   if (tool.hermes) {
@@ -178,14 +179,62 @@ test('audit: splits paid from API-equivalent, groups subscriptions by the plan t
   assert.ok(out.sources.find((s) => s.tool === 'cursor').status === 'unsupported');
 });
 
-test('audit: --billing override and --source filter', async () => {
-  const out = await run({ home: H, out: false, print: false, only: ['openclaw'], billing: { openclaw: 'api' } });
+test('audit: --billing override and --source filter; local usage is never re-billed', async () => {
+  const out = await run({ home: H, out: false, print: false, ask: 'never', only: ['openclaw'], billing: { openclaw: 'api' } });
   assert.deepEqual(out.sources.map((s) => s.tool), ['openclaw']);
-  assert.equal(out.tools[0].mode, 'api');
+  assert.deepEqual(out.tools[0].billing, { local: 1, api: 1 });
 });
 
 test('audit: empty machine does not crash', async () => {
   const out = await run({ home: EMPTY, out: false, print: false });
   assert.equal(out.spend.requests, 0);
   assert.deepEqual(out.subscriptions, []);
+  assert.equal(out.bill.now_usd_month, 0);
+});
+
+test('plans: tier detection only when unambiguous', () => {
+  assert.equal(detectTier('codex', 'plus'), 'plus');
+  assert.equal(detectTier('codex', 'business'), 'business');
+  assert.equal(detectTier('codex', 'pro'), null);
+  assert.equal(detectTier('claude-code', 'default_claude_max_20x'), 'max-20x');
+  assert.equal(detectTier('kimi', null), null);
+});
+
+test('plans: verdicts', () => {
+  const base = { tool: 'codex', unpricedShare: 0, limits: null };
+  assert.equal(verdict({ ...base, fee: null, value: 5, routed: 3 }).kind, 'no-fee');
+  assert.equal(verdict({ ...base, fee: 20, value: 50, routed: 30, unpricedShare: 0.5 }).kind, 'unpriced');
+  assert.deepEqual(verdict({ ...base, fee: 20, value: 12, routed: 7 }), { kind: 'overpaying', with_route: 7 });
+  assert.equal(verdict({ ...base, fee: 20, value: 80, routed: 50 }).kind, 'pays-off');
+  const lim = (peak) => ({ primary: { peak_30d: peak }, secondary: { peak_30d: peak / 2 } });
+  assert.equal(verdict({ ...base, tier: 'plus', fee: 20, value: 80, routed: 50, limits: lim(99) }).kind, 'at-limits');
+  // Pro 20x peaking at 12%: after offload a 5x plan still holds it with margin.
+  const down = verdict({ ...base, tier: 'pro-20x', fee: 200, value: 900, routed: 600, limits: lim(12) });
+  assert.deepEqual([down.kind, down.to, down.with_route], ['downgrade', 'pro-5x', 100]);
+  assert.equal(verdict({ ...base, tier: 'pro-20x', fee: 200, value: 900, routed: 600, limits: lim(60) }).kind, 'pays-off');
+});
+
+test('audit: questionnaire asks once per payer, saves, and prices the monthly bill', async () => {
+  const asked = [];
+  const script = ['', '', 'x', '5', '', '39'];
+  const prompt = async (q) => { asked.push(q); return script.shift() ?? '2'; };
+  const now = Date.parse('2026-09-24T12:00:00Z');
+  const out = await run({ home: H, out: false, print: false, ask: 'always', prompt, now });
+  const saved = loadAnswers(H);
+  assert.deepEqual(saved['claude-code'], { billing: 'subscription', tier: 'max-20x', usd_month: 200 }, 'detected tier is the default');
+  assert.deepEqual(saved.codex, { billing: 'subscription', tier: 'plus', usd_month: 20 });
+  assert.deepEqual(saved.kimi, { billing: 'subscription', tier: 'custom', usd_month: 39 }, 'invalid then empty input re-asks');
+  const sub = Object.fromEntries(out.subscriptions.map((s) => [s.tool, s]));
+  assert.equal(sub.codex.tier_label, 'ChatGPT Plus');
+  assert.equal(sub.kimi.tier_label, 'custom plan');
+  assert.equal(out.bill.lines.filter((l) => l.kind === 'subscription').length, 3);
+  assert.equal(out.bill.saving_usd_month, Number((out.bill.now_usd_month - out.bill.with_route_usd_month).toFixed(2)));
+  assert.ok(out.bill.now_usd_month >= 259);
+
+  // A later run reuses the answers and never prompts.
+  const again = await run({ home: H, out: false, print: false, prompt: () => { throw new Error('asked twice'); }, now });
+  assert.equal(again.bill.now_usd_month, out.bill.now_usd_month);
+  // Flags still win over saved answers.
+  const flagged = await run({ home: H, out: false, print: false, ask: 'never', plans: { codex: 100 }, now });
+  assert.equal(flagged.subscriptions.find((s) => s.tool === 'codex').fee_usd_month, 100);
 });
