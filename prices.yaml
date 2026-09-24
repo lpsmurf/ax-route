@@ -18,6 +18,15 @@ frontier:
   gpt-5.6-terra: { input: 2, output: 12, cache_read: 0.2, source: "ax-harness config/models.yaml", confidence: high }
   gpt-5.6-luna: { input: 0.2, output: 1.2, cache_read: 0.02, source: "ax-harness config/models.yaml", confidence: high }
   gpt-6-astra: { input: 10, output: 50, cache_read: 1.0, source: "ax-harness config/models.yaml", confidence: high }
+  # Seen in local Codex, Claude Code, Kimi and Hermes logs. Cache rates follow the harness defaults
+  # (Anthropic 0.1x read / 1.25x 5-minute write; OpenAI 0.1x read).
+  claude-fable-5: { input: 10, output: 50, cache_read: 1.0, cache_write: 12.5, source: "ax-harness config/models.yaml (claude-api skill)", confidence: high }
+  claude-sonnet-4-6: { input: 3, output: 15, cache_read: 0.3, cache_write: 3.75, source: "ax-harness config/models.yaml (claude-api skill)", confidence: high }
+  gpt-5.4: { input: 2.5, output: 15, cache_read: 0.25, source: "ax-harness config/models.yaml (developers.openai.com/api/docs/pricing 2026-09-22)", confidence: high }
+  # Aggregator figure, not platform.moonshot.ai — used for API-equivalent value only, never a bill.
+  kimi-code/k3-256k: { input: 3, output: 15, cache_read: 0.3, source: "ax-harness config/models.yaml (benchlm.ai/moonshot/api-pricing 2026-09-22)", confidence: medium }
+  # Deliberately unpriced: codex-auto-review (internal, no public price), kimi-code/kimi-for-coding
+  # and -highspeed (plan aliases, no confirmed public price).
 
 # Nebius Token Factory. Primary source: the Token Factory API itself —
 #   GET https://api.studio.nebius.com/v1/models?verbose=true  (authenticated, read 2026-09-23)

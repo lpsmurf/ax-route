@@ -28,7 +28,10 @@ switch (cmd) {
   case 'audit':
   case 'estate': {
     const { run } = await import('../src/estate.mjs');
-    await run({ reveal: args.includes('--reveal') });
+    // --plan claude-code=200,codex=20   --billing openclaw=api   --source codex,kimi
+    const pairs = (s) => Object.fromEntries((s || '').split(',').filter(Boolean).map((kv) => kv.split('=')));
+    const plans = Object.fromEntries(Object.entries(pairs(flag('plan'))).map(([k, v]) => [k, Number(v)]));
+    await run({ reveal: args.includes('--reveal'), plans, billing: pairs(flag('billing')), only: flag('source')?.split(',') });
     break;
   }
   case 'escalate': {
@@ -56,7 +59,8 @@ switch (cmd) {
 
 START HERE — no API key needed, reads your machine, takes a few seconds:
 
-  route audit                 what you spend, per project, and how much can move today
+  route audit                 what you spend, per tool and project, and how much can move today
+                              reads Claude Code, Codex, Kimi Code, Hermes and OpenClaw logs
 
 THEN, to act on it:
 
@@ -71,6 +75,12 @@ GOING DEEPER — prove it on your own workload (needs NEBIUS_API_KEY):
   route escalate              cheap-first with an automatic upgrade when the answer looks weak
   route replay                re-price your whole history under the policy
   route audit --reveal        same audit, with real project names instead of labels
+  route audit --plan codex=20,claude-code=200
+                              compare subscription value against what you pay per month
+  route audit --billing openclaw=api
+                              correct a tool's billing mode when detection can't tell
+  route audit --source codex,kimi
+                              only read these tools
 
 Everything writes JSON to results/ so you can diff it, chart it, or gate CI on it.
 `);

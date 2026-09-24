@@ -29,22 +29,57 @@ Across **3,865 real requests** in the local transcripts, the cheap tier ran **5 
 
 ## What Route does
 
-**Step one is an audit, and it needs no API key.** Point Route at your machine and it reads your
-whole agent estate — every role you have defined, every project, every request, what each one
-cost — then says which of those routes can move to open weights *on measured evidence*:
+**Step one is an audit, and it needs no API key.** Route reads the usage logs your agent tools
+already keep on disk — every project, every request, which model ran it, and how you pay for it —
+then says which of that work can move to open weights *on measured evidence*:
 
 ```
 $ npx ax-route audit
-estate: 8 agent roles, 129 skills, 19 repos registered
-spend:  3,960 requests across 56 projects, $168.15
+sources: claude-code 5538 · codex 2564 · kimi 365 · hermes 68 · openclaw 215
+usage:   10,489 requests across 139 projects
+
+tool         billing          reqs   tokens      paid  api-equiv  unpriced
+claude-code  subscription     5538     1.3B     $0.00    $985.49         -
+codex        subscription     2564   263.2M     $0.00    $143.07     16.4M
+hermes       subscription     1807   154.3M     $0.00    $103.75         -
+kimi         subscription      365    40.6M     $0.00      $6.84     26.8M
+
+subscriptions — flat fee, $0 per token:
+  codex        tier plus · worth $246.82 at API prices over 74 days · fee $49.33 → 5x value (used by codex, hermes)
+               limits as of 2026-09-22: 5h 10% (peak 99%) · 7d 31% (peak 75%)
 
 routes: 3 of 8 roles deployable on measured evidence, 5 untested
-addressable today: $82.23
+overspend today (pay-per-token):        $0.00
+offloadable (subscriptions, API prices): $462.24  — frees plan limits, not cash
 ```
 
 Three of eight roles have fixtures behind them and are marked deployable. The other five do not,
 so Route will not call them safe. A routing tool that marked all eight green would be guessing on
 five of them.
+
+### Which tools it reads
+
+| Tool | Reads | Billing detected from |
+|---|---|---|
+| **Claude Code** | `~/.claude/projects/**/*.jsonl` | signed-in account type in `~/.claude.json` |
+| **Codex** | `~/.codex/sessions/**/rollout-*.jsonl` | ChatGPT plan in the rate-limit events; also reports 5-hour and weekly limit use |
+| **Kimi Code** | `~/.kimi-code/sessions` (2.x) and `~/.kimi/sessions` (1.x) | `kimi-code/` models are the membership plan |
+| **Hermes** | `~/.hermes/state.db` (needs Node 22.5+) | Hermes' own per-model billing record |
+| **OpenClaw** | `~/.openclaw/agents/*/sessions/*.jsonl` | the provider endpoint in `openclaw.json` |
+| **Cursor** | detected only | usage lives on Cursor's servers — reader not built yet |
+
+**Two kinds of money, never mixed.** Pay-per-token usage is real spend and can be overspent.
+A flat subscription costs nothing per token, so its usage is shown at *API-equivalent* value and
+against the plan's rate limits — moving mechanical work off it frees limits, not cash. Hermes and
+OpenClaw are model-agnostic; when they run on your Codex or Kimi plan, that usage counts against
+that plan, once.
+
+```
+route audit --plan codex=20,claude-code=200   # your monthly fees → value multiple per plan
+route audit --billing openclaw=api            # correct a tool's billing when detection can't tell
+route audit --source codex,kimi               # only read these tools
+route audit --reveal                          # real project names instead of stable labels
+```
 
 **Step two is enforcement.** One OpenAI-compatible endpoint. Every call declares a *job*. A policy file a human can read maps
 that job to the cheapest model that can actually do it — open weights on **Nebius Token Factory**
@@ -172,7 +207,7 @@ governor. Now the gap is 62× and the quality difference is noise.
 
 | | |
 |---|---|
-| **Day one** | `npx ax-route audit`. No API key, no signup, no config. Reads your machine, prints what you spend and what can move. |
+| **Day one** | `npx ax-route audit`. No API key, no signup, no config. Reads Claude Code, Codex, Kimi Code, Hermes and OpenClaw logs, prints what you spend or what your plan is worth, and what can move. |
 | **Day one hundred** | A policy file in version control, model sweeps against your own fixtures, per-project ledgers, and JSON output you can diff or gate CI on. |
 
 The audit is the on-ramp because it costs nothing to run and answers the only question a new user
@@ -209,14 +244,18 @@ Point any OpenAI client at `http://localhost:8787/v1` and set `x-route-job`.
 | `src/ledger.mjs` | Append-only JSONL. One line per routed call. |
 | `src/bench.mjs` | Two arms, two scorers, blind judge. |
 | `src/replay.mjs` | Real transcripts → actual cost → counterfactual band. |
+| `src/estate.mjs` | The audit. Merges every source, splits paid from API-equivalent, groups subscriptions by plan. |
+| `src/sources/*.mjs` | One reader per agent tool, all returning the same usage record. Add a tool by adding a file. |
 
 ## What is not built
 
 Named honestly, because a demo that overstates its reach is worth less than one that does not:
 
-- **Claude Code support.** Route speaks the OpenAI wire format, which Token Factory, Codex,
-  Cursor, Continue and the OpenAI SDK all speak. Claude Code speaks the Anthropic format; that
-  adapter is the next piece of work, not a thing that exists today.
+- **Claude Code routing.** The audit reads Claude Code; the endpoint cannot route it yet. Route
+  speaks the OpenAI wire format, which Token Factory, Codex, Cursor, Continue and the OpenAI SDK
+  all speak. Claude Code speaks the Anthropic format; that adapter is the next piece of work.
+- **A Cursor audit.** Cursor keeps per-request usage on its servers, not on disk, so the audit
+  detects Cursor and says so instead of reporting zero.
 - **Quality-gate escalation.** The design escalates a failed job to the next tier up. Today the
   policy is static and the benchmark measures the failure rate that would trigger it.
 - **Streaming responses.**
