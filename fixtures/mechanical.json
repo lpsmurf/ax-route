@@ -1,0 +1,128 @@
+[
+  {
+    "id": "mech-01",
+    "job": "mechanical",
+    "prompt": "Extract the email address from this text and reply with only the email address: \"Please send the invoice to billing@example-corp.test by Friday.\"",
+    "rubric": "The answer is exactly billing@example-corp.test, with no extra words, quotes or punctuation."
+  },
+  {
+    "id": "mech-02",
+    "job": "mechanical",
+    "prompt": "Convert this date to ISO 8601 (YYYY-MM-DD) and reply with only the date: \"March 3rd, 2024\"",
+    "rubric": "The answer is exactly 2024-03-03, with no extra words."
+  },
+  {
+    "id": "mech-03",
+    "job": "mechanical",
+    "prompt": "Reply with only the number of items in this list: apples, bananas, cherries, dates, elderberries",
+    "rubric": "The answer is the digit 5, with no extra words."
+  },
+  {
+    "id": "mech-04",
+    "job": "mechanical",
+    "prompt": "Classify the sentiment of this sentence as positive, negative or neutral, reply with one word only: \"The delivery arrived two days late and the box was damaged.\"",
+    "rubric": "The answer is exactly \"negative\" (case-insensitive), with no extra words."
+  },
+  {
+    "id": "mech-05",
+    "job": "mechanical",
+    "prompt": "Reply with only the currency code (three letters) mentioned in this sentence: \"The invoice total is 129.00 EUR, due on receipt.\"",
+    "rubric": "The answer is exactly EUR, with no extra words."
+  },
+  {
+    "id": "mech-06",
+    "job": "mechanical",
+    "prompt": "Convert this phone number to E.164 format assuming country code +1, reply with only the number: \"(415) 555-0134\"",
+    "rubric": "The answer is exactly +14155550134, with no extra words."
+  },
+  {
+    "id": "mech-07",
+    "job": "mechanical",
+    "prompt": "Reply with only \"yes\" or \"no\": is the following a valid JSON object? {\"name\": \"Ada\", \"age\": 30}",
+    "rubric": "The answer is exactly \"yes\" (case-insensitive), with no extra words."
+  },
+  {
+    "id": "mech-08",
+    "job": "mechanical",
+    "prompt": "Reply with only \"yes\" or \"no\": is the following a valid JSON object? {name: \"Ada\", age: 30,}",
+    "rubric": "The answer is exactly \"no\" (case-insensitive), with no extra words."
+  },
+  {
+    "id": "mech-09",
+    "job": "mechanical",
+    "prompt": "Reply with only the total, computed by summing these numbers: 12, 45, 7, 100, 3",
+    "rubric": "The answer is exactly 167, with no extra words."
+  },
+  {
+    "id": "mech-10",
+    "job": "mechanical",
+    "prompt": "Reply with only the file extension (including the dot) of this filename: quarterly-report.final.v2.pdf",
+    "rubric": "The answer is exactly .pdf, with no extra words."
+  },
+  {
+    "id": "mech-11",
+    "job": "mechanical",
+    "prompt": "Reply with only the domain name (no protocol, no path) of this URL: https://sub.example.test/path/to/page?x=1",
+    "rubric": "The answer is exactly sub.example.test, with no extra words."
+  },
+  {
+    "id": "mech-12",
+    "job": "mechanical",
+    "prompt": "Reply with only \"true\" or \"false\": is 17 a prime number?",
+    "rubric": "The answer is exactly \"true\" (case-insensitive), with no extra words."
+  },
+  {
+    "id": "mech-13",
+    "job": "mechanical",
+    "prompt": "Reply with only \"true\" or \"false\": is 91 a prime number?",
+    "rubric": "The answer is exactly \"false\" (case-insensitive), with no extra words. 91 = 7 x 13."
+  },
+  {
+    "id": "mech-14",
+    "job": "mechanical",
+    "prompt": "Reply with only the HTTP status code mentioned in this log line: \"2024-01-05T10:22:31Z GET /health 503 Service Unavailable\"",
+    "rubric": "The answer is exactly 503, with no extra words."
+  },
+  {
+    "id": "mech-15",
+    "job": "mechanical",
+    "prompt": "Reply with only the plural form of this word: \"analysis\"",
+    "rubric": "The answer is exactly \"analyses\", with no extra words."
+  },
+  {
+    "id": "mech-16",
+    "job": "mechanical",
+    "prompt": "Reply with only the uppercase version of this text: \"error: connection refused\"",
+    "rubric": "The answer is exactly ERROR: CONNECTION REFUSED, with no extra words."
+  },
+  {
+    "id": "mech-17",
+    "job": "mechanical",
+    "prompt": "Reply with only the count of vowels (a, e, i, o, u, case-insensitive) in this word: \"benchmark\"",
+    "rubric": "The answer is exactly 2 (b-e-n-c-h-m-a-r-k has e and a), with no extra words."
+  },
+  {
+    "id": "mech-18",
+    "job": "mechanical",
+    "prompt": "Reply with only the reordered list, sorted alphabetically, comma-separated: banana, apple, cherry",
+    "rubric": "The answer is exactly \"apple, banana, cherry\" (order and commas matter, spacing may vary slightly)."
+  },
+  {
+    "id": "mech-19",
+    "job": "mechanical",
+    "prompt": "Reply with only the year extracted from this string: \"invoice_2023-11_final.csv\"",
+    "rubric": "The answer is exactly 2023, with no extra words."
+  },
+  {
+    "id": "mech-20",
+    "job": "mechanical",
+    "prompt": "Reply with only \"pass\" or \"fail\": does the string \"AB-1234-XY\" match the pattern two letters, dash, four digits, dash, two letters?",
+    "rubric": "The answer is exactly \"pass\" (case-insensitive), with no extra words."
+  },
+  {
+    "id": "mech-21",
+    "job": "mechanical",
+    "prompt": "Reply with only \"pass\" or \"fail\": does the string \"AB-12-XY\" match the pattern two letters, dash, four digits, dash, two letters?",
+    "rubric": "The answer is exactly \"fail\" (case-insensitive), with no extra words, since \"12\" is only two digits."
+  }
+]
