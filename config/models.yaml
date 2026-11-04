@@ -1,0 +1,99 @@
+# API list prices, USD per 1M tokens. Used by `ax usage` to show what the same work would cost
+# at pay-as-you-go API rates (compare with config/rates.yaml subscriptions).
+# Lookup: exact model id, else the longest key that is a prefix (so dated ids like
+# claude-haiku-4-5-20251001 match claude-haiku-4-5). A model not listed here gets cost null.
+# `cache_write_5m` / `cache_write_1h` / `cache_read` are multiples of `input` unless given in $.
+# Every entry names its source; re-check prices when a new model shows up in `ax usage --unpriced`.
+
+defaults:
+  anthropic: { cache_write_5m: 1.25x, cache_write_1h: 2x, cache_read: 0.1x }
+  openai: { cache_write_5m: 1.25x, cache_read: 0.1x }
+
+pricing:
+  # Anthropic. Source: claude-api skill model table (cached 2026-06-24) + prompt-caching economics.
+  claude-fable-5-1: { provider: anthropic, input: 10, output: 50, cache_read: 0.25, source: claude-api skill, confidence: high }
+  claude-fable-5: { provider: anthropic, input: 10, output: 50, source: claude-api skill, confidence: high }
+  claude-opus-5: { provider: anthropic, input: 5, output: 25, fast: { input: 10, output: 50 }, source: claude-api skill, confidence: high }
+  claude-opus-4-8: { provider: anthropic, input: 5, output: 25, fast: { input: 10, output: 50 }, source: claude-api skill, confidence: high }
+  claude-opus-4-7: { provider: anthropic, input: 5, output: 25, source: claude-api skill, confidence: high }
+  claude-opus-4-6: { provider: anthropic, input: 5, output: 25, source: claude-api skill, confidence: high }
+  claude-sonnet-5: { provider: anthropic, input: 2, output: 10, source: claude-api skill, confidence: high }
+  claude-sonnet-4-6: { provider: anthropic, input: 3, output: 15, source: claude-api skill, confidence: high }
+  claude-haiku-4-5: { provider: anthropic, input: 1, output: 5, source: claude-api skill, confidence: high }
+
+  # TypeSafe Jev classifier: $0.042 per 1M input tokens, output free. Used only for the decision-density and savings
+  # SCENARIOS (core/density/jev-price.ts); nothing is billed at this rate until a Jev call is wired in.
+  jev-latest: { provider: typesafe, input: 0.042, output: 0, source: "TypeSafe Jev article, not yet checked against TypeSafe's own price page", confidence: medium }
+
+  # OpenAI. Source: https://developers.openai.com/api/docs/pricing (read 2026-09-22).
+  gpt-6-astra: { provider: openai, input: 10, output: 50, cache_read: 1.0, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.6-sol: { provider: openai, input: 4, output: 20, cache_read: 0.4, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.6-terra: { provider: openai, input: 2, output: 12, cache_read: 0.2, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.6-luna: { provider: openai, input: 0.2, output: 1.2, cache_read: 0.02, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.5: { provider: openai, input: 5, output: 30, cache_read: 0.5, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.4: { provider: openai, input: 2.5, output: 15, cache_read: 0.25, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.3-codex: { provider: openai, input: 1.75, output: 14, cache_read: 0.175, source: openrouter.ai/openai/gpt-5.3-codex 2026-09-22, confidence: medium }
+  gpt-5.2: { provider: openai, input: 1.75, output: 14, cache_read: 0.175, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5.1: { provider: openai, input: 1.25, output: 10, cache_read: 0.125, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  gpt-5: { provider: openai, input: 1.25, output: 10, cache_read: 0.125, source: developers.openai.com/api/docs/pricing 2026-09-22, confidence: high }
+  # codex-auto-review: internal Codex reviewer model, no public API price -> left unpriced on purpose.
+
+  # Moonshot (Kimi). Source: aggregators (benchlm.ai, morphllm.com), not platform.moonshot.ai directly.
+  kimi-code/k3-256k: { provider: moonshot, input: 3, output: 15, cache_read: 0.3, source: benchlm.ai/moonshot/api-pricing 2026-09-22, confidence: medium }
+  # kimi-code/kimi-for-coding-highspeed: no confirmed public price (closest: K2.7 Code HighSpeed 1.90/0.38/8.00) -> unpriced.
+
+  # Perplexity Sonar (for main-researcher / Dream enrichment). Source: pricepertoken.com, medium.
+  sonar: { provider: perplexity, input: 1, output: 1, source: pricepertoken.com 2026-09-22, confidence: medium }
+  sonar-pro: { provider: perplexity, input: 3, output: 15, source: pricepertoken.com 2026-09-22, confidence: medium }
+
+  # Nebius Token Factory (EU, Finland). Source: the Token Factory API itself, GET /v1/models?verbose=true,
+  # read 2026-09-23 (ported from ax-route prices.yaml). No separate cached-input price is published, so
+  # cache reads bill at the input rate (cache_read: 1x).
+  Qwen/Qwen3-Embedding-8B: { provider: nebius, input: 0.01, output: 0, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B: { provider: nebius, input: 0.06, output: 0.24, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  nvidia/Nemotron-3_5-Lightning: { provider: nebius, input: 0.06, output: 0.24, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  google/gemma-3-27b-it: { provider: nebius, input: 0.1, output: 0.3, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  Qwen/Qwen3-30B-A3B-Instruct-2507: { provider: nebius, input: 0.1, output: 0.3, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  deepseek-ai/DeepSeek-V4-Flash-0731: { provider: nebius, input: 0.14, output: 0.28, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  openai/gpt-oss-120b: { provider: nebius, input: 0.15, output: 0.6, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  zai-org/GLM-5.3-Flash: { provider: nebius, input: 0.15, output: 0.5, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  Qwen/Qwen3-235B-A22B-Instruct-2507: { provider: nebius, input: 0.2, output: 0.6, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  MiniMaxAI/MiniMax-M3: { provider: nebius, input: 0.3, output: 1.2, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  nvidia/nemotron-3-super-120b-a12b: { provider: nebius, input: 0.3, output: 0.9, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  deepseek-ai/DeepSeek-V4.1-Flash: { provider: nebius, input: 0.3, output: 1.2, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  Qwen/Qwen3.5-397B-A17B: { provider: nebius, input: 0.6, output: 3.6, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  openbmb/MiniCPM-V-4_5: { provider: nebius, input: 0.658, output: 1.11, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  moonshotai/Kimi-K2.7-Code: { provider: nebius, input: 0.95, output: 4, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  moonshotai/Kimi-K2.6: { provider: nebius, input: 0.95, output: 4, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  NousResearch/Hermes-4-405B: { provider: nebius, input: 1, output: 3, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  nvidia/Nemotron-3-Ultra-550b-a55b: { provider: nebius, input: 1, output: 3, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  deepseek-ai/DeepSeek-V4-Pro-0813: { provider: nebius, input: 1.32, output: 3.96, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  zai-org/GLM-5.1: { provider: nebius, input: 1.4, output: 4.4, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  zai-org/GLM-5.2: { provider: nebius, input: 1.4, output: 4.4, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  zai-org/GLM-5.3: { provider: nebius, input: 1.4, output: 4.4, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  deepseek-ai/DeepSeek-V4-Pro: { provider: nebius, input: 1.75, output: 3.5, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+  moonshotai/Kimi-K3: { provider: nebius, input: 3, output: 15, cache_read: 1x, source: nebius api /v1/models 2026-09-23, confidence: high }
+
+# The share of total token cost to treat as routable in the phase-2 savings scenario. It approximates
+# the mechanical share but is applied across all usage until real-work replay classifies rows. This is
+# operator-set policy, not a measurement —
+# unlike `share`, the model itself is never hard-coded here: `ax plans`/the dashboard always resolve it
+# live from the newest bench evidence (ax/core/route/evidence.ts, evals/route/results/mechanical/), and
+# show no routing/savings line at all when no bench result has cleared the bar yet. Run `ax route bench
+# --job mechanical` to produce that evidence; `ax route evidence` prints today's resolved model.
+routing:
+  mechanical:
+    share: 0.5
+
+  # Routing policy per agent role (spec 003 T032; parsed by ax/core/route/policy.ts). The declared tier stays
+  # in each agent's frontmatter `model:` (Gate VI); this says which job a role belongs to and which models it
+  # may be routed to. Policy never names the winner: the routed model is resolved live from bench evidence
+  # (ax route evidence), and a role stays "untested" until a job has a result. A role not listed here has no
+  # routing policy. `preferred` (optional, must be in `allowed`) wins over a cheaper model when the evidence
+  # marks it deployable.
+  # `thresholds` can only tighten the absolute floors in ax/core/route/bench.ts (bar 0.9, 20 samples).
+  thresholds: { bar: 0.9, min_samples: 20 }
+  roles:
+    qa-test: { job: mechanical, allowed: [google/gemma-3-27b-it, openai/gpt-oss-120b, Qwen/Qwen3-235B-A22B-Instruct-2507] }
+    memory-retrieval: { job: mechanical, allowed: [google/gemma-3-27b-it, openai/gpt-oss-120b, Qwen/Qwen3-235B-A22B-Instruct-2507] }
+    learning-extractor: { job: mechanical, allowed: [google/gemma-3-27b-it, openai/gpt-oss-120b, Qwen/Qwen3-235B-A22B-Instruct-2507] }
